@@ -1,0 +1,20 @@
+{
+  "name": "dilims",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Maximkreizer/dilims.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Maximkreizer/dilims/issues"
+  },
+  "homepage": "https://github.com/Maximkreizer/dilims#readme",
+  "description": ""
+}
