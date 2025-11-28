@@ -1,3 +1,12 @@
+<!--
+Startseite / Dashboard der Anwendung.
+
+Funktionalität:
+- Zeigt eine zentrierte Auswahl an großen Navigations-Kacheln (Tiles).
+- Iteriert über ein Konfigurations-Array, um Route und Icon pro Kachel zu rendern.
+- Leitet den Nutzer per Vue Router zum gewählten Modul (Suche, Labor, Antikörper).
+-->
+
 <template>
   <v-container class="d-flex align-center justify-center" style="height: 100vh; padding: 0;">
     <v-row class="d-flex flex-row justify-center align-center" style="margin: 0;" no-gutters>

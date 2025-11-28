@@ -1,4 +1,12 @@
 // src/main.ts
+/**
+Einstiegspunkt (Entry Point) der Anwendung.
+
+Funktionalität:
+- Erstellt die Vue-Instanz basierend auf der Root-Komponente (App.vue).
+- Initialisiert und registriert globale Plugins: Pinia (State), Router (Navigation) und Vuetify (UI/Styles).
+- Mountet die fertige Applikation an das DOM, um sie im Browser zu rendern.
+*/
 
 import { createApp } from 'vue';
 import App from './App.vue';

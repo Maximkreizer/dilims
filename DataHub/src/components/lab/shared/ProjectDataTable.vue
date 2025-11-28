@@ -1,4 +1,12 @@
 <!-- src/components/lab/shared/ProjectDataTable.vue -->
+ <!--  * UI-Komponente zur tabellarischen Darstellung von Suchergebnissen.
+ * 
+ * Funktionalität:
+ * - Wrappt eine v-data-table mit vordefinierten Spalten für Projekte.
+ * - Zeigt Meta-Informationen (Trefferanzahl) im Header.
+ * - Normalisiert das 'click:row'-Event der Tabelle und emittet das 
+ *   ausgewählte Datenobjekt ('select') an den Parent.
+  -->
 <template>
   <v-card border>
     <v-card-title class="d-flex align-center">

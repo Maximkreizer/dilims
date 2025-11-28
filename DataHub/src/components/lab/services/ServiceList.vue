@@ -1,4 +1,12 @@
 <!-- src/components/lab/services/ServiceList.vue -->
+ /**
+ * UI-Komponente zur Auflistung existierender Services (meist als Sidebar genutzt).
+ * 
+ * Funktionalität:
+ * - Zeigt Projekt-Dienstleistungen in einer klickbaren Liste an.
+ * - Visualisiert den Ladezustand mittels Skeleton-Loader.
+ * - Emittet Events zum Auswählen eines Eintrags ('select') oder zum Starten der Neuanlage ('createNew').
+ */
 <template>
   <v-card border>
     <v-card-title class="d-flex align-center">

@@ -1,4 +1,14 @@
 <!-- src/components/lab/services/ServiceEditorForm.vue -->
+ /**
+ * Multi-State-Komponente zur Erstellung und Bearbeitung von Labor-Dienstleistungen.
+ * 
+ * Funktionalität:
+ * - Fungiert als "Wizard":
+ *   1. Zeigt Katalog zur Auswahl des Service-Typs (Grid mit Icons).
+ *   2. Zeigt das Bearbeitungsformular mit dynamischen Feldern (abhängig vom Service-Typ per v-if).
+ *   3. Zeigt Leerzustand, wenn nichts ausgewählt ist.
+ * - Mutiert das übergebene `activeService`-Objekt direkt via v-model.
+ */
 <template>
   <v-card border min-height="400" class="d-flex flex-column">
     <v-fade-transition mode="out-in">

@@ -1,20 +1,30 @@
 {
   "name": "dilims",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "",
+  "author": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Maximkreizer/dilims.git"
+  "main": "index.js",
+  "dependencies": {
+    "@mdi/font": "5.9.55",
+    "roboto-fontface": "*",
+    "vuetify": "^3.0.0-beta.0",
+    "webfontloader": "^1.0.0"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "devDependencies": {
+    "vue-cli-plugin-vuetify": "~2.5.8",
+    "webpack-plugin-vuetify": "^2.0.0-alpha.0"
+  },
   "bugs": {
     "url": "https://github.com/Maximkreizer/dilims/issues"
   },
   "homepage": "https://github.com/Maximkreizer/dilims#readme",
-  "description": ""
+  "keywords": [],
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Maximkreizer/dilims.git"
+  }
 }

@@ -1,4 +1,12 @@
 // src/services/api.ts
+/**
+Simulierter API-Layer (Service) für das Frontend.
+
+Funktionalität:
+- Stellt Methoden bereit (findProjects, saveProject), die sich verhalten wie echte HTTP-Requests.
+- Simuliert Netzwerklatenz (Delay), um Ladezustände in der UI testen zu können.
+- Implementiert die Geschäftslogik zum Filtern und Aktualisieren der lokalen Mock-Datenbank.
+*/
 
 import type { Project } from '@/mocks/db';
 // Korrekter Import der Mock-Daten-Arrays aus unserer db.ts
@@ -31,45 +39,69 @@ export const api = {
    * @returns Eine Promise, die ein Array von Projekten zurückgibt.
    */
 
-  async findProjects(filters: any): Promise<Project[]> {
-    await delay(600);
-    console.log('API-SIMULATION: Wende Filter an:', filters);
+async findProjects(filters: any): Promise<Project[]> {
+    await delay(400); // Kurze Ladezeit simuliert
+    // console.log('API-SIMULATION: Wende Filter an:', filters);
 
     let results = [...mockProjects];
 
-    // Filter nach Status
+    // --- 1. ALLGEMEINE SUCHE (Das Suchfeld oben) ---
+    if (filters.generalSearch) {
+      const term = filters.generalSearch.toLowerCase().trim();
+      
+      results = results.filter(p => {
+        // Wir suchen in Projektnummer...
+        const inNumber = p.projectNumber.toLowerCase().includes(term);
+        // ...oder in der Aufgabenbeschreibung...
+        const inTask = p.taskDescription.toLowerCase().includes(term);
+        // ...oder im Status
+        const inStatus = p.status.toLowerCase().includes(term);
+        
+        // Wenn EINES davon zutrifft, ist das Projekt ein Treffer
+        return inNumber || inTask || inStatus;
+      });
+    }
+
+    // --- 2. SPEZIFISCHE FILTER (Die Search Options) ---
+    
+    // Status (Dropdown)
     if (filters.status) {
       results = results.filter(p => p.status === filters.status);
     }
 
-    // Filter nach Mitarbeiter-ID
+    // Mitarbeiter-ID
     if (filters.technicalAssistantId) {
       results = results.filter(p => p.technicalAssistantId === Number(filters.technicalAssistantId));
     }
     
-    // NEU: Filter nach Arzt/Partner-ID
+    // Arzt/Partner-ID
     if (filters.cooperationPartnerId) {
       results = results.filter(p => p.cooperationPartnerId === Number(filters.cooperationPartnerId));
     }
 
-    // Filter nach Projektnummer
+    // Arbeitsgruppe
+    if (filters.workgroupId) {
+      results = results.filter(p => p.workgroupId === Number(filters.workgroupId));
+    }
+
+    // Spezifische Projektnummer (aus den Optionen)
     if (filters.projectNumber) {
       results = results.filter(p => p.projectNumber.toLowerCase().includes(filters.projectNumber.toLowerCase()));
     }
     
-    // Filter nach Projekttyp-Flags
-    if (filters.isNctTbb === 'true') { results = results.filter(p => p.isNctTbb === true); }
-    if (filters.isPccc === 'true') { results = results.filter(p => p.isPccc === true); }
-    // ...
+    // Projekttyp-Flags (Dropdown)
+    if (filters.projectType) { 
+       // Wir prüfen dynamisch, ob das Flag (z.B. 'isNctTbb') auf true steht
+       results = results.filter(p => (p as any)[filters.projectType] === true); 
+    }
 
-    // Filter nach Checkbox-Flags
-    if (filters.finalCheck === 'true') { results = results.filter(p => p.finalCheck === true); }
-    if (filters.isLongTermProject === 'true') { results = results.filter(p => p.isLongTermProject === true); }
-    if (filters.isSfb118Project === 'true') { results = results.filter(p => p.isSfb118Project === true); }
+    // Checkbox-Flags
+    if (filters.finalCheck) { results = results.filter(p => p.finalCheck === true); }
+    if (filters.isLongTermProject) { results = results.filter(p => p.isLongTermProject === true); }
+    if (filters.isSfb118Project) { results = results.filter(p => p.isSfb118Project === true); }
 
     return results;
   },
-  
   /**
    * Simuliert das Abrufen der Optionen für die Dropdown-Felder im Suchformular.
    * @returns Eine Promise, die ein Objekt mit den Optionslisten zurückgibt.

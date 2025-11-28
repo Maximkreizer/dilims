@@ -1,3 +1,11 @@
+<!--
+Layout-Wrapper (Rahmen) für den gesamten Labor-Bereich.
+
+Funktionalität:
+- Bietet eine konsistente Hülle (Header & Footer) für alle Labor-Seiten.
+- Rendered dynamische Unterseiten (Search, Editor) mittels <router-view> im Inhaltsbereich.
+- Enthält die Navigation zum Verlassen des Workflows (Zurück zum Dashboard).
+-->
 <template>
   <!-- 
     Wir verwenden eine v-card mit einer Mindesthöhe, um das Gefühl einer

@@ -1,4 +1,13 @@
 <!-- src/components/lab/forms/ProjectDataForm.vue -->
+<!-- 
+ * UI-Komponente (Formular) zur Bearbeitung von Projekt-Stammdaten.
+ * 
+ * Funktionalität:
+ * - Zweispaltiges Layout: Links editierbare Projektdaten, rechts schreibgeschützte Antragsdaten.
+ * - Mappt Dropdown-Auswahlen auf Boolean-Flags (Projekttypen).
+ * - Konvertiert Datumsformate für HTML-Inputs.
+ * - Emittet 'save', 'fetch-application-data' und 'edit-services' an die Elternkomponente.
+ -->
 <template>
   <!-- v-if stellt sicher, dass das Formular erst gerendert wird, wenn Daten da sind -->
   <v-form v-if="formData">

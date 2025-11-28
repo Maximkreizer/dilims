@@ -1,27 +1,11 @@
 /**
- * =======================================================================================
- * DATA CONTRACT & MOCK DATABASE
- * =======================================================================================
- * This file serves as both the formal Data Contract (via TypeScript Interfaces) and
- * the mock database for the entire application.
- *
- * PART 1: The Data Contract defines the shape of our data (the "Bauplan").
- * PART 2: The Mock Data provides realistic sample data based on that contract.
- * =======================================================================================
- */
+Zentraler Daten-Vertrag und Mock-Datenbank der Anwendung.
 
-// =======================================================================================
-// PART 1: THE DATA CONTRACT (INTERFACES)
-// (This part remains unchanged as our blueprint is solid)
-// =======================================================================================
-
-// ... [Der gesamte INTERFACE-Teil von "Section 1.1" bis "Section 1.3" bleibt exakt derselbe wie zuvor] ...
-// HINWEIS: Aus Gründen der Übersichtlichkeit wird der unveränderte Interface-Teil hier nicht wiederholt.
-// Die folgenden Mock-Daten halten sich exakt an die zuvor definierten Interfaces.
-
-/**
- * Represents a Technical Assistant (TA) from the fixed list.
- */
+Funktionalität:
+- Definiert via TypeScript-Interfaces die Struktur aller Datenobjekte (Projekte, polymorphe Services, Personen).
+- Stellt statische Beispieldaten (Mocks) bereit, die als Ersatz für ein echtes Backend dienen.
+- Ermöglicht die Entwicklung und das Testen komplexer Formulare und Listen ohne Datenbankverbindung.
+*/
 export interface TechnicalAssistant {
   id: number;
   code: string; // e.g., "MM"
