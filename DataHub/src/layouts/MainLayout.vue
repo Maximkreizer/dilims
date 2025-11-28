@@ -110,14 +110,15 @@
     <!-- ===================================== -->
     <!-- MITTE: Content                        -->
     <!-- ===================================== -->
-    <v-main class="bg-grey-lighten-5">
-      <router-view v-slot="{ Component }">
-        <v-fade-transition mode="out-in">
-          <div :key="route.fullPath" class="fill-height">
-            <component :is="Component" />
-          </div>
-        </v-fade-transition>
-      </router-view>
+    <v-main class="bg-grey-lighten-5">  
+    <router-view v-slot="{ Component }">
+      <v-fade-transition mode="out-in">
+        <!-- Key geändert auf route.name! -->
+        <div :key="route.name?.toString()" class="fill-height">
+          <component :is="Component" />
+        </div>
+      </v-fade-transition>
+    </router-view>
     </v-main>
   </v-app>
 </template>

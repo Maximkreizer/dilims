@@ -31,6 +31,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'ServiceProjectEdit',
         component: () => import('@/pages/lab/ProjectEditorView.vue'),
         props: true
+      },
+      {
+        path: 'project/:projectId/services',
+        name: 'ServiceProjectServices', // Eindeutiger Name
+        component: () => import('@/pages/lab/ProjectServicesView.vue'),
+        props: true
       }
     ]
   },

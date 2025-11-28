@@ -132,29 +132,42 @@ async findProjects(filters: any): Promise<Project[]> {
     };
   },
 
-  async saveProject(projectData: Project): Promise<Project> {
+async saveProject(projectData: Project): Promise<Project> {
     await delay(500);
-    console.log("API-SIMULATION: Speichere Projekt", projectData);
+    // console.log("API-SIMULATION: Speichere Projekt", projectData);
 
-    if (projectData.id && projectData.id !== 0) {
+    // WICHTIG: Erstelle eine tiefe Kopie der eingehenden Daten, 
+    // um Referenz-Probleme mit Proxies zu vermeiden
+    const dataToSave = JSON.parse(JSON.stringify(projectData));
+
+    if (dataToSave.id && dataToSave.id !== 0) {
       // --- UPDATE ---
-      // Finde den Index des bestehenden Projekts
-      const index = mockProjects.findIndex(p => p.id === projectData.id);
+      const index = mockProjects.findIndex(p => p.id === dataToSave.id);
       if (index !== -1) {
-        // Ersetze das alte Projekt durch die neuen Daten
-        mockProjects[index] = projectData;
-        return projectData;
+        mockProjects[index] = dataToSave;
+        return dataToSave;
       }
     }
     
     // --- CREATE ---
-    // Erstelle eine neue ID (simpel, nur für Mocks)
-    const newId = Math.max(...mockProjects.map(p => p.id)) + 1;
-    const newProject = { ...projectData, id: newId };
-    mockProjects.push(newProject);
+    const newId = Math.max(...mockProjects.map(p => p.id), 0) + 1;
+    const newProject = { ...dataToSave, id: newId }; // Neue ID zuweisen
+    
+    // Ganz oben in die Liste einfügen, damit man es sofort sieht
+    mockProjects.unshift(newProject); 
+    
     return newProject;
   },
 
+  async deleteProject(id: number): Promise<void> {
+    await delay(300);
+    const index = mockProjects.findIndex(p => p.id === id);
+    if (index !== -1) {
+      mockProjects.splice(index, 1);
+      console.log(`API-SIMULATION: Projekt ${id} gelöscht.`);
+    }
+  },
+  
   async fetchApplicationData() {
       console.log("API-SIMULATION: Starte 5-sekündige Abfrage der Antragsdaten...");
       await delay(5000); // Simuliert 5 Sekunden Ladezeit

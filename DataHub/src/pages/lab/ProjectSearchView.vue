@@ -31,7 +31,7 @@
                     <v-col cols="12" md="3"><v-select v-model="filters.projectType" label="Projekttyp" :items="options.projectTypes" item-title="title" item-value="value" density="compact" variant="outlined"></v-select></v-col>
                     <v-col cols="12" md="3"><v-select v-model="filters.status" label="Status" :items="options.statuses" item-title="title" item-value="value" density="compact" variant="outlined"></v-select></v-col>
                     <v-col cols="12" md="3"><v-select v-model="filters.technicalAssistantId" label="TA" :items="options.technicalAssistants" item-title="fullName" item-value="id" density="compact" variant="outlined"></v-select></v-col>
-                    <v-col cols="12" md="3"><v-select v-model="filters.cooperationPartnerId" label="Partner" :items="options.cooperationPartners" item-title="fullName" item-value="id" density="compact" variant="outlined"></v-select></v-col>
+                    <v-col cols="12" md="3"><v-select v-model="filters.cooperationArztId" label="Arzt" :items="options.cooperationPartners" item-title="fullName" item-value="id" density="compact" variant="outlined"></v-select></v-col>
                     
                     <v-col cols="12" md="4"><v-text-field v-model="filters.projectNumber" label="Projekt-Nr." density="compact" variant="outlined"></v-text-field></v-col>
                     <v-col cols="12" md="4"><v-select v-model="filters.workgroupId" label="Arbeitsgruppe" :items="options.workgroups" item-title="name" item-value="id" density="compact" variant="outlined"></v-select></v-col>
@@ -87,6 +87,9 @@
                 :style="{ width: column.width + 'px', minWidth: column.width + 'px' }"
                 class="custom-header position-relative"
                 @click="() => toggleSort(column)"
+                @open="handleProjectSelect"
+                @open-in-tab="handleOpenInNewTab"
+                @delete="handleDeleteProject"
               >
                 <!-- Header Titel -->
                 <span class="mr-2 cursor-pointer font-weight-bold">{{ column.title }}</span>
@@ -236,6 +239,21 @@ function startEdit(item: Project, field: string) { if(editingCell.value) cancelE
 function cancelEdit() { setTimeout(() => { editingCell.value = null; editingValue.value = null; }, 100); }
 async function saveEdit(item: Project, field: string) { if (editingCell.value) { (item as any)[field] = editingValue.value; await api.saveProject(item); cancelEdit(); } }
 async function quickSave(item: Project) { await api.saveProject(item); }
+
+function handleOpenInNewTab(project: Project) {
+  navStore.addTab(`/services/project/${project.id}`);
+}
+
+async function handleDeleteProject(project: Project) {
+  loading.value = true;
+  try {
+    await api.deleteProject(project.id);
+    // Liste aktualisieren
+    await performSearch(); 
+  } finally {
+    loading.value = false;
+  }
+}
 
 async function performSearch() {
   loading.value = true;

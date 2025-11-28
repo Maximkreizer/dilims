@@ -37,21 +37,6 @@ export const useNavigationStore = defineStore('navigation', () => {
   const showNewButton = computed(() => activeTab.value ? activeTab.value.showNewButton : false);
 
   // --- ACTIONS ---
-
-  function addTab() {
-    if (tabs.value.length >= 8) return;
-    const newId = `tab-${Date.now()}`;
-    const newTab: TabSession = {
-      id: newId,
-      icon: 'mdi-monitor-dashboard', // Startet immer als Dashboard
-      path: '/',
-      breadcrumbs: [{ title: 'Navigation', disabled: true }],
-      showNewButton: false
-    };
-    tabs.value.push(newTab);
-    switchTab(newId);
-  }
-
   function switchTab(id: string) {
     const targetTab = tabs.value.find(t => t.id === id);
     if (targetTab) {
@@ -113,6 +98,30 @@ export const useNavigationStore = defineStore('navigation', () => {
 
   function setNewAction(callback: () => void) {
     onNewButtonClick.value = callback;
+  }
+
+  function addTab(targetPath?: string) {
+    if (tabs.value.length >= 8) return;
+
+    const newId = `tab-${Date.now()}`;
+    
+    // Wenn ein Pfad übergeben wurde, nutzen wir den, sonst Startseite
+    const initialPath = targetPath || '/';
+    
+    // Kleiner Trick: Wenn wir direkt in ein Projekt springen, setzen wir ein generisches Icon,
+    // das korrekte Icon (Becherglas) wird dann von der Seite selbst (onMounted) gesetzt.
+    const initialIcon = targetPath ? 'mdi-loading' : 'mdi-monitor-dashboard';
+
+    const newTab: TabSession = {
+      id: newId,
+      icon: initialIcon,
+      path: initialPath,
+      breadcrumbs: [{ title: 'Laden...', disabled: true }],
+      showNewButton: false
+    };
+
+    tabs.value.push(newTab);
+    switchTab(newId);
   }
 
   return { 

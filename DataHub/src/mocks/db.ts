@@ -1,144 +1,126 @@
 /**
-Zentraler Daten-Vertrag und Mock-Datenbank der Anwendung.
+ * =======================================================================================
+ * DATA CONTRACT & MOCK DATABASE (UPDATED)
+ * =======================================================================================
+ */
 
-Funktionalität:
-- Definiert via TypeScript-Interfaces die Struktur aller Datenobjekte (Projekte, polymorphe Services, Personen).
-- Stellt statische Beispieldaten (Mocks) bereit, die als Ersatz für ein echtes Backend dienen.
-- Ermöglicht die Entwicklung und das Testen komplexer Formulare und Listen ohne Datenbankverbindung.
-*/
 export interface TechnicalAssistant {
   id: number;
-  code: string; // e.g., "MM"
+  code: string;
   fullName: string;
 }
 
-/**
- * Represents a Doctor or Cooperation Partner from the fixed list.
- */
 export interface CooperationPartner {
   id: number;
-  code: string; // e.g., "SMI"
+  code: string;
   fullName: string;
 }
 
-/**
- * Represents a Workgroup. The 'field' number is the ID.
- */
 export interface Workgroup {
-  id: number; // The 'Feld' number
+  id: number;
   name: string;
 }
-interface BaseService {
+
+// Basis-Eigenschaften für alle Services
+export interface BaseService {
   id: number;
-  remarks: string;
-  deliveryDate: string | null;
+  serviceType: string; // Wichtig für die Unterscheidung
+  remarks: string;     // Bemerkung
+  deliveryDate: string | null; // Abgabedatum
 }
 
-// Sparte 1: Gewebeverarbeitung
-export interface ParaffinSectionService extends BaseService {
-  serviceType: 'paraffin_sections';
-  sampleCount: number;
-  unstainedSectionsPerSample: number;
-  tubesPerSample: number;
-  scrollsPerTube: number; 
-  heSectionsForRequestor: number;
-  heSectionsForTissueBank: number;
-  archiveSectionCount: number;
-  archiveBlockCount: number;
+/**
+ * HIER ERWEITERN WIR DIE INTERFACES FÜR DIE NEUEN FORMULARE
+ */
+
+// 1. & 2. Paraffin (Schnitte & Tubes) & 3. Einbettung
+export interface ParaffinService extends BaseService {
+  serviceType: 'paraffin_sections' | 'paraffin_tubes' | 'paraffin_embedding';
+  sampleCount?: number;             // P_Anz_Proben
+  slidesPerSample?: number;         // P_Anz_OT_pro_Probe
+  tubesPerSample?: number;          // P_Anz_Tubes_pro_Probe
+  scrollsPerTubeCount?: number;     // P_Röllchen pro Tube
+  heRequestor?: number;             // P_HE_Schnitte für Antragssteller
+  heTissueBank?: number;            // P_HE_Schnitte für Gewebebank
+  archiveSlidesCases?: number;      // P_Archiv_Anz_Schnittpräperate (Fälle)
+  archiveBlocksCases?: number;      // P_Archiv_Anz_Blöcke (Fälle) / Anz_Einbettung
 }
 
-export interface ParaffinTubeService extends BaseService {
-  serviceType: 'paraffin_tubes';
-  sampleCount: number;
-  tubesPerSample: number;
-  scrollsPerTube: number;
-  heSectionsForRequestor: number;
-  heSectionsForTissueBank: number;
-  archiveSectionCount: number;
-  archiveBlockCount: number;
-}
-export interface CryoSectionService extends BaseService {
-  serviceType: 'cryo_sections';
-  sampleCount: number;
-  unstainedSectionsPerSample: number;
-  heSectionsForRequestor: number;
-  heSectionsForTissueBank: number;
-  archiveSampleCount: number;
-}
-export interface CryoTubeService extends BaseService {
-  serviceType: 'cryo_tubes';
-  sampleCount: number;
-  tubesPerSample: number;
-  scrollsPerTubeCount: number;
-  scrollsPerTubeWeight: number;
-  heSectionsForRequestor: number;
-  heSectionsForTissueBank: number;
-  archiveSampleCount: number;
-}
-
+// 4. & 5. Kryo (Schnitte, Tubes, Service)
 export interface CryoService extends BaseService {
-  serviceType: 'cryo_service';
-  sampleCount: number;
-  unstainedSectionsPerSample: number;
-  heSectionsForRequestor: number;
-  heSectionsForTissueBank: number;
+  serviceType: 'cryo_sections' | 'cryo_tubes' | 'cryo_service';
+  sampleCount?: number;             // K_Anz_Proben
+  slidesPerSample?: number;         // K_Anz_OT_pro_Probe
+  tubesPerSample?: number;          // K_Anz_Tubes_pro_Probe
+  scrollsPerTubeCount?: number;     // K_Röllchen pro Tube (Anzahl)
+  scrollsPerTubeWeight?: number;    // K_Röllchen pro Tube (Gewicht) - NEU!
+  heRequestor?: number;
+  heTissueBank?: number;
+  archiveSampleCases?: number;      // K_Archiv_Anz_Proben (Fälle)
 }
 
-// Sparte 2: Spezial-Analyse & Färbung
+// 6. IHC
 export interface IhcService extends BaseService {
   serviceType: 'ihc';
-  slideCount: number;
-  stainingDevice: 'dako' | 'ventana' | 'sonstiges_ak_plus' | 'sonstiges_ak_minus' | 'bond' | 'artisan' | null;
+  slideCount: number;               // IHC_Schnitte
+  stainingDevice: string | null;    // IHC_Faerbegerät ('Dako', 'Ventana'...)
 }
 
-// Sparte 3: TMA
+// 10. TMA Erstellung
+export interface TmaCreationService extends BaseService {
+  serviceType: 'tma_creation';
+  tmaNumber: string;                // TMA_Nr
+  tmaHeCount: number;               // TMA_Anz_HE_Schnitte
+  tmaDate: string | null;           // Datum
+  punchesPerBlock: number;          // TMA_Anz_Stanzen_pro_Bl
+  blockNumbers: string;             // Blocknummern
+  patientCount: number;             // TMA_Anz_Patienten
+  excludedCount: number;            // Ausgeschieden
+}
+
+// 11. TMA Schnitte
 export interface TmaSectionService extends BaseService {
   serviceType: 'tma_sections';
-  sourceTmaId: number;
-  sourceTmaName: string;
-  blockCount: number;
-  blockNumbers: string;
-  sectionsPerBlock: number;
+  tmaName: string;                  // TMA_NAME
+  tmaNumber: string;                // TMA_NR
+  blockCount: number;               // Anz_Bloecke
+  sectionsPerBlock: number;         // Anz_Schnitte_pro_Bloecke
+  blockNumbers: string;             // Blocknummern
 }
 
-// Sparte 4: Digitale Pathologie
+// 12. Virtuelle Mikroskopie
 export interface VirtualMicroscopyService extends BaseService {
   serviceType: 'virtual_microscopy';
-  archiveSectionCount: number;
-  archiveBlockCount: number;
-  scanCount: number;
-  isBrightfield: boolean;
-  isFluorescence: boolean;
+  archiveSlidesCases: number;       // P_Archiv_Anz_Schnittpräperate
+  archiveBlocksCases: number;       // P_Anz_Blöcke
+  scanCount: number;                // Virtuelle_Mikroskopie (Anz. Scans)
+  isBrightfield: boolean;           // Hellfeld
+  isFluorescence: boolean;          // Floureszenz
 }
 
-// Universelle Typen für einfache Zähler
+// Einfache Zähler (DNA, Patho)
 export interface SimpleCountService extends BaseService {
-  serviceType: 
-    | 'paraffin_embedding'
-    | 'pathological_assessment'
-    | 'dna_rna_extraction';
-  count: number;
+  serviceType: 'dna_rna_extraction' | 'pathological_assessment';
+  extractionCount?: number;         // Anz_DNA_RNA_Extraktion
+  assessmentCount?: number;         // Anz_Pathol_Beurteilung
 }
 
-// Universelle Typen ohne spezifische Felder
+// Generisch (Färbung, Daten, Ethik, Archiv)
 export interface GenericService extends BaseService {
-  serviceType:
-    | 'data'
-    | 'ethics'
-    | 'staining'
-    | 'tma_creation'
-    | 'archival_work';
+  serviceType: 'staining' | 'data' | 'ethics' | 'archival_work';
+  // Archivarbeit nutzt z.T. Felder von Paraffin (Slides/Blocks), daher optional hier:
+  archiveSlidesCases?: number;
+  archiveBlocksCases?: number;
 }
 
+// UNION TYPE: Das ist wichtig, damit das Formular weiß, was alles möglich ist
 export type ProjectService =
-  | ParaffinSectionService
-  | ParaffinTubeService
-  | CryoSectionService
-  | CryoTubeService
+  | ParaffinService
   | CryoService
   | IhcService
-  | VirtualMicroscopyService
+  | TmaCreationService
   | TmaSectionService
+  | VirtualMicroscopyService
   | SimpleCountService
   | GenericService;
 
@@ -146,34 +128,35 @@ export interface Project {
   id: number;
   projectNumber: string;
 
-  // --- Flags & Categories ---
+  // Flags
   isNctTbb: boolean;
   isPccc: boolean;
   isDzif: boolean;
   isCmcp: boolean;
   isSfb118Project: boolean;
   isFollowUpProject: boolean;
-  isLongTermProject: boolean; // Bereits vorhanden, wird jetzt im Formular verwendet
-  finalCheck: boolean; // Bereits vorhanden, wird jetzt im Formular verwendet
+  isLongTermProject: boolean;
+  finalCheck: boolean;
 
-  // --- Status & Descriptions ---
+  // Status & Text
   status: 'clarified' | 'pending_number' | 'in_progress' | 'completed' | 'inquiry' | 'rejected' | 'cancelled' | 'on_hold';
   taskDescription: string;
   projectStatusText: string;
 
-  // --- Relationships ---
+  // Relationen
   technicalAssistantId: number | null | undefined;
   cooperationPartnerId: number | null | undefined;
   workgroupId: number | null | undefined;
 
-  // --- Dates ---
+  // Daten
   estimatedCompletionDate: string | null | undefined;
   lastThursdayOfMonth: string | null | undefined;
-  completionDate: string | null | undefined; // Bereits vorhanden, wird jetzt hinzugefügt
+  completionDate: string | null | undefined;
   
+  // Die Liste der Services
   services: ProjectService[];
 
-  // --- NEU: Felder für die Antragsbearbeitung (Application Processing) ---
+  // Antragsdaten (Readonly View)
   applicationStudy?: string | null;
   applicationProcessingStatus?: string | null;
   applicationTitle?: string | null;
@@ -188,12 +171,8 @@ export interface Project {
 }
 
 // =======================================================================================
-// PART 2: THE MOCK DATA (Updated with your real examples)
+// MOCK DATA (Deine existierenden Daten, leicht angepasst wo nötig)
 // =======================================================================================
-
-// ---------------------------------------------------------------------------------------
-// Section 2.1: Mock Lookup Data (Enriched with your data)
-// ---------------------------------------------------------------------------------------
 
 export const mockTechnicalAssistants: TechnicalAssistant[] = [
   { id: 1, code: 'MK', fullName: 'M. Klein' },
@@ -212,22 +191,17 @@ export const mockWorkgroups: Workgroup[] = [
   { id: 22, name: 'AG Onkologie' },
 ];
 
-// ---------------------------------------------------------------------------------------
-// Section 2.2: Mock Project Data (Generated from your 3 real projects)
-// ---------------------------------------------------------------------------------------
-
 export const mockProjects: Project[] = [
-  // --- Projekt 1 (basierend auf Ihren Daten) ---
   {
     id: 2001,
     projectNumber: 'j123',
     isNctTbb: false, isPccc: false, isDzif: true, isCmcp: false, isSfb118Project: false,
     isFollowUpProject: false, isLongTermProject: false, finalCheck: false,
     status: 'in_progress',
-    taskDescription: '3x30 Lungenparaffinschnitte von Patienten in versch. Krankheitsstadien',
-    projectStatusText: '', // Nicht spezifiziert, kann leer bleiben
-    technicalAssistantId: 1, // MK
-    cooperationPartnerId: 101, // SOC
+    taskDescription: '3x30 Lungenparaffinschnitte...',
+    projectStatusText: '',
+    technicalAssistantId: 1,
+    cooperationPartnerId: 101,
     workgroupId: null,
     estimatedCompletionDate: null,
     lastThursdayOfMonth: null,
@@ -243,22 +217,20 @@ export const mockProjects: Project[] = [
         remarks: '',
         deliveryDate: '2024-01-22T00:00:00.000Z',
         slideCount: 18,
-        stainingDevice: 'bond' // Annahme, basierend auf Bemerkung oben
+        stainingDevice: 'Bond'
       }
     ]
   },
-  
-  // --- Projekt 2 (basierend auf Ihren Daten) ---
   {
     id: 2002,
     projectNumber: '1230',
     isNctTbb: true, isPccc: false, isDzif: false, isCmcp: false, isSfb118Project: false,
-    isFollowUpProject: false, isLongTermProject: false, finalCheck: false, // Annahme basierend auf fehlenden Daten
+    isFollowUpProject: false, isLongTermProject: false, finalCheck: false,
     status: 'completed',
-    taskDescription: 'Anfertigung einer unbestimmten Anzahl an Gewebeschnitten (Paraffin- und Kryogewebe sowie TMA) diverser Organe zu Verwendung von Antikörpern',
+    taskDescription: 'Anfertigung einer unbestimmten Anzahl...',
     projectStatusText: '',
-    technicalAssistantId: 2, // MF
-    cooperationPartnerId: 102, // CP
+    technicalAssistantId: 2,
+    cooperationPartnerId: 102,
     workgroupId: null,
     estimatedCompletionDate: '2021-11-23T00:00:00.000Z',
     lastThursdayOfMonth: '2021-11-25T00:00:00.000Z',
@@ -267,28 +239,26 @@ export const mockProjects: Project[] = [
       {
         id: 3003, serviceType: 'paraffin_sections', remarks: '', deliveryDate: null,
         sampleCount: 13,
-        unstainedSectionsPerSample: 13,
+        slidesPerSample: 13,
         tubesPerSample: 13,
-        scrollsPerTube: 0,
-        heSectionsForRequestor: 0,
-        heSectionsForTissueBank: 13,
-        archiveSectionCount: 13,
-        archiveBlockCount: 13
+        scrollsPerTubeCount: 0,
+        heRequestor: 0,
+        heTissueBank: 13,
+        archiveSlidesCases: 13,
+        archiveBlocksCases: 13
       }
     ]
   },
-
-  // --- Projekt 3 (basierend auf Ihren Daten) ---
   {
     id: 2003,
     projectNumber: '420',
     isNctTbb: true, isPccc: false, isDzif: false, isCmcp: false, isSfb118Project: false,
     isFollowUpProject: false, isLongTermProject: false, finalCheck: false,
     status: 'completed',
-    taskDescription: 'Je ein Slide des TMA BCT-CCC NR. 57 1-10',
+    taskDescription: 'Je ein Slide des TMA...',
     projectStatusText: '',
-    technicalAssistantId: 3, // MA
-    cooperationPartnerId: 103, // BRU
+    technicalAssistantId: 3,
+    cooperationPartnerId: 103,
     workgroupId: null,
     estimatedCompletionDate: null,
     lastThursdayOfMonth: null,
@@ -297,11 +267,11 @@ export const mockProjects: Project[] = [
       {
         id: 3004, serviceType: 'tma_sections', remarks: '',
         deliveryDate: '2024-09-03T00:00:00.000Z',
-        sourceTmaId: 54,
-        sourceTmaName: 'CCC',
+        tmaName: 'CCC',
         blockCount: 10,
         blockNumbers: '1-10',
-        sectionsPerBlock: 1
+        sectionsPerBlock: 1,
+        tmaNumber: '57'
       }
     ]
   }

@@ -112,11 +112,6 @@
         </v-card>
       </v-col>
     </v-row>
-    <div class="d-flex align-center mt-4">
-      <v-btn v-if="formData && formData.id !== 0" variant="text" prepend-icon="mdi-beaker-check-outline" @click="onEditServices" > Dienstleistungen bearbeiten </v-btn>
-      <v-spacer></v-spacer>
-      <v-btn size="large" color="primary" @click="onSave" prepend-icon="mdi-content-save" :loading="props.isFetchingData" > Projekt speichern </v-btn>
-    </div>
   </v-form>
 </template>
 
@@ -124,6 +119,7 @@
 import { ref, watch, computed } from 'vue';
 import type { Project, TechnicalAssistant, CooperationPartner, Workgroup } from '@/mocks/db';
 import { useProjectStore } from '@/stores/projectStore';
+
 const projectStore = useProjectStore();
 
 const props = defineProps<{
@@ -137,22 +133,46 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'save', project: Project): void;
+  (e: 'update:project', project: Project): void;
   (e: 'fetch-application-data'): void;
-  (e: 'edit-services', projectId: number): void;
 }>();
 
 const formData = ref<any>(null);
 
+// --- WATCHER 1: Daten kommen rein (Initial oder von Tabelle unten) ---
 watch(
-  [() => props.project, () => projectStore.projectVersion], 
-  ([newProject]) => {
-    formData.value = newProject ? { ...newProject } : null;
-  }, 
+  () => props.project,
+  (newProject) => {
+    if (newProject) {
+      // Sicherheits-Check gegen Endlos-Schleifen
+      if (JSON.stringify(formData.value) !== JSON.stringify(newProject)) {
+        formData.value = JSON.parse(JSON.stringify(newProject));
+      }
+    } else {
+      formData.value = null;
+    }
+  },
   { immediate: true, deep: true }
 );
 
-// Übersetzt zwischen dem Dropdown-Wert (string) und den boolean-Flags im Datenobjekt
+// --- WATCHER 2: Daten gehen raus (User tippt) ---
+watch(
+  formData, 
+  (newValue) => {
+    if (newValue) {
+      emit('update:project', JSON.parse(JSON.stringify(newValue)));
+    }
+  }, 
+  { deep: true }
+);
+
+// --- HELPER FUNCTION (Die hat gefehlt!) ---
+function onFetchApplicationData() {
+  emit('fetch-application-data');
+}
+
+// --- COMPUTED PROPERTIES ---
+
 const selectedProjectType = computed({
   get() {
     if (!formData.value) return null;
@@ -169,7 +189,6 @@ const selectedProjectType = computed({
   }
 });
 
-// Übersetzt zwischen dem ISO-Datum (string) und dem HTML-Date-Input-Format ('YYYY-MM-DD')
 const estimatedDateForInput = computed({
   get: () => formData.value?.estimatedCompletionDate?.split('T')[0] || '',
   set: (value) => { if (formData.value) { formData.value.estimatedCompletionDate = value ? `${value}T00:00:00.000Z` : null; } }
@@ -179,24 +198,6 @@ const completionDateForInput = computed({
   get: () => formData.value?.completionDate?.split('T')[0] || '',
   set: (value) => { if (formData.value) { formData.value.completionDate = value ? `${value}T00:00:00.000Z` : null; } }
 });
-
-// ======================================================================
-
-function onFetchApplicationData() {
-  emit('fetch-application-data');
-}
-
-function onEditServices() {
-  if (formData.value && formData.value.id) {
-    emit('edit-services', formData.value.id);
-  }
-}
-
-function onSave() {
-  if (formData.value) {
-    emit('save', formData.value);
-  }
-}
 </script>
 
 <style scoped>
