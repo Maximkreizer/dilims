@@ -1,215 +1,129 @@
-<!-- src/components/lab/services/ServiceForm.vue -->
+<!-- src/components/lab/services/ServiceEditorForm.vue -->
+<!-- 
+ * Multi-State-Komponente zur Erstellung und Bearbeitung von Labor-Dienstleistungen.
+ * 
+ * Funktionalität:
+ * - Fungiert als "Wizard":
+ *   1. Zeigt Katalog zur Auswahl des Service-Typs (Grid mit Icons).
+ *   2. Zeigt das Bearbeitungsformular mit dynamischen Feldern (abhängig vom Service-Typ per v-if).
+ *   3. Zeigt Leerzustand, wenn nichts ausgewählt ist.
+ * - Mutiert das übergebene `activeService`-Objekt direkt via v-model.
+-->
 <template>
-  <v-card border flat>
-    <v-card-title class="bg-grey-lighten-4 text-subtitle-1 font-weight-bold d-flex align-center">
-      <v-icon start color="primary">mdi-pencil</v-icon>
-      Dienstleistung bearbeiten: <span class="text-primary ml-2">{{ getLabel(formData.serviceType) }}</span>
-    </v-card-title>
-    
-    <v-divider></v-divider>
+  <v-card border min-height="400" class="d-flex flex-column">
+    <v-fade-transition mode="out-in">
 
-    <!-- INFO HEADER: Projektnummer & Folgeprojekt (Anforderung 6) -->
-    <div class="pa-2 bg-blue-grey-lighten-5 d-flex align-center ga-4 text-caption">
-      <div><strong>Projekt-Nr:</strong> {{ projectNumber }}</div>
-      <div><strong>Folgeprojekt:</strong> 
-        <v-icon v-if="isFollowUp" color="success" size="small">mdi-check</v-icon>
-        <v-icon v-else color="grey" size="small">mdi-close</v-icon>
-      </div>
-    </div>
-    <v-divider></v-divider>
-
-    <v-card-text style="max-height: 600px; overflow-y: auto;">
-      <v-form ref="form">
+      <!-- ZUSTAND 1: Service-Katalog -->
+      <div v-if="activeService && 'status' in activeService && activeService.status === 'selecting'" class="pa-4">
         <v-row dense>
-          
-          <!-- ======================================================= -->
-          <!-- DYNAMISCHE FELDER BASIEREND AUF SERVICE TYPE            -->
-          <!-- ======================================================= -->
-
-          <!-- 1. PARAFFIN SCHNITTE -->
-          <template v-if="formData.serviceType === 'paraffin_sections'">
-            <v-col cols="6"><v-text-field v-model.number="formData.sampleCount" label="P_Anz_Proben" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.slidesPerSample" label="P_Anz_OT_pro_Probe (ohne HE)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heRequestor" label="P_HE_Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heTissueBank" label="P_HE_Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveSlidesCases" label="P_Archiv_Anz_Schnittpräparate (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveBlocksCases" label="P_Archiv_Anz_Blöcke (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-          </template>
-
-          <!-- 2. PARAFFIN TUBE -->
-          <template v-if="formData.serviceType === 'paraffin_tubes'">
-            <v-col cols="6"><v-text-field v-model.number="formData.sampleCount" label="P_Anz_Proben" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.tubesPerSample" label="P_Anz_Tubes_pro_Probe" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.scrollsPerTubeCount" label="P_Röllchen pro Tube" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heRequestor" label="P_HE_Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heTissueBank" label="P_HE_Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveSlidesCases" label="P_Archiv_Anz_Schnittpräparate (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveBlocksCases" label="P_Archiv_Anz_Blöcke (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-          </template>
-
-          <!-- 3. PARAFFIN EINBETTUNG -->
-          <template v-if="formData.serviceType === 'paraffin_embedding'">
-            <v-col cols="12"><v-text-field v-model.number="formData.archiveBlocksCases" label="Anz_Einbettung" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-          </template>
-
-          <!-- 4. KRYO SCHNITTE -->
-          <template v-if="formData.serviceType === 'cryo_sections'">
-            <v-col cols="6"><v-text-field v-model.number="formData.sampleCount" label="K_Anz_Proben" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.slidesPerSample" label="K_Anz_OT_pro_Probe (ohne HE)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heRequestor" label="K_HE_Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heTissueBank" label="K_HE_Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="12"><v-text-field v-model.number="formData.archiveSampleCases" label="K_Archiv_Anz_Proben (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-          </template>
-
-          <!-- 5. KRYO SERVICE -->
-          <template v-if="formData.serviceType === 'cryo_service' || formData.serviceType === 'cryo_tubes'">
-            <v-col cols="6"><v-text-field v-model.number="formData.sampleCount" label="K_Anz_Proben" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.tubesPerSample" label="K_Anz_Tubes_pro_Probe" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.scrollsPerTubeCount" label="K_Röllchen pro Tube (Anzahl)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.scrollsPerTubeWeight" label="K_Röllchen pro Tube (Gewicht)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heRequestor" label="K_HE_Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heTissueBank" label="K_HE_Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="12"><v-text-field v-model.number="formData.archiveSampleCases" label="K_Archiv_Anz_Proben (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-          </template>
-
-          <!-- 6. IHC -->
-          <template v-if="formData.serviceType === 'ihc'">
-            <v-col cols="6"><v-text-field v-model.number="formData.slideCount" label="IHC_Schnitte" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6">
-              <v-select v-model="formData.stainingDevice" label="IHC_Färbegerät" :items="['Dako', 'Ventana', 'Bond', 'Manuell']" density="compact" variant="outlined"></v-select>
+          <template v-for="item in serviceCatalog" :key="item.type || item.title">
+            <!-- Kategorien-Überschrift -->
+            <v-col v-if="item.isHeader" cols="12" class="mt-4 mb-1">
+              <v-divider></v-divider>
+              <div class="text-overline text-medium-emphasis pa-1">{{ item.title }}</div>
+            </v-col>
+            <!-- Service-Karte -->
+            <v-col v-else-if="item.type" cols="12" md="6">
+                <v-card outlined hover @click="$emit('selectType', item.type)">
+                <div class="d-flex align-center pa-3">
+                  <v-icon size="x-large" color="primary" class="mr-4">{{ item.icon }}</v-icon>
+                  <div>
+                    <div class="font-weight-medium">{{ item.title }}</div>
+                  </div>
+                </div>
+              </v-card>
             </v-col>
           </template>
-
-          <!-- 7. FÄRBUNG (Nur Bemerkung & Datum, siehe unten) -->
-
-          <!-- 8. DNA/RNA EXTRAKTION -->
-          <template v-if="formData.serviceType === 'dna_rna_extraction'">
-            <v-col cols="12"><v-text-field v-model.number="formData.extractionCount" label="Anz_DNA_RNA_Extraktion" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-          </template>
-
-          <!-- 9. PATHOLOGISCHE BEURTEILUNG -->
-          <template v-if="formData.serviceType === 'pathological_assessment'">
-            <v-col cols="12"><v-text-field v-model.number="formData.assessmentCount" label="Anz_Pathol_Beurteilung" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-          </template>
-
-          <!-- 10. TMA ERSTELLUNG -->
-          <template v-if="formData.serviceType === 'tma_creation'">
-            <v-col cols="6"><v-text-field v-model="formData.tmaNumber" label="TMA_Nr" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.tmaHeCount" label="TMA_Anz_HE_Schnitte" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model="formData.tmaDate" label="Datum" type="date" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.punchesPerBlock" label="TMA_Anz_Stanzen_pro_Bl" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="12"><v-text-field v-model="formData.blockNumbers" label="Blocknummern" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.patientCount" label="TMA_Anz_Patienten" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.excludedCount" label="Ausgeschieden" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-          </template>
-
-          <!-- 11. TMA SCHNITTE -->
-          <template v-if="formData.serviceType === 'tma_sections'">
-            <v-col cols="6"><v-text-field v-model="formData.tmaName" label="TMA_NAME" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model="formData.tmaNumber" label="TMA_NR" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.blockCount" label="Anz_Bloecke" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.sectionsPerBlock" label="Anz_Schnitte_pro_Bloecke" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="12"><v-text-field v-model="formData.blockNumbers" label="Blocknummern" density="compact" variant="outlined"></v-text-field></v-col>
-          </template>
-
-          <!-- 12. VIRTUELLE MIKROSKOPIE -->
-          <template v-if="formData.serviceType === 'virtual_microscopy'">
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveSlidesCases" label="P_Archiv_Anz_Schnittpräparate (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveBlocksCases" label="P_Anz_Blöcke (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="12"><v-text-field v-model.number="formData.scanCount" label="Virtuelle_Mikroskopie (Anz. Scans)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-checkbox v-model="formData.isBrightfield" label="Hellfeld" density="compact" hide-details></v-checkbox></v-col>
-            <v-col cols="6"><v-checkbox v-model="formData.isFluorescence" label="Fluoreszenz" density="compact" hide-details></v-checkbox></v-col>
-          </template>
-
-          <!-- 13. ARCHIVARBEIT -->
-          <template v-if="formData.serviceType === 'archival_work'">
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveSlidesCases" label="P_Archiv_Anz_Schnittpräparate (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveBlocksCases" label="P_Anz_Blöcke (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-          </template>
-
-          <!-- ======================================================= -->
-          <!-- ALLGEMEINE FELDER (Für fast alle sichtbar)              -->
-          <!-- ======================================================= -->
-          
-          <v-col cols="12">
-            <v-divider class="my-2"></v-divider>
-          </v-col>
-
-          <v-col cols="12">
-            <v-textarea v-model="formData.remarks" label="Bemerkung" rows="2" density="compact" variant="outlined"></v-textarea>
-          </v-col>
-          
-          <v-col cols="12">
-            <v-text-field v-model="deliveryDateInput" label="Abgabedatum" type="date" density="compact" variant="outlined"></v-text-field>
-          </v-col>
-
         </v-row>
-      </v-form>
-    </v-card-text>
+      </div>
 
-    <v-divider></v-divider>
-    
-    <v-card-actions class="pa-4 bg-grey-lighten-5">
-      <v-spacer></v-spacer>
-      <v-btn variant="text" @click="$emit('cancel')">Abbrechen</v-btn>
-      <v-btn color="primary" variant="flat" prepend-icon="mdi-content-save" @click="save">Speichern</v-btn>
-    </v-card-actions>
+      <!-- ZUSTAND 2: Dynamisches Formular -->
+      <div v-else-if="activeService && 'serviceType' in activeService" class="d-flex flex-column flex-grow-1">
+        <v-card-title>
+          Service bearbeiten: <span class="font-weight-bold ml-2 text-primary">{{ activeService.serviceType }}</span>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="flex-grow-1" style="overflow-y: auto;">
+          <!-- Gemeinsame Felder -->
+          <v-textarea v-model="activeService.remarks" label="Bemerkung" rows="2" variant="outlined" class="mb-4"></v-textarea>
+          <!-- ... (Hier könnten weitere gemeinsame Felder wie Abgabedatum hin) ... -->
+          <v-divider class="my-6"></v-divider>
+          
+          <!-- Spezifische Felder -->
+          <div v-if="activeService.serviceType === 'ihc'">
+            <v-text-field v-model.number="activeService.slideCount" label="Anzahl IHC Schnitte" type="number" variant="outlined"></v-text-field>
+            <v-select v-model="activeService.stainingDevice" label="Färbegerät" :items="ihcStainingDevices" variant="outlined" class="mt-4"></v-select>
+          </div>
+          <div v-if="activeService.serviceType === 'paraffin_sections'">
+             <v-text-field v-model.number="activeService.sampleCount" label="Anzahl Proben" type="number" variant="outlined"></v-text-field>
+             <v-text-field v-model.number="activeService.unstainedSectionsPerSample" label="OT pro Probe (ohne HE)" type="number" variant="outlined" class="mt-4"></v-text-field>
+             <!-- Fügen Sie hier weitere Paraffin-Felder hinzu -->
+          </div>
+          <!-- ... Fügen Sie hier v-if Blöcke für JEDEN anderen Service-Typ mit Feldern hinzu ... -->
+          <div v-if="activeService.serviceType === 'paraffin_embedding'">
+            <v-text-field v-model.number="activeService.count" label="Anzahl Einbettungen" type="number" variant="outlined"></v-text-field>
+          </div>
+
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions class="pa-4">
+          <v-spacer></v-spacer>
+          <v-btn variant="text" @click="$emit('cancel')">Abbrechen</v-btn>
+          <v-btn variant="flat" color="primary" @click="$emit('save')">Speichern</v-btn>
+        </v-card-actions>
+      </div>
+      
+      <!-- ZUSTAND 3: Leerzustand -->
+      <div v-else class="d-flex align-center justify-center flex-grow-1">
+        <div class="text-center text-medium-emphasis">
+          <v-icon size="x-large">mdi-arrow-left</v-icon>
+          <p class="mt-2">Service aus der Liste auswählen<br>oder einen neuen erstellen.</p>
+        </div>
+      </div>
+    </v-fade-transition>
   </v-card>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
 import type { ProjectService } from '@/mocks/db';
 
-const props = defineProps<{
-  service: ProjectService;
-  projectNumber: string;
-  isFollowUp: boolean;
+defineProps<{
+  activeService: ProjectService | { status: 'selecting' } | null;
 }>();
 
-const emit = defineEmits<{
-  (e: 'save', service: ProjectService): void;
+defineEmits<{
+  (e: 'selectType', type: string): void;
+  (e: 'save'): void;
   (e: 'cancel'): void;
 }>();
 
-// Lokale Kopie der Daten
-const formData = ref<any>({});
+const ihcStainingDevices = ['Dako', 'Ventana', 'Sonstiges+AK', 'Sonstiges-AK', 'Bond', 'ARTISAN'];
 
-// Wenn eine neue Dienstleistung reinkommt, kopieren wir sie
-watch(() => props.service, (newVal) => {
-  formData.value = JSON.parse(JSON.stringify(newVal));
-}, { immediate: true });
+const serviceCatalog = [
+  { isHeader: true, title: 'Gewebeverarbeitung' },
+  { type: 'paraffin_sections', icon: 'mdi-layers-outline', title: 'Paraffin-Schnitte' },
+  { type: 'paraffin_tubes', icon: 'mdi-test-tube', title: 'Paraffin-Tubes' },
+  { type: 'paraffin_embedding', icon: 'mdi-archive-outline', title: 'Paraffin-Einbettung' },
+  { type: 'cryo_sections', icon: 'mdi-snowflake-thermometer', title: 'Kryo-Schnitte' },
+  { type: 'cryo_tubes', icon: 'mdi-snowflake-melt', title: 'Kryo-Tubes' },
+  { type: 'cryo_service', icon: 'mdi-snowflake-alert', title: 'Kryoservice' },
+  
+  { isHeader: true, title: 'Spezial-Analyse & Färbung' },
+  { type: 'ihc', icon: 'mdi-eyedropper-variant', title: 'IHC' },
+  { type: 'staining', icon: 'mdi-brush', title: 'Färbung (Allgemein)' },
+  { type: 'dna_rna_extraction', icon: 'mdi-dna', title: 'DNA/RNA-Extraktion' },
+  { type: 'pathological_assessment', icon: 'mdi-clipboard-text-search-outline', title: 'Pathologische Beurteilung' },
 
-// Datumskonvertierung für Input
-const deliveryDateInput = computed({
-  get: () => formData.value.deliveryDate ? formData.value.deliveryDate.split('T')[0] : '',
-  set: (val) => { formData.value.deliveryDate = val ? `${val}T00:00:00.000Z` : null; }
-});
+  { isHeader: true, title: 'Tissue Microarray (TMA)' },
+  { type: 'tma_creation', icon: 'mdi-dots-grid', title: 'TMA-Erstellung' },
+  { type: 'tma_sections', icon: 'mdi-grid', title: 'TMA-Schnitte' },
 
-// Mapping für Titel
-const labels: Record<string, string> = {
-  paraffin_sections: 'Paraffin-Schnitte',
-  paraffin_tubes: 'Paraffin-Tubes',
-  paraffin_embedding: 'Paraffin-Einbettung',
-  cryo_sections: 'Kryo-Schnitte',
-  cryo_tubes: 'Kryo-Tubes',
-  cryo_service: 'Kryoservice',
-  ihc: 'IHC',
-  staining: 'Färbung',
-  dna_rna_extraction: 'DNA/RNA-Extraktion',
-  pathological_assessment: 'Pathol. Beurteilung',
-  tma_creation: 'TMA-Erstellung',
-  tma_sections: 'TMA-Schnitte',
-  virtual_microscopy: 'Virtuelle Mikroskopie',
-  archival_work: 'Archivarbeit',
-  data: 'Daten',
-  ethics: 'Ethik'
-};
+  { isHeader: true, title: 'Digitale Pathologie & Archiv' },
+  { type: 'virtual_microscopy', icon: 'mdi-scanner', title: 'Virtuelle Mikroskopie' },
+  { type: 'archival_work', icon: 'mdi-archive-search-outline', title: 'Archivarbeit' },
 
-function getLabel(type: string) { return labels[type] || type; }
-
-function save() {
-  // Sende die bearbeiteten Daten zurück
-  emit('save', formData.value);
-}
+  { isHeader: true, title: 'Allgemein & Administrativ' },
+  { type: 'data', icon: 'mdi-database-cog-outline', title: 'Daten' },
+  { type: 'ethics', icon: 'mdi-gavel', title: 'Ethik' },
+];
 </script>

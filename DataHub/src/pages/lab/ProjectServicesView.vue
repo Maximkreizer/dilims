@@ -9,16 +9,11 @@
     <div v-else class="d-flex flex-column h-100">
       
       <!-- ============================================= -->
-      <!-- OBERER BEREICH: SPLIT VIEW (Katalog | Form)   -->
+      <!-- OBERER BEREICH: SPLIT VIEW (Fixe Höhe 600px)  -->
       <!-- ============================================= -->
-      
-      <!-- 
-         NEU: height: 500px fixiert die Höhe. 
-         Damit springt der Rest der Seite nicht, wenn man links einklappt.
-      -->
-      <div class="flex-grow-0 mb-4 d-flex align-stretch" style="height: 500px; position: relative;">
+      <div class="flex-grow-0 mb-4 d-flex align-stretch" style="height: 600px; position: relative; min-height: 0;">
         
-        <!-- 1. LINKES PANEL: KATALOG -->
+        <!-- 1. LINKES PANEL: KATALOG (Fixe Breite 400px) -->
         <div 
           class="catalog-pane d-flex flex-column"
           :class="{ 'catalog-closed': !isCatalogOpen }"
@@ -29,7 +24,6 @@
               Neue Dienstleistung
             </v-card-title>
             
-            <!-- catalog-scroll-area sorgt für Scrollbalken INNERHALB der Karte -->
             <v-card-text class="pa-0 catalog-scroll-area flex-grow-1">
               
               <!-- GEWEBEVERARBEITUNG -->
@@ -84,7 +78,7 @@
           </v-card>
         </div>
 
-        <!-- 2. MITTE: DER TOGGLE-STREIFEN -->
+        <!-- 2. MITTE: TOGGLE STREIFEN -->
         <div class="toggle-strip d-flex align-center justify-center flex-shrink-0" @click="toggleCatalog">
           <div class="strip-line"></div>
           <v-btn icon size="x-small" variant="flat" color="grey-lighten-2" class="toggle-btn" elevation="2">
@@ -95,12 +89,13 @@
         </div>
 
         <!-- 3. RECHTES PANEL: EDITOR -->
-        <div class="editor-pane flex-grow-1 h-100" style="min-width: 0; overflow: hidden;">
+        <div class="editor-pane flex-grow-1 h-100 d-flex flex-column" style="min-width: 0; overflow: hidden;">
           <v-fade-transition mode="out-in">
             
-            <div v-if="isEditorOpen" class="h-100 d-flex flex-column">
-              <!-- Alert Wrapper entfernt für mehr Platz, direkt die Form -->
-              <div class="h-100 border rounded bg-white" style="overflow: hidden;">
+            <!-- Zustand A: Editor offen -->
+            <!-- WICHTIG: overflow-y-auto HIER sorgt für den Scrollbalken im Formular -->
+            <div v-if="isEditorOpen" class="h-100 d-flex flex-column bg-white rounded border" style="overflow: hidden;">
+              <div class="h-100" style="overflow-y: auto;">
                 <ServiceForm
                   v-if="currentService"
                   :service="currentService"
@@ -112,11 +107,12 @@
               </div>
             </div>
             
-            <!-- Fallback (sollte eigentlich durch Auto-Load nicht sichtbar sein) -->
+            <!-- Zustand B: Leer -->
             <div v-else class="d-flex justify-center align-center h-100 bg-grey-lighten-5 rounded border border-dashed">
               <div class="text-center text-grey-darken-1">
-                <v-progress-circular indeterminate color="primary"></v-progress-circular>
-                <div class="text-caption mt-2">Lade Dienstleistung...</div>
+                <v-icon size="64" class="mb-2 text-grey-lighten-1">mdi-arrow-left-box</v-icon>
+                <div class="text-h6">Keine Dienstleistung ausgewählt</div>
+                <div class="text-body-2">Wählen Sie links eine aus oder erstellen Sie eine neue.</div>
               </div>
             </div>
 
@@ -134,7 +130,7 @@
             :loading="loading"
             @update="handleTableUpdate"
             @delete="handleDelete"
-            @open="openServiceForEdit" 
+            @open="openServiceForEdit"
             @open-in-tab="handleOpenInNewTab"
          />
       </div>
@@ -144,7 +140,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { api } from '@/services/api';
@@ -161,12 +157,18 @@ const project = ref<Project | null>(null);
 const services = ref<ProjectService[]>([]);
 
 // UI State
-const isCatalogOpen = ref(true);
+const isCatalogOpen = ref(false);
 const currentService = ref<ProjectService | null>(null);
 const isEditorOpen = computed(() => currentService.value !== null);
 
 function toggleCatalog() {
   isCatalogOpen.value = !isCatalogOpen.value;
+}
+
+// Wenn "Neu" oben im Header geklickt wird
+function handleHeaderNewClick() {
+  isCatalogOpen.value = true; // <--- Das öffnet den Katalog
+  currentService.value = null; // Editor leeren, damit man links wählen muss
 }
 
 // --- KATALOG DATEN ---
@@ -216,7 +218,6 @@ const otherCategories = [
 // --- ACTIONS ---
 
 async function createNewService(type: string) {
-  // Erstellt ein neues Dummy-Objekt für den Editor (ID 0 = noch nicht gespeichert)
   currentService.value = {
     id: 0, 
     serviceType: type,
@@ -229,17 +230,13 @@ function openServiceForEdit(service: ProjectService) {
   currentService.value = JSON.parse(JSON.stringify(service));
 }
 
-function closeEditor() {
-  // Wenn wir schließen, laden wir die Default-Logik erneut, 
-  // oder wir lassen es einfach leer. Hier: Erneut Default laden.
-  if (services.value.length > 0) openServiceForEdit(services.value[0]);
-  else createNewService('paraffin_sections');
+function handleOpenInNewTab(service: ProjectService) {
+  // Da ein Service keine eigene Seite hat, öffnen wir das ganze Projektmodul in neuem Tab
+  navStore.addTab(`/services/project/${props.projectId}/services`);
 }
 
-function handleOpenInNewTab(service: ProjectService) {
-  // Da ein Service keine eigene "Page" hat, öffnen wir das Projekt-Dienstleistungs-Fenster
-  // im neuen Tab. Das ist hilfreich, um z.B. 2 Projekte nebeneinander zu vergleichen.
-  navStore.addTab(`/services/project/${props.projectId}/services`);
+function closeEditor() {
+  currentService.value = null;
 }
 
 async function handleSave(serviceToSave: ProjectService) {
@@ -257,9 +254,8 @@ async function handleSave(serviceToSave: ProjectService) {
   project.value.services = list;
   await api.saveProject(project.value);
   services.value = list;
-  
-  // Nach Speichern nicht schließen, sondern den gespeicherten Eintrag aktiv lassen
-  openServiceForEdit(serviceToSave);
+  // Nach Speichern schließen wir (oder lassen offen, wie gewünscht)
+  // closeEditor(); 
 }
 
 async function handleTableUpdate(service: ProjectService) {
@@ -268,28 +264,20 @@ async function handleTableUpdate(service: ProjectService) {
   if (idx !== -1) services.value[idx] = service;
   project.value.services = services.value;
   await api.saveProject(project.value);
-  
-  // Wenn das geänderte Item gerade offen ist, aktualisieren
-  if (currentService.value && currentService.value.id === service.id) {
-    currentService.value = JSON.parse(JSON.stringify(service));
-  }
 }
 
 async function handleDelete(service: ProjectService) {
-  if (!confirm('Löschen?')) return;
   if (!project.value) return;
   services.value = services.value.filter(s => s.id !== service.id);
   project.value.services = services.value;
   await api.saveProject(project.value);
   
-  // Wenn gelöschtes Item offen war, Default laden
   if (currentService.value && currentService.value.id === service.id) {
-    if (services.value.length > 0) openServiceForEdit(services.value[0]);
-    else createNewService('paraffin_sections');
+    currentService.value = null;
   }
 }
 
-// --- LOAD LOGIC ---
+// --- LOAD ---
 async function loadData() {
   loading.value = true;
   try {
@@ -299,16 +287,14 @@ async function loadData() {
       project.value = found;
       services.value = found.services || [];
       updateNav();
-
-      // --- NEU: DEFAULT SELECTION LOGIC ---
+      
+      // --- LOGIK ANGEPASST ---
       if (services.value.length > 0) {
-        // 1. Wenn Services da sind -> Lade den Ersten
+        // Wenn Dienstleistungen da sind, öffnen wir die erste zur Ansicht
         openServiceForEdit(services.value[0]);
-      } else {
-        // 2. Wenn keine da sind -> Lade leeres Paraffin-Formular
-        await createNewService('paraffin_sections');
-      }
-
+      } 
+      // HIER WURDE GELÖSCHT: Der else-Block, der createNewService() aufrief, ist weg.
+      // Dadurch bleibt der Katalog zu und der Editor leer, bis man oben auf "Neu" klickt.
     }
   } finally {
     loading.value = false;
@@ -316,36 +302,44 @@ async function loadData() {
 }
 
 function updateNav() {
-  navStore.setContext('mdi-beaker-check-outline', [
-    { title: 'Projekterfassung', to: {name:'ServiceSearch'} },
-    { title: `Projekt ${project.value?.projectNumber}`, to: {name:'ServiceProjectEdit', params:{projectId: props.projectId}} },
-    { title: 'Dienstleistungen', disabled: true }
-  ]);
+  navStore.setContext(
+    'mdi-beaker-check-outline', 
+    [
+      { title: 'Navigation', to: '/' },
+      { title: 'Projekterfassung', to: {name:'ServiceSearch'} },
+      { title: `Projekt ${project.value?.projectNumber}`, to: {name:'ServiceProjectEdit', params:{projectId: props.projectId}} },
+      { title: 'Dienstleistungen', disabled: true }
+    ],
+    true // NEU Button aktivieren
+  );
+  
+  // Action für Neu Button
+  navStore.setNewAction(handleHeaderNewClick);
 }
+
+// Tab Icon Fix
+watch(() => navStore.activeTabId, () => updateNav());
 
 onMounted(loadData);
 </script>
 
 <style scoped>
-/* Transition für das Katalog-Panel */
+/* Katalog Breite Fixiert */
 .catalog-pane {
-  width: 40%; /* Breite wenn offen */
-  min-width: 350px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 400px; /* FIXE BREITE */
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   opacity: 1;
+  margin-right: 0;
 }
 
-/* Zustand: Eingeklappt */
 .catalog-closed {
   width: 0 !important;
-  min-width: 0 !important;
   opacity: 0;
-  padding: 0;
   margin: 0;
 }
 
-/* Der Streifen in der Mitte */
 .toggle-strip {
   width: 20px;
   cursor: pointer;
@@ -353,36 +347,18 @@ onMounted(loadData);
   z-index: 2;
   transition: background-color 0.2s;
 }
-.toggle-strip:hover {
-  background-color: rgba(0,0,0,0.03);
-}
-.toggle-strip:hover .strip-line {
-  background-color: var(--v-theme-primary);
-}
+.toggle-strip:hover { background-color: rgba(0,0,0,0.03); }
+.toggle-strip:hover .strip-line { background-color: var(--v-theme-primary); }
 
 .strip-line {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 1px;
-  background-color: #e0e0e0;
-  transition: background-color 0.2s;
+  position: absolute; top: 0; bottom: 0; left: 50%; width: 1px;
+  background-color: #e0e0e0; transition: background-color 0.2s;
 }
+.toggle-btn { z-index: 3; border: 1px solid #e0e0e0; }
 
-.toggle-btn {
-  z-index: 3;
-  border: 1px solid #e0e0e0;
-}
-
-/* Scrollbereich im Katalog */
 .catalog-scroll-area {
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 100%;
+  overflow-y: auto; overflow-x: hidden; height: 100%;
 }
 
-.lh-1 {
-  line-height: 1.1;
-}
+.lh-1 { line-height: 1.1; }
 </style>

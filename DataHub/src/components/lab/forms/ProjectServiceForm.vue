@@ -1,10 +1,10 @@
-/**
+<!-- 
  * UI-Platzhalter für das zukünftige Dienstleistungs-Formular.
  * 
  * Diese Komponente enthält noch keine Logik. Sie zeigt lediglich einen 
  * Hinweis an ("Coming Soon"), um den Platz im Layout für einen späteren 
  * Entwicklungsschritt (Sprint) zu reservieren.
- */
+-->
 <template>
   <v-card border variant="tonal">
     <v-card-text class="text-center">

@@ -1,6 +1,6 @@
 <!-- src/components/lab/services/ServiceForm.vue -->
 <template>
-  <v-card border flat>
+  <v-card border flat class="h-100 d-flex flex-column">
     <v-card-title class="bg-grey-lighten-4 text-subtitle-1 font-weight-bold d-flex align-center">
       <v-icon start color="primary">mdi-pencil</v-icon>
       Dienstleistung bearbeiten: <span class="text-primary ml-2">{{ getLabel(formData.serviceType) }}</span>
@@ -18,7 +18,7 @@
     </div>
     <v-divider></v-divider>
 
-    <v-card-text style="max-height: 600px; overflow-y: auto;">
+    <v-card-text class="flex-grow-1">
       <v-form ref="form">
         <v-row dense>
           

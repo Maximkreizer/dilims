@@ -22,9 +22,6 @@
         </v-overlay>
 
         <v-card-text>
-           <!-- 
-              WICHTIG: Hier rufen wir jetzt 'handleFormInput' auf, statt es inline zu machen.
-           -->
            <ProjectDataForm
             :project="projectData || emptyProject"
             :status-options="options.statuses"
@@ -39,10 +36,47 @@
         </v-card-text>
 
         <v-divider></v-divider>
-        <v-card-actions class="d-flex justify-end ga-3 pa-4 bg-grey-lighten-5">
-           <v-btn variant="outlined" prepend-icon="mdi-plus" @click="createNewProject" :disabled="isFormLoading">Neues Projekt</v-btn>
-           <v-btn variant="outlined" color="primary" prepend-icon="mdi-beaker-check-outline" @click="goToServices(projectData?.id || 0)" :disabled="isFormLoading">Dienstleistung bearbeiten</v-btn>
-           <v-btn color="primary" variant="flat" prepend-icon="mdi-content-save" @click="triggerSave" :loading="isSaving" :disabled="isFormLoading">Projekt speichern</v-btn>
+        
+        <!-- BUTTON LEISTE UNTEN -->
+        <v-card-actions class="d-flex justify-space-between align-center pa-4 bg-grey-lighten-5">
+           
+           <!-- 1. LINKS: CLEAR (Formular leeren) -->
+           <v-btn 
+             variant="text" 
+             color="error" 
+             prepend-icon="mdi-eraser" 
+             @click="confirmClearForm" 
+             :disabled="isFormLoading"
+           >
+             Formular leeren
+           </v-btn>
+
+           <div class="d-flex ga-3">
+             <!-- 2. MITTE: DIENSTLEISTUNGEN (Wichtig) -->
+             <v-btn 
+               variant="outlined" 
+               color="primary" 
+               prepend-icon="mdi-beaker-check-outline" 
+               @click="goToServices(projectData?.id || 0)" 
+               :disabled="isFormLoading"
+               class="font-weight-bold"
+             >
+               Dienstleistung bearbeiten
+             </v-btn>
+
+             <!-- 3. RECHTS: SPEICHERN -->
+             <v-btn 
+               color="primary" 
+               variant="flat" 
+               prepend-icon="mdi-content-save" 
+               @click="triggerSave" 
+               :loading="isSaving" 
+               :disabled="isFormLoading"
+             >
+               Projekt speichern
+             </v-btn>
+           </div>
+
         </v-card-actions>
       </v-card>
 
@@ -60,6 +94,23 @@
       </div>
 
     </div>
+
+    <!-- DIALOG: FORMULAR LEEREN -->
+    <v-dialog v-model="clearDialog" max-width="400">
+      <v-card>
+        <v-card-title class="text-h6 text-warning">Formular leeren?</v-card-title>
+        <v-card-text>
+          Möchten Sie alle Eingaben verwerfen und das Formular zurücksetzen?
+          Nicht gespeicherte Änderungen gehen verloren.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="grey-darken-1" variant="text" @click="clearDialog = false">Abbrechen</v-btn>
+          <v-btn color="error" variant="flat" @click="executeClear">Leeren</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </v-container>
 </template>
 
@@ -83,6 +134,9 @@ const isSaving = ref(false);
 const isTableLoading = ref(false);
 const isFetchingExternal = ref(false);
 
+// Dialog State
+const clearDialog = ref(false);
+
 const projectData = ref<Project | null>(null);
 const allProjects = ref<Project[]>([]);
 
@@ -94,18 +148,14 @@ watch(() => props.projectId, async (newId, oldId) => {
   if (newId !== oldId) await switchProjectData(newId);
 });
 
-// --- WICHTIG: DIE NEUE SYNC FUNKTION ---
+// Watcher für Tab-Wechsel (Icon Fix)
+watch(() => navStore.activeTabId, () => updateNavigation());
 
+// --- SYNC ---
 function handleFormInput(updatedProject: Project) {
-  // 1. Das Formular-Objekt aktualisieren (damit man weitertippen kann)
   projectData.value = updatedProject;
-
-  // 2. Die Tabelle unten SOFORT aktualisieren
-  // Wir suchen das Projekt in der Liste und überschreiben es mit den neuen Daten
   const index = allProjects.value.findIndex(p => p.id === updatedProject.id);
-  if (index !== -1) {
-    allProjects.value[index] = updatedProject;
-  }
+  if (index !== -1) allProjects.value[index] = updatedProject;
 }
 
 // --- STANDARD LOGIC ---
@@ -113,30 +163,47 @@ function handleFormInput(updatedProject: Project) {
 function handleProjectSelect(project: Project) {
   router.push({ name: 'ServiceProjectEdit', params: { projectId: project.id } });
 }
+
+// WICHTIG: Das ist die Funktion für den "Neu"-Button oben rechts im Header
 async function createNewProject() {
   router.push({ name: 'ServiceProjectEdit', params: { projectId: 'new' } });
 }
+
+function handleOpenInNewTab(project: Project) {
+  navStore.addTab(`/services/project/${project.id}`);
+}
+
 async function handleDeleteProject(project: Project) {
   isTableLoading.value = true;
   try {
     await api.deleteProject(project.id);
-    
-    // Fall A: Wir haben das Projekt gelöscht, das gerade oben offen ist
     if (projectData.value && projectData.value.id === project.id) {
-      await createNewProject(); // Formular resetten
+      await createNewProject();
     }
-    
-    // Liste aktualisieren
     await loadTableData();
   } finally {
     isTableLoading.value = false;
   }
 }
 
-// NEU: Tab-Logik (falls noch nicht vorhanden)
-function handleOpenInNewTab(project: Project) {
-  navStore.addTab(`/services/project/${project.id}`);
+// --- CLEAR LOGIC (Formular leeren) ---
+function confirmClearForm() {
+  clearDialog.value = true;
 }
+
+function executeClear() {
+  // Wir setzen das Formular auf den "Leeren/Neuen" Zustand zurück
+  projectData.value = JSON.parse(JSON.stringify(emptyProject));
+  
+  // Wir ändern die URL auf 'new', falls wir gerade ein bestehendes Projekt bearbeitet haben,
+  // damit man nicht versehentlich das bestehende Projekt mit leeren Daten überschreibt.
+  router.replace({ name: 'ServiceProjectEdit', params: { projectId: 'new' } });
+  
+  clearDialog.value = false;
+  updateNavigation();
+}
+
+// --- DATA LOADING ---
 
 async function switchProjectData(id: string | number) {
   isFormLoading.value = true;
@@ -148,8 +215,6 @@ async function switchProjectData(id: string | number) {
       const found = allProjects.value.find(p => p.id === Number(id));
       if (found) {
         projectData.value = JSON.parse(JSON.stringify(found));
-      } else {
-        // Fallback API call
       }
     }
     updateNavigation();
@@ -171,7 +236,6 @@ async function loadPage() {
   }
 }
 
-// Update von unten (Tabelle -> Formular)
 function handleTableUpdate(updatedProject: Project) {
   const index = allProjects.value.findIndex(p => p.id === updatedProject.id);
   if (index !== -1) allProjects.value[index] = updatedProject;
@@ -192,11 +256,7 @@ async function handleSave(updatedProject: Project) {
     if (updatedProject.id === 0) {
        router.replace({ name: 'ServiceProjectEdit', params: { projectId: saved.id } });
     }
-    
-    // Liste sicherheitshalber neu holen, aber da wir live synchronisieren,
-    // sollte die Tabelle schon aktuell sein. Das hier ist der "Double Check".
     await api.findProjects({}).then(res => allProjects.value = res);
-    
     updateNavigation();
   } finally {
     isSaving.value = false;
@@ -209,23 +269,34 @@ async function loadTableData() {
 
 function updateNavigation() {
   const title = (!projectData.value?.id || projectData.value.id === 0) ? 'Neues Projekt' : `Projekt ${projectData.value?.projectNumber}`;
-  navStore.setContext('mdi-beaker-check-outline', [{ title: 'Navigation', to: '/' }, { title: 'Projekterfassung', to: {name: 'ServiceSearch'} }, { title: title, disabled: true }], false);
+  
+  // WICHTIG: Hier aktivieren wir den "Neu" Button oben rechts (3. Parameter = true)
+  navStore.setContext(
+    'mdi-beaker-check-outline', 
+    [
+      { title: 'Navigation', to: '/' }, 
+      { title: 'Projekterfassung', to: {name: 'ServiceSearch'} }, 
+      { title: title, disabled: true }
+    ], 
+    true // <--- Das aktiviert den "Neu"-Button im Header!
+  );
+  
+  // Und wir sagen dem Button, was er tun soll (createNewProject aufrufen)
+  navStore.setNewAction(createNewProject);
 }
 
 function goToServices(id: number) {
-  // Sicherheits-Check: Wenn das Projekt noch nicht gespeichert ist (ID 0), darf man nicht hin
   if (!id || id === 0) {
     alert("Bitte speichern Sie das Projekt zuerst, bevor Sie Dienstleistungen erfassen.");
     return;
   }
-
-  // Navigation zur neuen Route
-  router.push({ 
-    name: 'ServiceProjectServices', 
-    params: { projectId: id } 
-  });
+  router.push({ name: 'ServiceProjectServices', params: { projectId: id } });
 }
+
 async function handleFetchApplicationData() { /* ... */ }
 
-onMounted(loadPage);
+onMounted(() => {
+  updateNavigation();
+  loadPage();
+});
 </script>

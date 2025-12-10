@@ -276,3 +276,162 @@ export const mockProjects: Project[] = [
     ]
   }
 ];
+// --- ANTIBODY KONTEXT ---
+
+
+/// =======================================================================================
+// TEIL 3: ANTIKÖRPER KONTEXT & DATEN
+// =======================================================================================
+
+// --- INTERFACES ---
+
+export interface Antibody {
+  id: number;
+  akId: string;
+  name: string;
+  refNumber: string;
+  lotNumber: string;
+  status: string;
+  manufacturer: string;
+}
+
+export interface AntibodyProject {
+  id: number;
+  projectNumber: string;
+  status: string;
+  projectType: string;
+  technicalAssistantId: number | null;
+  cooperationPartnerId: number | null;
+  workgroupId: number | null;
+  isFollowUp: boolean;
+  tasks: string;
+  projectStatusText: string;
+  dueDate: string | null;
+  applicant: string;
+  additionalLeaders: string;
+  finalCheck: boolean;
+  isLongTerm: boolean;
+}
+
+export interface StainingRun {
+  id: number;
+  runId: string;
+  projectId: number | null;
+  technicalAssistantId: number | null;
+  stainingType: string;
+  date: string | null;
+  device: string;
+  kit: string;
+  cutCount: number;
+  tissue: string;
+  material: string;
+  pretreatDemasking: string;
+  pretreatReagent: string;
+  pretreatTime: string;
+  blockH2O2: boolean;
+  blockAvidinBiotin: boolean;
+  blockBsaNgs: boolean;
+  ventanaHqLinkerTime: string;
+  ventanaHqMultiTime: string;
+  ventanaPeroxidaseInhibitor: boolean;
+  primaryAkLotId: string;
+  primaryAkId: string;
+  primaryAkName: string;
+  primaryDilution: string;
+  primaryIncubationTime: string;
+  secondaryAkLotId: string;
+  secondaryAkId: string;
+  secondaryAkName: string;
+  secondaryDilution: string;
+  secondaryIncubationTime: string;
+  remarks: string;
+  antibodyName?: string; // Für Suche
+  antibodyId?: string;   // Für Suche
+}
+
+export interface AntibodyLot {
+  id: number;
+  lotId: string;
+  akName: string;
+  manufacturer: string;
+  refNumber: string;
+  lotNumber: string;
+  concentration: string;
+  host: string;
+  isotype: string;
+  clone: string;
+  storage: string;
+  controlTissue: string;
+  reactivity: string;
+  owner: string;
+  status: string;
+  isSecondary: boolean;
+  remarks: string;
+}
+
+export interface AntibodyOrder {
+  id: number;
+  orderId?: string; // Optional, da in einem Mock evtl. vorhanden, im anderen nicht
+  workgroup: string | null; // String oder ID, je nach Nutzung
+  applicant: string;
+  material?: string;
+  otherMaterial?: string;
+  price?: number;
+  orderDate?: string; // Datum wann bestellt
+  deliveryDate: string | null; // Datum wann geliefert
+  status?: string;
+  remarks?: string;
+  balanceAg?: string;
+}
+
+
+// --- MOCK DATEN (Nur EINMAL definiert!) ---
+
+export const mockAntibodies: Antibody[] = [
+  { id: 1, akId: 'AK-100', name: 'Ki-67', refNumber: 'A123', lotNumber: 'L-99', status: 'Aktiv', manufacturer: 'Dako' },
+  { id: 2, akId: 'AK-101', name: 'CD3', refNumber: 'B456', lotNumber: 'L-55', status: 'Leer', manufacturer: 'Leica' },
+  { id: 3, akId: 'AK-102', name: 'CD20', refNumber: 'C789', lotNumber: 'L-11', status: 'Aktiv', manufacturer: 'Roche' },
+];
+
+export const mockAntibodyProjects: AntibodyProject[] = [
+  { 
+    id: 1, projectNumber: 'AK-2024-01', status: 'in_progress', projectType: 'Validierung', 
+    technicalAssistantId: 1, cooperationPartnerId: 101, workgroupId: 21, isFollowUp: false,
+    tasks: 'Testung neuer Lots', projectStatusText: 'Laufend', dueDate: '2024-12-31',
+    applicant: 'Dr. Müller', additionalLeaders: '', finalCheck: false, isLongTerm: false 
+  }
+];
+
+export const mockStainingRuns: StainingRun[] = [
+  {
+    id: 1, runId: 'RUN-100', projectId: 1, technicalAssistantId: 1, stainingType: 'IHC', date: '2024-01-10',
+    device: 'Bond', kit: 'Standard', cutCount: 10, tissue: 'Tonsille', material: 'Paraffin',
+    pretreatDemasking: 'pH 9', pretreatReagent: 'ER2', pretreatTime: '20min',
+    blockH2O2: true, blockAvidinBiotin: false, blockBsaNgs: true,
+    ventanaHqLinkerTime: '', ventanaHqMultiTime: '', ventanaPeroxidaseInhibitor: false,
+    primaryAkLotId: 'L-123', primaryAkId: 'AK-55', primaryAkName: 'Ki-67', primaryDilution: '1:100', primaryIncubationTime: '30min',
+    secondaryAkLotId: 'L-999', secondaryAkId: 'S-01', secondaryAkName: 'Anti-Mouse', secondaryDilution: '1:200', secondaryIncubationTime: '20min',
+    remarks: 'Gute Färbung', antibodyName: 'Ki-67', antibodyId: 'AK-100'
+  }
+];
+
+export const mockAntibodyLots: AntibodyLot[] = [
+  {
+    id: 1, lotId: 'LOT-500', akName: 'CD3', manufacturer: 'Dako', refNumber: 'REF-1', lotNumber: 'CH-99',
+    concentration: '0.5mg/ml', host: 'Mouse', isotype: 'IgG1', clone: 'F7.2.38', storage: '4°C',
+    controlTissue: 'Tonsille', reactivity: 'Human', owner: 'AG Müller', status: 'active', isSecondary: false, remarks: ''
+  }
+];
+
+export const mockAntibodyOrders: AntibodyOrder[] = [
+  { 
+    id: 1, orderId: 'ORD-20', workgroup: 'AG Immunologie', applicant: 'Dr. Müller', 
+    orderDate: '2023-11-01', status: 'Bestellt', material: 'CD3 Antikörper', 
+    price: 250.00, deliveryDate: null, balanceAg: '5000.00' 
+  },
+  { 
+    id: 2, orderId: 'ORD-21', workgroup: 'AG Onkologie', applicant: 'Prof. Weber', 
+    orderDate: '2023-11-05', status: 'Geliefert', material: 'Ki-67', 
+    price: 120.00, deliveryDate: '2023-11-10', balanceAg: '2000.00' 
+  },
+];

@@ -20,7 +20,6 @@ export const useProjectStore = defineStore('projects', {
   state: () => ({
     projects: [] as Project[],
     activeProject: null as Project | null,
-    // NEU HINZUGEFÜGT: Ein Zähler, der sich bei jeder signifikanten Änderung am activeProject erhöht.
     projectVersion: 0,
     isLoading: false,
     searchOptions: {
@@ -36,12 +35,12 @@ export const useProjectStore = defineStore('projects', {
       this.isLoading = true;
       this.projects = await api.findProjects(filters);
       this.activeProject = null;
-      this.projectVersion++; // Auch hier erhöhen, um das Formular sicher zu leeren
+      this.projectVersion++;
       this.isLoading = false;
     },
     loadProject(project: Project) {
       this.activeProject = project;
-      this.projectVersion++; // Signalisiert, dass ein neues Projekt geladen wurde
+      this.projectVersion++;
     },
     prepareNewProject() {
       this.activeProject = {
@@ -61,7 +60,7 @@ export const useProjectStore = defineStore('projects', {
         services: []
       };
       this.projects = [];
-      this.projectVersion++; // Signalisiert, dass ein neues, leeres Projekt bereit ist
+      this.projectVersion++;
     },
     async fetchSearchOptions() {
       if (this.searchOptions.technicalAssistants.length > 0) return;
@@ -75,7 +74,7 @@ export const useProjectStore = defineStore('projects', {
         const savedProject = await api.saveProject(projectData);
         this.activeProject = savedProject;
         // ... (Logik zur Aktualisierung der `projects`-Liste) ...
-        this.projectVersion++; // Signalisiert, dass das Projekt gespeichert wurde
+        this.projectVersion++;
       } catch (error) {
         console.error("Fehler beim Speichern des Projekts:", error);
       } finally {
@@ -93,7 +92,7 @@ export const useProjectStore = defineStore('projects', {
           applicationTitle: this.activeProject.applicationTitle || '',
           applicationRequest: this.activeProject.applicationRequest || '',
         };
-        this.projectVersion++; // Das ist das entscheidende Signal, dass sich die Daten geändert haben!
+        this.projectVersion++;
         alert('Daten aus der Antragsbearbeitung wurden erfolgreich geladen!');
       } catch (error) {
         console.error("Fehler beim Holen der Antragsdaten:", error);

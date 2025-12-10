@@ -1,32 +1,30 @@
-// DATEI: src/router/index.ts
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
 
+// Definition der Routen
 const routes: Array<RouteRecordRaw> = [
-  // 1. Dashboard (Startseite) - Lädt Dashboard.vue (Nur 2 Kacheln)
+  // 1. DASHBOARD (Startseite)
   {
     path: '/',
     name: 'Dashboard',
-    component: () => import('@/pages/Dashboard.vue') 
+    component: () => import('@/pages/Dashboard.vue')
   },
 
-  // 2. Dienstleistungen (Service Context)
+  // 2. DIENSTLEISTUNGEN
   {
     path: '/services',
-    // Hier gruppieren wir die Routen für Dienstleistungen
+    // Hinweis: Wenn hier kein 'component' steht, rendert Vue Router die Kinder direkt in das <router-view> der App/MainLayout
     children: [
       {
-        path: '', 
+        path: '',
         redirect: { name: 'ServiceSearch' }
       },
       {
-        // Die Such-Seite
-        path: 'search', 
+        path: 'search',
         name: 'ServiceSearch',
-        component: () => import('@/pages/lab/ProjectSearchView.vue') 
+        component: () => import('@/pages/lab/ProjectSearchView.vue')
       },
       {
-        // Der Editor (Bearbeiten)
-        // Hier ist der Name "ServiceProjectEdit", den die Fehlermeldung vermisst hat!
         path: 'project/:projectId',
         name: 'ServiceProjectEdit',
         component: () => import('@/pages/lab/ProjectEditorView.vue'),
@@ -34,18 +32,32 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'project/:projectId/services',
-        name: 'ServiceProjectServices', // Eindeutiger Name
+        name: 'ServiceProjectServices',
         component: () => import('@/pages/lab/ProjectServicesView.vue'),
         props: true
       }
     ]
   },
 
-  // 3. Antikörper (Antibody Context)
+  // 3. ANTIKÖRPER
   {
     path: '/antibodies',
-    name: 'Antibodies',
-    component: () => import('@/pages/Antibodies.vue')
+    children: [
+      {
+        // Das Dashboard für Antikörper (Suche, Tabs etc.)
+        path: '',
+        name: 'AntibodyDashboard',
+        component: () => import('@/pages/Antibodies.vue')
+      },
+      {
+        // Der Editor für Färbeverläufe
+        path: 'run/:id',
+        name: 'StainingRunEditor',
+        component: () => import('@/pages/antibodies/StainingRunEditorView.vue'),
+        props: true
+      }
+      // Hier können später weitere Editoren folgen (z.B. Lots, Orders)
+    ]
   }
 ];
 

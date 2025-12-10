@@ -8,13 +8,17 @@ Funktionalität:
 - Implementiert die Geschäftslogik zum Filtern und Aktualisieren der lokalen Mock-Datenbank.
 */
 
-import type { Project } from '@/mocks/db';
+import type { Project, Antibody, AntibodyOrder, StainingRun } from '@/mocks/db';
 // Korrekter Import der Mock-Daten-Arrays aus unserer db.ts
 import {
   mockProjects,
   mockTechnicalAssistants,
   mockCooperationPartners,
   mockWorkgroups,
+   mockAntibodies, 
+   mockAntibodyOrders, 
+   mockStainingRuns, 
+   mockAntibodyProjects 
 } from '@/mocks/db';
 
 /**
@@ -25,6 +29,16 @@ import {
  */
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+function formatDateForSearch(isoString: string | null | undefined): string {
+  if (!isoString) return '';
+  try {
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat('de-DE').format(date); // Macht "31.12.2024" daraus
+  } catch (e) {
+    return '';
+  }
+}
 
 /**
  * Dies ist unser "Fake-API"-Objekt für die Frontend-Entwicklung in Phase 1.
@@ -39,63 +53,124 @@ export const api = {
    * @returns Eine Promise, die ein Array von Projekten zurückgibt.
    */
 
-async findProjects(filters: any): Promise<Project[]> {
-    await delay(400); // Kurze Ladezeit simuliert
-    // console.log('API-SIMULATION: Wende Filter an:', filters);
 
-    let results = [...mockProjects];
+  
+  async findProjects(filters: any): Promise<Project[]> {
+  await delay(400); 
 
-    // --- 1. ALLGEMEINE SUCHE (Das Suchfeld oben) ---
-    if (filters.generalSearch) {
-      const term = filters.generalSearch.toLowerCase().trim();
-      
-      results = results.filter(p => {
-        // Wir suchen in Projektnummer...
-        const inNumber = p.projectNumber.toLowerCase().includes(term);
-        // ...oder in der Aufgabenbeschreibung...
-        const inTask = p.taskDescription.toLowerCase().includes(term);
-        // ...oder im Status
-        const inStatus = p.status.toLowerCase().includes(term);
-        
-        // Wenn EINES davon zutrifft, ist das Projekt ein Treffer
-        return inNumber || inTask || inStatus;
-      });
-    }
+  let results = [...mockProjects];
 
-    // --- 2. SPEZIFISCHE FILTER (Die Search Options) ---
+  // --- 1. INTELLIGENTE VOLLTEXTSUCHE ---
+  if (filters.generalSearch && filters.generalSearch.trim() !== '') {
+    const term = filters.generalSearch.toLowerCase().trim();
     
-    // Status (Dropdown)
+    results = results.filter(p => {
+      // Wir bauen einen "Heuhaufen" (Array) aus allen lesbaren Werten dieses Projekts
+      const searchTerms: string[] = [];
+
+      // 1. Basis-Textfelder
+      searchTerms.push(p.projectNumber);
+      searchTerms.push(p.taskDescription);
+      searchTerms.push(p.projectStatusText);
+      // searchTerms.push(p.remarks || ''); // Falls vorhanden
+
+      // 2. Status (Übersetzung ins Deutsche, damit "bearb" -> "In Bearbeitung" findet)
+      const statusMap: Record<string, string> = {
+        'in_progress': 'In Bearbeitung',
+        'completed': 'Abgeschlossen',
+        'inquiry': 'Anfrage',
+        'on_hold': 'Zurückgestellt',
+        'clarified': 'Abgeklärt',
+        'pending_number': 'Nr. nicht vergeben',
+        'rejected': 'Abgelehnt',
+        'cancelled': 'Storniert'
+      };
+      if (p.status && statusMap[p.status]) {
+        searchTerms.push(statusMap[p.status]);
+      }
+
+      // 3. Boolean Flags (Damit man nach "Abschlusskontrolle" oder "NCT" suchen kann)
+      if (p.finalCheck) searchTerms.push('Abschlusskontrolle');
+      if (p.isLongTermProject) searchTerms.push('Langzeitprojekt');
+      if (p.isFollowUpProject) searchTerms.push('Folgeprojekt');
+      if (p.isSfb118Project) searchTerms.push('SFB118');
+      
+      // Projekttypen
+      if (p.isNctTbb) searchTerms.push('NCT', 'NCT-TBB');
+      if (p.isPccc) searchTerms.push('PCCC');
+      if (p.isDzif) searchTerms.push('DZIF');
+      if (p.isCmcp) searchTerms.push('CMCP');
+
+      // 4. Namen auflösen (IDs -> Text)
+      
+      // TA
+      const ta = mockTechnicalAssistants.find(t => t.id === p.technicalAssistantId);
+      if (ta) {
+        searchTerms.push(ta.fullName);
+        searchTerms.push(ta.code);
+      }
+
+      // Partner / Arzt
+      const partner = mockCooperationPartners.find(c => c.id === p.cooperationPartnerId);
+      if (partner) {
+        searchTerms.push(partner.fullName);
+        searchTerms.push(partner.code);
+      }
+
+      // Arbeitsgruppe (AG)
+      const wg = mockWorkgroups.find(w => w.id === p.workgroupId);
+      if (wg) {
+        searchTerms.push(wg.name);
+      }
+
+      // 5. Datumsfelder (Sowohl ISO als auch Deutsches Format suchbar machen)
+      // ISO (z.B. "2024")
+      if (p.completionDate) searchTerms.push(p.completionDate);
+      if (p.estimatedCompletionDate) searchTerms.push(p.estimatedCompletionDate);
+      
+      // Deutsch (z.B. "24.12")
+      searchTerms.push(formatDateForSearch(p.completionDate));
+      searchTerms.push(formatDateForSearch(p.estimatedCompletionDate));
+      // Auch "Letzter Donnerstag" Feld
+      if (p.lastThursdayOfMonth) {
+          searchTerms.push(p.lastThursdayOfMonth);
+          searchTerms.push(formatDateForSearch(p.lastThursdayOfMonth));
+      }
+
+
+      // --- PRÜFUNG ---
+      // Ist der Suchbegriff in IRGENDEINEM dieser Werte enthalten?
+      return searchTerms.some(text => text && text.toLowerCase().includes(term));
+    });
+  }
+
+    // --- 2. RESTLICHE FILTER (Spezifische Felder) ---
+    // (Diese Logik bleibt bestehen für die Dropdowns in "Search Options")
     if (filters.status) {
       results = results.filter(p => p.status === filters.status);
     }
-
-    // Mitarbeiter-ID
     if (filters.technicalAssistantId) {
       results = results.filter(p => p.technicalAssistantId === Number(filters.technicalAssistantId));
     }
-    
-    // Arzt/Partner-ID
     if (filters.cooperationPartnerId) {
       results = results.filter(p => p.cooperationPartnerId === Number(filters.cooperationPartnerId));
     }
-
-    // Arbeitsgruppe
     if (filters.workgroupId) {
       results = results.filter(p => p.workgroupId === Number(filters.workgroupId));
     }
-
-    // Spezifische Projektnummer (aus den Optionen)
-    if (filters.projectNumber) {
+    if (filters.projectNumber && filters.projectNumber !== filters.generalSearch) {
       results = results.filter(p => p.projectNumber.toLowerCase().includes(filters.projectNumber.toLowerCase()));
     }
-    
-    // Projekttyp-Flags (Dropdown)
     if (filters.projectType) { 
-       // Wir prüfen dynamisch, ob das Flag (z.B. 'isNctTbb') auf true steht
        results = results.filter(p => (p as any)[filters.projectType] === true); 
     }
-
-    // Checkbox-Flags
+    if (filters.date) {
+       // Spezifische Datumssuche (Checkt ob EINES der Datumsfelder übereinstimmt)
+       results = results.filter(p => 
+         (p.completionDate && p.completionDate.startsWith(filters.date)) ||
+         (p.estimatedCompletionDate && p.estimatedCompletionDate.startsWith(filters.date))
+       );
+    }
     if (filters.finalCheck) { results = results.filter(p => p.finalCheck === true); }
     if (filters.isLongTermProject) { results = results.filter(p => p.isLongTermProject === true); }
     if (filters.isSfb118Project) { results = results.filter(p => p.isSfb118Project === true); }
@@ -189,5 +264,78 @@ async saveProject(projectData: Project): Promise<Project> {
       
       console.log("API-SIMULATION: Antragsdaten erfolgreich geholt.");
       return fetchedData;
+  },
+
+  
+    // --- ANTIKÖRPER DATENBANK SUCHE ---
+
+  // 1. Suche für Antikörper-Projekte (GETRENNT von Dienstleistungs-Projekten)
+  async searchAntibodyProjects(filters: any): Promise<Project[]> {
+    await delay(300);
+    let results = [...mockAntibodyProjects]; // Greift auf die ANDERE Datenbank zu
+
+    if (filters.generalSearch) {
+      const term = filters.generalSearch.toLowerCase();
+      results = results.filter(p => 
+        p.projectNumber.toLowerCase().includes(term) || 
+        p.taskDescription.toLowerCase().includes(term)
+      );
+    }
+    // ... hier weitere Filterlogik analog zu findProjects einfügen, falls nötig
+    return results;
+  },
+
+  // 2. Suche nach Antikörpern
+  async searchAntibodies(filters: any): Promise<Antibody[]> {
+    await delay(300);
+    let results = [...mockAntibodies];
+
+    const term = filters.general ? filters.general.toLowerCase() : '';
+    
+    // Allgemeine Suche
+    if (term) {
+      results = results.filter(a => 
+        a.name.toLowerCase().includes(term) || 
+        a.akId.toLowerCase().includes(term) ||
+        a.manufacturer.toLowerCase().includes(term)
+      );
+    }
+
+    // Spezifische Filter
+    if (filters.name) results = results.filter(a => a.name.toLowerCase().includes(filters.name.toLowerCase()));
+    if (filters.akId) results = results.filter(a => a.akId.toLowerCase().includes(filters.akId.toLowerCase()));
+    if (filters.status) results = results.filter(a => a.status === filters.status);
+
+    return results;
+  },
+
+  // 3. Suche nach Bestellungen
+  async searchOrders(filters: any): Promise<AntibodyOrder[]> {
+    await delay(300);
+    let results = [...mockAntibodyOrders];
+    
+    const term = filters.general ? filters.general.toLowerCase() : '';
+    if (term) {
+      results = results.filter(o => 
+        o.applicant.toLowerCase().includes(term) || 
+        o.workgroup.toLowerCase().includes(term)
+      );
+    }
+    return results;
+  },
+
+  // 4. Suche nach Färbeläufen
+  async searchStainingRuns(filters: any): Promise<StainingRun[]> {
+    await delay(300);
+    let results = [...mockStainingRuns];
+    
+    const term = filters.general ? filters.general.toLowerCase() : '';
+    if (term) {
+      results = results.filter(r => 
+        r.runId.toLowerCase().includes(term) || 
+        r.antibodyName.toLowerCase().includes(term)
+      );
+    }
+    return results;
   }
 };
