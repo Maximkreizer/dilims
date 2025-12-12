@@ -7,7 +7,7 @@
         <v-card-text>
           
           <!-- HAUPT-SUCHLEISTE -->
-          <div class="d-flex align-center ga-2 mb-2">
+          <div class="d-flex align-center ga-2 mb-4">
             <v-text-field
               v-model="filters.generalSearch"
               :label="searchLabel"
@@ -23,77 +23,82 @@
             <v-btn color="primary" height="40" prepend-icon="mdi-magnify" @click="performSearch" :loading="loading">Search</v-btn>
           </div>
 
-          <!-- SEARCH OPTIONS (Tabs für die 4 Bereiche) -->
-          <v-expansion-panels v-model="panel" variant="accordion" class="mt-2">
-            <v-expansion-panel elevation="0" style="border: 1px solid #e0e0e0; border-radius: 4px;">
-              <v-expansion-panel-title>
-                <v-icon start class="text-medium-emphasis">mdi-filter-variant</v-icon> 
-                Such-Kategorie & Filter
+          <!-- SEARCH OPTIONS -->
+          <v-expansion-panels v-model="panel" variant="accordion" class="my-0">
+            <v-expansion-panel elevation="0" style="border: 1px solid #e0e0e0; border-radius: 4px;" value="options">
+              <v-expansion-panel-title class="text-caption text-uppercase font-weight-bold text-grey-darken-1">
+                <v-icon start size="small">mdi-filter-variant</v-icon> 
+                Detaillierte Filteroptionen
               </v-expansion-panel-title>
               
-              <v-expansion-panel-text class="pt-0">
+              <!-- FIX: overflow-visible hilft gegen abgeschnittene Labels -->
+              <v-expansion-panel-text class="pt-2" style="overflow: visible;">
                 
-                <!-- TABS: Hier wählt man die Datenbank -->
-                <v-tabs v-model="activeTab" density="compact" color="primary" class="mb-4 border-b">
+                <v-tabs v-model="activeTab" density="compact" color="primary" class="mb-6 border-b">
                   <v-tab value="antibody">Antikörper</v-tab>
                   <v-tab value="project">Projekte</v-tab>
-                  <v-tab value="run">Färbeverläufe</v-tab>
+                  <v-tab value="run">Färbelauf</v-tab>
                   <v-tab value="order">Bestellungen</v-tab>
                 </v-tabs>
 
-                <!-- FILTER-FELDER (Wechseln je nach Tab) -->
-                <v-window v-model="activeTab">
+                <v-window v-model="activeTab" style="overflow: visible;">
                   
                   <!-- 1. ANTIKÖRPER SUCHE -->
-                  <v-window-item value="antibody">
+                  <v-window-item value="antibody" class="pa-1">
                     <v-row dense>
                       <v-col cols="12" md="2"><v-text-field v-model="filters.antibody.akId" label="AK_ID" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="3"><v-text-field v-model="filters.antibody.name" label="AK_Name" density="compact" variant="outlined"></v-text-field></v-col>
                       <v-col cols="12" md="2"><v-text-field v-model="filters.antibody.refNr" label="Ref-Nr" density="compact" variant="outlined"></v-text-field></v-col>
+                      <v-col cols="12" md="3"><v-text-field v-model="filters.antibody.name" label="AK_Name" density="compact" variant="outlined"></v-text-field></v-col>
                       <v-col cols="12" md="2"><v-text-field v-model="filters.antibody.lotNr" label="Lot-Nr" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="3"><v-text-field v-model="filters.antibody.manufacturer" label="Hersteller" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="2"><v-select v-model="filters.antibody.status" label="Status" :items="['Aktiv', 'Leer', 'Verworfen']" density="compact" variant="outlined"></v-select></v-col>
+                      <!-- Hersteller ist jetzt null-safe im Script -->
+                      <v-col cols="12" md="3"><v-select v-model="filters.antibody.manufacturer" label="Hersteller" :items="options.manufacturers" density="compact" variant="outlined"></v-select></v-col>
+                      
+                      <v-col cols="12" md="3"><v-select v-model="filters.antibody.owner" label="Eigentümer" :items="options.owners" density="compact" variant="outlined"></v-select></v-col>
+                      <v-col cols="12" md="3"><v-select v-model="filters.antibody.status" label="Status" :items="['Aktiv', 'Leer', 'Verworfen']" density="compact" variant="outlined"></v-select></v-col>
                     </v-row>
                   </v-window-item>
 
-                  <!-- 2. PROJEKTSUCHE (Spezifisch für Antikörper-Projekte) -->
-                  <v-window-item value="project">
+                  <!-- 2. PROJEKTE SUCHE -->
+                  <v-window-item value="project" class="pa-1">
                     <v-row dense>
+                      <v-col cols="12" md="3"><v-select v-model="filters.project.status" label="Status" :items="options.projectStatuses" density="compact" variant="outlined"></v-select></v-col>
+                      <v-col cols="12" md="3"><v-select v-model="filters.project.type" label="Projekttyp" :items="['NCT', 'pCCC', 'DZiF', 'CMCP']" density="compact" variant="outlined"></v-select></v-col>
+                      <v-col cols="12" md="3"><v-select v-model="filters.project.ta" label="Mitarbeiter (TA)" :items="['MK', 'MF', 'MA']" density="compact" variant="outlined"></v-select></v-col>
+                      <v-col cols="12" md="3"><v-select v-model="filters.project.doctor" label="Ärzte" :items="['Dr. Sommerfeld', 'Prof. Conrad', 'Dr. Brunner']" density="compact" variant="outlined"></v-select></v-col>
+
                       <v-col cols="12" md="3"><v-text-field v-model="filters.project.number" label="Projektnummer" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="3"><v-select v-model="filters.project.status" label="Projektstatus" :items="statusOptions" density="compact" variant="outlined"></v-select></v-col>
-                      <v-col cols="12" md="3"><v-select v-model="filters.project.workgroup" label="Arbeitsgruppe" :items="['AG Immunologie', 'AG Onkologie']" density="compact" variant="outlined"></v-select></v-col>
-                      <v-col cols="12" md="3"><v-text-field v-model="filters.project.date" label="Datum" type="date" density="compact" variant="outlined"></v-text-field></v-col>
                       
-                      <v-col cols="12" md="6" class="d-flex align-center ga-4 mt-2">
+                      <v-col cols="12" md="9" class="d-flex align-center ga-4">
                         <v-checkbox v-model="filters.project.finalCheck" label="Abschlusskontrolle" density="compact" hide-details></v-checkbox>
-                        <v-checkbox v-model="filters.project.longTerm" label="Langzeitprojekt" density="compact" hide-details></v-checkbox>
                       </v-col>
                     </v-row>
                   </v-window-item>
 
-                  <!-- 3. FÄRBEVERLÄUFE -->
-                  <v-window-item value="run">
+                  <!-- 3. FÄRBELAUF SUCHE -->
+                  <v-window-item value="run" class="pa-1">
                     <v-row dense>
-                      <v-col cols="12" md="3"><v-text-field v-model="filters.run.runId" label="Färbe-ID" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="3"><v-text-field v-model="filters.run.akId" label="AK_ID" density="compact" variant="outlined"></v-text-field></v-col>
+                      <v-col cols="12" md="2"><v-text-field v-model="filters.run.akId" label="AK_ID" density="compact" variant="outlined"></v-text-field></v-col>
+                      <v-col cols="12" md="2"><v-text-field v-model="filters.run.runId" label="Färbe-ID" density="compact" variant="outlined"></v-text-field></v-col>
                       <v-col cols="12" md="3"><v-text-field v-model="filters.run.akName" label="AK_Name" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="3"><v-text-field v-model="filters.run.date" label="Färbe-Datum" type="date" density="compact" variant="outlined"></v-text-field></v-col>
+                      <v-col cols="12" md="2"><v-text-field v-model="filters.run.date" label="Färbe-Datum" type="date" density="compact" variant="outlined"></v-text-field></v-col>
+                      <v-col cols="12" md="3"><v-select v-model="filters.run.tissue" label="Gewebe" :items="['Tonsille', 'Leber', 'Niere']" density="compact" variant="outlined"></v-select></v-col>
+                      
+                      <v-col cols="12" md="3"><v-select v-model="filters.run.type" label="Lauftyp" :items="['Testlauf', 'Projektlauf', 'Etablierungslauf (final)']" density="compact" variant="outlined"></v-select></v-col>
                     </v-row>
                   </v-window-item>
 
-                  <!-- 4. BESTELLUNGEN -->
-                  <v-window-item value="order">
+                  <!-- 4. BESTELLUNGEN SUCHE -->
+                  <v-window-item value="order" class="pa-1">
                     <v-row dense>
                       <v-col cols="12" md="4"><v-select v-model="filters.order.workgroup" label="AG" :items="['AG Immunologie', 'AG Onkologie']" density="compact" variant="outlined"></v-select></v-col>
-                      <v-col cols="12" md="4"><v-text-field v-model="filters.order.applicant" label="Antragssteller" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="4"><v-select v-model="filters.order.status" label="Status" :items="['Bestellt', 'Geliefert']" density="compact" variant="outlined"></v-select></v-col>
+                      <v-col cols="12" md="4"><v-text-field v-model="filters.order.applicant" label="Antragsteller (Name, Vorname)" density="compact" variant="outlined"></v-text-field></v-col>
                     </v-row>
                   </v-window-item>
 
                 </v-window>
 
                 <!-- ACTIONS -->
-                <v-row dense class="mt-2">
+                <v-row dense class="mt-4">
                   <v-col cols="12" class="d-flex justify-end ga-2">
                     <v-btn variant="text" color="grey-darken-1" @click="resetFilters">Clean</v-btn>
                     <v-btn color="primary" @click="performSearch">Search</v-btn>
@@ -107,18 +112,41 @@
       </v-card>
     </div>
 
-    <!-- UNTERER BEREICH: Generische Tabelle -->
+    <!-- UNTERER BEREICH: TABELLE -->
     <div class="flex-grow-1" style="min-height: 0;">
-      <!-- 
-         Wir nutzen hier ResizableGenericTable, weil die Spalten sich ändern.
-         Die Tabelle ist read-only (nur Anzeige).
-      -->
       <ResizableGenericTable 
         :items="results"
         :headers="currentHeaders"
         :loading="loading"
-        @open="handleOpen"
-      />
+      >
+        <template v-slot:item.action_open="{ item }">
+          <div class="d-flex justify-center">
+            <v-btn icon size="x-small" variant="text" color="primary" @click.stop="handleOpen(item)">
+              <v-icon>mdi-open-in-new</v-icon>
+              <v-tooltip activator="parent" location="top">Öffnen</v-tooltip>
+            </v-btn>
+          </div>
+        </template>
+
+        <template v-slot:item.action_tab="{ item }">
+          <div class="d-flex justify-center">
+            <v-btn icon size="x-small" variant="text" color="grey-darken-3" @click.stop="handleOpenInNewTab(item)">
+              <v-icon>mdi-tab-plus</v-icon>
+              <v-tooltip activator="parent" location="top">Neuer Tab</v-tooltip>
+            </v-btn>
+          </div>
+        </template>
+
+        <template v-slot:item.action_delete="{ item }">
+          <div class="d-flex justify-center">
+            <v-btn icon size="x-small" variant="text" color="error" @click.stop="handleDelete(item)">
+              <v-icon>mdi-delete-outline</v-icon>
+              <v-tooltip activator="parent" location="top">Löschen</v-tooltip>
+            </v-btn>
+          </div>
+        </template>
+
+      </ResizableGenericTable>
     </div>
 
   </v-container>
@@ -135,71 +163,72 @@ const router = useRouter();
 const navStore = useNavigationStore();
 
 const loading = ref(false);
-const panel = ref<number[]>([0]); // Default: Filter ausgeklappt
-const activeTab = ref('antibody'); // Start-Tab: Antikörper
+const panel = ref<any[]>(['options']);
+const activeTab = ref('antibody');
 const results = ref<any[]>([]);
 
-const statusOptions = ['In Bearbeitung', 'Abgeschlossen', 'Storniert'];
+const options = {
+  projectStatuses: ['abklären', 'Nr. nicht vergeben', 'In Bearbeitung', 'abgeschlossen', 'Anfrage', 'abgelehnt', 'storniert', 'zurückgestellt'],
+  manufacturers: ['Dako', 'Leica', 'Roche', 'Sigma'],
+  owners: ['AG Müller', 'AG Schmidt', 'Zentrallager'],
+};
 
-// Filter State
-const filters = reactive({
+// FIX: Verwende null statt '' für Dropdowns, damit das Label nicht oben klebt
+const filters = reactive<any>({
   generalSearch: '',
-  // Unterobjekte für jeden Tab
-  antibody: { akId: '', name: '', refNr: '', lotNr: '', status: null, manufacturer: '' },
-  project: { number: '', status: null, workgroup: null, ta: null, doctor: null, date: null, finalCheck: false, longTerm: false },
-  run: { akId: '', akName: '', runId: '', date: null },
-  order: { workgroup: null, applicant: '', status: null },
+  antibody: { akId: '', name: '', refNr: '', lotNr: '', manufacturer: null, status: null, owner: null },
+  project: { number: '', status: null, type: null, workgroup: null, ta: null, doctor: null, date: null, finalCheck: false },
+  run: { akId: '', runId: '', akName: '', date: null, tissue: null, type: null },
+  order: { workgroup: null, applicant: '' },
 });
 
-// --- DYNAMISCHE HEADER ---
-// Je nachdem, welcher Tab aktiv ist, zeigen wir andere Spalten an.
 const currentHeaders = computed(() => {
-  // Gemeinsame Spalte "Öffnen"
-  const common = [{ title: 'Öffnen', key: 'actions', width: 60, sortable: false, align: 'center', fixed: true }];
+  const actions = [
+    { title: 'Öffnen', key: 'action_open', width: 60, sortable: false, align: 'center', fixed: true },
+    { title: 'Tab', key: 'action_tab', width: 50, sortable: false, align: 'center', fixed: true },
+    { title: 'Löschen', key: 'action_delete', width: 60, sortable: false, align: 'center', fixed: true },
+  ];
   
   switch (activeTab.value) {
     case 'antibody':
-      return [
-        ...common,
+      return [...actions,
         { title: 'AK-ID', key: 'akId', width: 100 },
-        { title: 'Name', key: 'name', width: 150 },
+        { title: 'Name', key: 'name', width: 200 },
         { title: 'Ref-Nr', key: 'refNumber', width: 120 },
         { title: 'Lot-Nr', key: 'lotNumber', width: 120 },
         { title: 'Hersteller', key: 'manufacturer', width: 150 },
         { title: 'Status', key: 'status', width: 100 },
+        { title: 'Eigentümer', key: 'owner', width: 120 },
       ];
     case 'project':
-      return [
-        ...common,
+      return [...actions,
         { title: 'Nr.', key: 'projectNumber', width: 100 },
         { title: 'Status', key: 'status', width: 120 },
-        { title: 'Aufgabe', key: 'taskDescription', width: 300 },
-        { title: 'Abgabe', key: 'completionDate', width: 120 },
+        { title: 'Typ', key: 'projectType', width: 100 },
+        { title: 'Aufgabe', key: 'tasks', width: 300 },
+        { title: 'Antragsteller', key: 'applicant', width: 150 },
       ];
     case 'run':
-      return [
-        ...common,
-        { title: 'Färbe-ID', key: 'runId', width: 120 },
-        { title: 'Datum', key: 'date', width: 120 },
-        { title: 'AK-Name', key: 'antibodyName', width: 150 },
+      return [...actions,
+        { title: 'Lauf-ID', key: 'runId', width: 100 },
+        { title: 'Datum', key: 'date', width: 100 },
         { title: 'AK-ID', key: 'antibodyId', width: 100 },
+        { title: 'AK-Name', key: 'antibodyName', width: 150 },
       ];
     case 'order':
-      return [
-        ...common,
+      return [...actions,
+        { title: 'Bestell-ID', key: 'orderId', width: 100 },
         { title: 'AG', key: 'workgroup', width: 150 },
         { title: 'Antragsteller', key: 'applicant', width: 200 },
-        { title: 'Datum', key: 'orderDate', width: 120 },
         { title: 'Status', key: 'status', width: 120 },
       ];
     default: return [];
   }
 });
 
-// Label für das Hauptsuchfeld
 const searchLabel = computed(() => {
   switch (activeTab.value) {
-    case 'antibody': return 'Suche Antikörper (Name, ID, Hersteller...)';
+    case 'antibody': return 'Suche Antikörper';
     case 'project': return 'Suche Projekte';
     case 'run': return 'Suche Färbeverläufe';
     case 'order': return 'Suche Bestellungen';
@@ -207,27 +236,18 @@ const searchLabel = computed(() => {
   }
 });
 
-// --- API AUFRUFE ---
-
 async function performSearch() {
   loading.value = true;
-  results.value = []; // Liste leeren
-  
+  results.value = [];
   try {
     const general = filters.generalSearch;
-
-    // Je nach Tab rufen wir eine ANDERE Funktion in der API auf
-    // (Diese Funktionen haben wir im Schritt zuvor in api.ts erstellt)
     if (activeTab.value === 'antibody') {
       results.value = await api.searchAntibodies({ general, ...filters.antibody });
-    } 
-    else if (activeTab.value === 'project') {
+    } else if (activeTab.value === 'project') {
       results.value = await api.searchAntibodyProjects({ generalSearch: general, ...filters.project });
-    }
-    else if (activeTab.value === 'run') {
+    } else if (activeTab.value === 'run') {
       results.value = await api.searchStainingRuns({ general, ...filters.run });
-    }
-    else if (activeTab.value === 'order') {
+    } else if (activeTab.value === 'order') {
       results.value = await api.searchOrders({ general, ...filters.order });
     }
   } finally {
@@ -237,26 +257,39 @@ async function performSearch() {
 
 function resetFilters() {
   filters.generalSearch = '';
-  // Reset Logik für Unterobjekte (vereinfacht)
-  // Man könnte hier rekursiv alle Felder leeren
+  // Einfacher Reset der Filterobjekte
+  if (activeTab.value === 'antibody') filters.antibody = { akId: '', name: '', refNr: '', lotNr: '', manufacturer: null, status: null, owner: null };
+  // ... (für andere Tabs analog)
   performSearch();
 }
 
-// --- AKTIONEN ---
-
 function handleOpen(item: any) {
+  // FIX: Wir öffnen hier je nach Typ die Seite.
+  // Auch wenn wir noch keine Detailseiten für Antibody/Order haben,
+  // zeigt das alert() dass der Button geht.
   if (activeTab.value === 'run') {
-    // Der Router sucht nach "StainingRunEditor". 
-    // Dieser Name MUSS in router/index.ts exakt so definiert sein.
-    router.push({ 
-      name: 'StainingRunEditor', 
-      params: { id: item.id } 
-    });
-  } 
+    router.push({ name: 'StainingRunEditor', params: { id: item.id } });
+  } else {
+    alert(`Öffne ${activeTab.value}: ${item.id} (Ansicht folgt)`);
+  }
 }
-// --- INIT ---
 
-// Wenn man den Tab wechselt, leeren wir die Suche oder suchen automatisch neu
+function handleOpenInNewTab(item: any) {
+  if (activeTab.value === 'run') {
+    navStore.addTab(`/antibodies/run/${item.id}`);
+  } else {
+    alert("Neuer Tab für diesen Typ noch nicht verfügbar");
+  }
+}
+
+function handleDelete(item: any) {
+  if(!confirm(`Möchten Sie ${item.id} wirklich löschen?`)) return;
+  alert("Gelöscht!");
+  // Hier würde api.delete... aufgerufen werden
+  // await api.delete(activeTab.value, item.id);
+  // performSearch();
+}
+
 watch(activeTab, () => {
   filters.generalSearch = '';
   results.value = [];
@@ -264,23 +297,8 @@ watch(activeTab, () => {
 });
 
 onMounted(() => {
-  // Layout Context setzen
-  navStore.setContext(
-    'mdi-molecule', // Icon
-    [
-      { title: 'Navigation', to: '/' },
-      { title: 'Antikörper', disabled: true }
-    ],
-    true // Neu Button anzeigen
-  );
-  
-  // "Neu" Button Logik
-  navStore.setNewAction(() => {
-    // Hier müsste ein Dialog kommen: "Was wollen Sie anlegen? Neuer AK? Neue Bestellung?"
-    alert("Neues Element anlegen (noch nicht implementiert)");
-  });
-
-  // Start-Suche
+  navStore.setContext('mdi-molecule', [{ title: 'Navigation', to: '/' }, { title: 'Antikörper', disabled: true }], true);
+  navStore.setNewAction(() => alert("Neues Element anlegen"));
   performSearch();
 });
 </script>

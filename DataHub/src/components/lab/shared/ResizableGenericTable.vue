@@ -20,13 +20,14 @@
     >
       <template v-slot:headers="{ columns, isSorted, getSortIcon, toggleSort }">
         <tr>
-          <template v-for="column in columns" :key="column.key">
+          <!-- FIX: index hinzugefügt und key sicher gemacht -->
+          <template v-for="(column, index) in columns" :key="column.key || index">
             <th 
               :style="{ width: column.width + 'px', minWidth: column.width + 'px' }"
               class="custom-header position-relative"
               @click="() => toggleSort(column)"
             >
-              <div class="d-flex align-center justify-space-between w-100 h-100" style="overflow: hidden;">
+              <div class="d-flex align-center justify-center w-100 h-100" style="overflow: hidden;">
                 <span class="font-weight-bold text-truncate">{{ column.title }}</span>
                 <v-icon v-if="isSorted(column)" size="x-small">{{ getSortIcon(column) }}</v-icon>
               </div>
@@ -36,15 +37,17 @@
         </tr>
       </template>
 
-      <!-- Standard Actions -->
-      <template v-slot:item.actions="{ item }">
-        <v-btn icon size="x-small" variant="text" color="primary" @click.stop="$emit('open', item)">
-          <v-icon>mdi-open-in-new</v-icon>
-        </v-btn>
+      <!-- SLOTS FÜR BUTTONS -->
+      <template v-slot:item.action_open="{ item }">
+        <slot name="item.action_open" :item="item"></slot>
+      </template>
+      <template v-slot:item.action_tab="{ item }">
+        <slot name="item.action_tab" :item="item"></slot>
+      </template>
+      <template v-slot:item.action_delete="{ item }">
+        <slot name="item.action_delete" :item="item"></slot>
       </template>
 
-      <!-- Dynamische Datenanzeige (Fallback für alles was nicht action ist) -->
-      <!-- Wir rendern hier einfach text, da es eine Readonly Suche ist -->
     </v-data-table>
 
     <div class="height-resizer bg-grey-lighten-3 d-flex justify-center align-center flex-shrink-0" @mousedown.prevent="startHeightResize">
@@ -56,18 +59,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-// Generic Props
 const props = defineProps<{
   items: any[];
-  headers: any[]; // Headers kommen jetzt von außen!
+  headers: any[];
   loading: boolean;
 }>();
 
-const emit = defineEmits<{ (e: 'open', item: any): void; }>();
-
 const tableHeight = ref(400);
 
-// Resizing Logic (Identisch zu vorher)
 function startColumnResize(event: MouseEvent, column: any) {
   const startX = event.pageX; const startWidth = column.width || 50;
   const onMouseMove = (e: MouseEvent) => { column.width = Math.max(20, startWidth + (e.pageX - startX)); };
