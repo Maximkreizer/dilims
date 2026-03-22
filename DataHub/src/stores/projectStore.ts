@@ -1,5 +1,6 @@
 // src/stores/projectStore.ts
 import { defineStore } from 'pinia';
+import { shallowRef } from 'vue';
 import { api } from '@/services/api';
 import type { Project, TechnicalAssistant, CooperationPartner, Workgroup } from '@/mocks/db';
 
@@ -18,7 +19,7 @@ interface SearchOptions {
 
 export const useProjectStore = defineStore('projects', {
   state: () => ({
-    projects: [] as Project[],
+    projects: shallowRef<Project[]>([]),
     activeProject: null as Project | null,
     projectVersion: 0,
     isLoading: false,

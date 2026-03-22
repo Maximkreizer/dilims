@@ -1,5 +1,6 @@
 // src/stores/serviceStore.ts
 import { defineStore } from 'pinia';
+import { shallowRef } from 'vue';
 import type { 
   ProjectService, 
   GenericService,
@@ -17,7 +18,7 @@ import { useProjectStore } from './projectStore';
 
 export const useServiceStore = defineStore('services', {
   state: () => ({
-    services: [] as ProjectService[],
+    services: shallowRef<ProjectService[]>([]),
     activeService: null as ProjectService | { status: 'selecting' } | null,
     isLoading: false,
   }),

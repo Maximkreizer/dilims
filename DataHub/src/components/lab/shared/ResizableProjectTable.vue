@@ -82,7 +82,7 @@
           :class="readonly ? 'readonly-cell' : 'editable-cell'" 
           class="text-wrap"
         >
-          <v-text-field v-if="isEditing(item, 'projectNumber')" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'projectNumber')" @blur="cancelEdit"></v-text-field>
+          <v-text-field v-if="editingCellId === item.id + '-projectNumber'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'projectNumber')" @blur="cancelEdit"></v-text-field>
           <span v-else>{{ item.projectNumber }}</span>
         </div>
       </template>
@@ -92,7 +92,7 @@
           @click.stop="startEdit(item, 'status')" 
           :class="readonly ? 'readonly-cell' : 'editable-cell'"
         >
-          <v-select v-if="isEditing(item, 'status')" v-model="editingValue" :items="options.statuses" item-title="title" item-value="value" variant="plain" density="compact" hide-details menu-icon="" open-on-mount @update:model-value="saveEdit(item, 'status')"></v-select>
+          <v-select v-if="editingCellId === item.id + '-status'" v-model="editingValue" :items="options.statuses" item-title="title" item-value="value" variant="plain" density="compact" hide-details menu-icon="" open-on-mount @update:model-value="saveEdit(item, 'status')"></v-select>
           <v-chip v-else size="x-small" :color="getStatusColor(item.status)" class="px-1" style="max-width: 100%;"><span class="text-truncate">{{ getStatusText(item.status) }}</span></v-chip>
         </div>
       </template>
@@ -103,7 +103,7 @@
           :class="readonly ? 'readonly-cell' : 'editable-cell'" 
           class="text-wrap"
         >
-          <v-text-field v-if="isEditing(item, 'taskDescription')" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'taskDescription')" @blur="cancelEdit"></v-text-field>
+          <v-text-field v-if="editingCellId === item.id + '-taskDescription'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'taskDescription')" @blur="cancelEdit"></v-text-field>
           <span v-else>{{ item.taskDescription || '...' }}</span>
         </div>
       </template>
@@ -113,13 +113,13 @@
           @click.stop="startEdit(item, 'technicalAssistantId')" 
           :class="readonly ? 'readonly-cell' : 'editable-cell'"
         >
-          <v-select v-if="isEditing(item, 'technicalAssistantId')" v-model="editingValue" :items="options.technicalAssistants" item-title="fullName" item-value="id" variant="plain" density="compact" hide-details menu-icon="" open-on-mount @update:model-value="saveEdit(item, 'technicalAssistantId')"></v-select>
-          <span v-else class="text-truncate">{{ getName(item.technicalAssistantId, options.technicalAssistants, 'fullName') }}</span>
+          <v-select v-if="editingCellId === item.id + '-technicalAssistantId'" v-model="editingValue" :items="options.technicalAssistants" item-title="fullName" item-value="id" variant="plain" density="compact" hide-details menu-icon="" open-on-mount @update:model-value="saveEdit(item, 'technicalAssistantId')"></v-select>
+          <span v-else class="text-truncate">{{ taMap[item.technicalAssistantId] || '-' }}</span>
         </div>
       </template>
 
-      <template v-slot:item.cooperationPartnerId="{ value }">{{ getName(value, options.cooperationPartners, 'fullName') }}</template>
-      <template v-slot:item.workgroupId="{ value }">{{ getName(value, options.workgroups, 'name') }}</template>
+      <template v-slot:item.cooperationPartnerId="{ value }">{{ cpMap[value] || '-' }}</template>
+      <template v-slot:item.workgroupId="{ value }">{{ wgMap[value] || '-' }}</template>
       
       <!-- Checkboxen: Wenn readonly, dann disabled -->
       <template v-slot:item.finalCheck="{ item }">
@@ -151,7 +151,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onUnmounted, computed } from 'vue';
 import { api } from '@/services/api';
 import type { Project } from '@/mocks/db';
 
@@ -189,20 +189,29 @@ const headers = ref<any[]>([
   { title: 'Langzeit', key: 'isLongTermProject', width: 60, align: 'center' },
 ]);
 
+
+// O(1) Lookups for relations
+const taMap = computed(() => { const m: Record<number, string> = {}; (props.options.technicalAssistants || []).forEach((x:any) => m[x.id] = x.fullName); return m; });
+const cpMap = computed(() => { const m: Record<number, string> = {}; (props.options.cooperationPartners || []).forEach((x:any) => m[x.id] = x.fullName); return m; });
+const wgMap = computed(() => { const m: Record<number, string> = {}; (props.options.workgroups || []).forEach((x:any) => m[x.id] = x.name); return m; });
+const statusMap = computed(() => { const m: Record<string, string> = {}; (props.options.statuses || []).forEach((x:any) => m[x.value] = x.title); return m; });
+
 // Helper
 function getStatusColor(s: string) { return s === 'completed' ? 'success' : 'info'; }
-function getStatusText(s: string) { return props.options.statuses?.find((x:any)=>x.value===s)?.title || s; }
-function getName(id: number | null | undefined, list: any[], field: string) { if (!id) return '-'; return list?.find(i=>i.id===id)?.[field] || '-'; }
+function getStatusText(s: string) { return statusMap.value[s] || s; }
+
 
 // Delete
 function confirmDelete(item: Project) { itemToDelete.value = item; deleteDialog.value = true; }
 function executeDelete() { if (itemToDelete.value) { emit('delete', itemToDelete.value); deleteDialog.value = false; itemToDelete.value = null; } }
 
 // Editing
+
+const editingCellId = computed(() => editingCell.value ? editingCell.value.id + '-' + editingCell.value.field : null);
+
 const editingCell = ref<{ id: number, field: string } | null>(null);
 const editingValue = ref<any>(null);
 
-function isEditing(item: Project, field: string) { return editingCell.value?.id === item.id && editingCell.value?.field === field; }
 
 function startEdit(item: Project, field: string) { 
   // WICHTIG: Wenn Readonly, brich sofort ab!
@@ -218,18 +227,33 @@ async function saveEdit(item: Project, field: string) { if (editingCell.value) {
 async function quickSave(item: Project) { if(props.readonly) return; const saved = await api.saveProject(item); emit('project-updated', saved); }
 
 // Resizing
+
+const activeListeners = { move: null as any, up: null as any };
+function cleanupListeners() {
+  if (activeListeners.move) document.removeEventListener('mousemove', activeListeners.move);
+  if (activeListeners.up) document.removeEventListener('mouseup', activeListeners.up);
+  activeListeners.move = null; activeListeners.up = null;
+  document.body.style.cursor = '';
+}
+onUnmounted(() => cleanupListeners());
+
 function startColumnResize(event: MouseEvent, column: any) {
+  cleanupListeners();
   const startX = event.pageX; const startWidth = column.width || 50;
   const onMouseMove = (e: MouseEvent) => { column.width = Math.max(10, startWidth + (e.pageX - startX)); };
-  const onMouseUp = () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); document.body.style.cursor = ''; };
+  const onMouseUp = () => cleanupListeners();
+  activeListeners.move = onMouseMove; activeListeners.up = onMouseUp;
   document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp); document.body.style.cursor = 'col-resize';
 }
 function startHeightResize(event: MouseEvent) {
+  cleanupListeners();
   const startY = event.pageY; const startHeight = tableHeight.value;
   const onMouseMove = (e: MouseEvent) => { if (e.clientY > window.innerHeight - 50) window.scrollBy(0, 10); tableHeight.value = Math.max(150, startHeight + (e.pageY - startY)); };
-  const onMouseUp = () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); document.body.style.cursor = ''; };
+  const onMouseUp = () => cleanupListeners();
+  activeListeners.move = onMouseMove; activeListeners.up = onMouseUp;
   document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp); document.body.style.cursor = 'ns-resize';
 }
+
 </script>
 
 <style scoped>

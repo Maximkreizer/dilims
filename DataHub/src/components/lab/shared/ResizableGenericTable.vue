@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
 
 const props = defineProps<{
   items: any[];
@@ -67,18 +67,32 @@ const props = defineProps<{
 
 const tableHeight = ref(400);
 
+const activeListeners = { move: null as any, up: null as any };
+function cleanupListeners() {
+  if (activeListeners.move) document.removeEventListener('mousemove', activeListeners.move);
+  if (activeListeners.up) document.removeEventListener('mouseup', activeListeners.up);
+  activeListeners.move = null; activeListeners.up = null;
+  document.body.style.cursor = '';
+}
+onUnmounted(() => cleanupListeners());
+
 function startColumnResize(event: MouseEvent, column: any) {
+  cleanupListeners();
   const startX = event.pageX; const startWidth = column.width || 50;
   const onMouseMove = (e: MouseEvent) => { column.width = Math.max(20, startWidth + (e.pageX - startX)); };
-  const onMouseUp = () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); document.body.style.cursor = ''; };
+  const onMouseUp = () => cleanupListeners();
+  activeListeners.move = onMouseMove; activeListeners.up = onMouseUp;
   document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp); document.body.style.cursor = 'col-resize';
 }
 function startHeightResize(event: MouseEvent) {
+  cleanupListeners();
   const startY = event.pageY; const startHeight = tableHeight.value;
   const onMouseMove = (e: MouseEvent) => { if (e.clientY > window.innerHeight - 50) window.scrollBy(0, 10); tableHeight.value = Math.max(150, startHeight + (e.pageY - startY)); };
-  const onMouseUp = () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); document.body.style.cursor = ''; };
+  const onMouseUp = () => cleanupListeners();
+  activeListeners.move = onMouseMove; activeListeners.up = onMouseUp;
   document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp); document.body.style.cursor = 'ns-resize';
 }
+
 </script>
 
 <style scoped>

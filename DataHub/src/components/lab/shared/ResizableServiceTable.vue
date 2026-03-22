@@ -76,7 +76,7 @@
       <template v-slot:item.smartCount="{ item }">
         <div @click="startEdit(item, 'smartCount')" class="editable-cell">
           <v-text-field 
-            v-if="isEditing(item, 'smartCount')" 
+            v-if="editingCellId === item.id + '-smartCount'" 
             v-model.number="editingValue" 
             type="number"
             variant="plain" density="compact" hide-details autofocus 
@@ -90,14 +90,14 @@
 
       <template v-slot:item.remarks="{ item }">
         <div @click="startEdit(item, 'remarks')" class="editable-cell text-wrap">
-          <v-text-field v-if="isEditing(item, 'remarks')" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'remarks')" @blur="cancelEdit" @click.stop></v-text-field>
+          <v-text-field v-if="editingCellId === item.id + '-remarks'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'remarks')" @blur="cancelEdit" @click.stop></v-text-field>
           <span v-else>{{ item.remarks || '-' }}</span>
         </div>
       </template>
 
       <template v-slot:item.deliveryDate="{ item }">
         <div @click="startEdit(item, 'deliveryDate')" class="editable-cell">
-          <v-text-field v-if="isEditing(item, 'deliveryDate')" v-model="editingValue" type="date" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'deliveryDate')" @blur="cancelEdit" @click.stop></v-text-field>
+          <v-text-field v-if="editingCellId === item.id + '-deliveryDate'" v-model="editingValue" type="date" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'deliveryDate')" @blur="cancelEdit" @click.stop></v-text-field>
           <span v-else>{{ formatDate(item.deliveryDate) }}</span>
         </div>
       </template>
@@ -125,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onUnmounted, computed } from 'vue';
 import type { ProjectService } from '@/mocks/db';
 
 const icons: Record<string, string> = { paraffin_sections: 'mdi-layers-outline', paraffin_tubes: 'mdi-test-tube', paraffin_embedding: 'mdi-archive-outline', cryo_sections: 'mdi-snowflake', cryo_tubes: 'mdi-snowflake-melt', cryo_service: 'mdi-snowflake-alert', ihc: 'mdi-eyedropper-variant', staining: 'mdi-brush', dna_rna_extraction: 'mdi-dna', pathological_assessment: 'mdi-clipboard-pulse', tma_creation: 'mdi-dots-grid', tma_sections: 'mdi-grid', virtual_microscopy: 'mdi-monitor-eye', archival_work: 'mdi-archive-search', data: 'mdi-database', ethics: 'mdi-gavel' };
@@ -239,14 +239,37 @@ function saveSmartCount(item: any) {
 }
 
 // Editing & Resizing
+const editingCellId = computed(() => editingCell.value ? editingCell.value.id + '-' + editingCell.value.field : null);
 const editingCell = ref<{ id: number, field: string } | null>(null);
 const editingValue = ref<any>(null);
-function isEditing(item: ProjectService, field: string) { return editingCell.value?.id === item.id && editingCell.value?.field === field; }
 function startEdit(item: ProjectService, field: string) { if(editingCell.value) cancelEdit(); editingCell.value = { id: item.id, field }; if (field === 'smartCount') { const val = getSmartCount(item); editingValue.value = val === '-' ? 0 : val; } else { editingValue.value = (item as any)[field]; } }
 function cancelEdit() { setTimeout(() => { editingCell.value = null; editingValue.value = null; }, 150); }
 function saveEdit(item: ProjectService, field: string) { if (editingCell.value) { (item as any)[field] = editingValue.value; emit('update', item); editingCell.value = null; } }
-function startColumnResize(event: MouseEvent, column: any) { const startX = event.pageX; const startWidth = column.width || 50; const onMouseMove = (e: MouseEvent) => { column.width = Math.max(10, startWidth + (e.pageX - startX)); }; const onMouseUp = () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); document.body.style.cursor = ''; }; document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp); document.body.style.cursor = 'col-resize'; }
-function startHeightResize(event: MouseEvent) { const startY = event.pageY; const startHeight = tableHeight.value; const onMouseMove = (e: MouseEvent) => { if (e.clientY > window.innerHeight - 50) window.scrollBy(0, 10); tableHeight.value = Math.max(150, startHeight + (e.pageY - startY)); }; const onMouseUp = () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); document.body.style.cursor = ''; }; document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp); document.body.style.cursor = 'ns-resize'; }
+const activeListeners = { move: null as any, up: null as any };
+function cleanupListeners() {
+  if (activeListeners.move) document.removeEventListener('mousemove', activeListeners.move);
+  if (activeListeners.up) document.removeEventListener('mouseup', activeListeners.up);
+  activeListeners.move = null; activeListeners.up = null;
+  document.body.style.cursor = '';
+}
+onUnmounted(() => cleanupListeners());
+
+function startColumnResize(event: MouseEvent, column: any) {
+  cleanupListeners();
+  const startX = event.pageX; const startWidth = column.width || 50;
+  const onMouseMove = (e: MouseEvent) => { column.width = Math.max(10, startWidth + (e.pageX - startX)); };
+  const onMouseUp = () => cleanupListeners();
+  activeListeners.move = onMouseMove; activeListeners.up = onMouseUp;
+  document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp); document.body.style.cursor = 'col-resize';
+}
+function startHeightResize(event: MouseEvent) {
+  cleanupListeners();
+  const startY = event.pageY; const startHeight = tableHeight.value;
+  const onMouseMove = (e: MouseEvent) => { if (e.clientY > window.innerHeight - 50) window.scrollBy(0, 10); tableHeight.value = Math.max(150, startHeight + (e.pageY - startY)); };
+  const onMouseUp = () => cleanupListeners();
+  activeListeners.move = onMouseMove; activeListeners.up = onMouseUp;
+  document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp); document.body.style.cursor = 'ns-resize';
+}
 </script>
 
 <style scoped>
