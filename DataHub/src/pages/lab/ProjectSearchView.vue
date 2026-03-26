@@ -172,7 +172,12 @@ onMounted(async () => {
   try {
     const opts = await api.getSearchOptions();
     Object.assign(options, opts);
+    // WICHTIG: Kein automatisches Search bei Initialisierung, 
+    // wenn die Daten anonymisiert/leer sind oder die Filter noch nicht gesetzt wurden.
+    // Aber für den ersten Testlauf laden wir die Liste.
     await performSearch();
+  } catch (error) {
+    console.error('Fehler beim Initialisieren der Suche:', error);
   } finally {
     loading.value = false;
   }

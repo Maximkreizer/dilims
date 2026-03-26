@@ -65,9 +65,11 @@ export const api = {
       results = results.filter(p => {
         const searchTerms: string[] = [];
 
-        searchTerms.push(p.ProjektNr);
-        searchTerms.push(p.Aufgaben);
-        searchTerms.push(p.Projektstand);
+        if (p.ProjektNr) searchTerms.push(p.ProjektNr);
+        if (p.Aufgaben) searchTerms.push(p.Aufgaben);
+        if (p.Projektstand) searchTerms.push(p.Projektstand);
+        if (p.ProjektNr_lang) searchTerms.push(p.ProjektNr_lang);
+        if (p.Projekttyp) searchTerms.push(p.Projekttyp);
 
         const statusMap: Record<string, string> = {
           'in_progress': 'In Bearbeitung',
@@ -138,21 +140,15 @@ export const api = {
       results = results.filter(p => p.AB_P_Kundennummer === Number(filters.workgroupId));
     }
     if (filters.projectNumber && filters.projectNumber !== filters.generalSearch) {
-      results = results.filter(p => p.ProjektNr.toLowerCase().includes(filters.projectNumber.toLowerCase()));
+      results = results.filter(p => p.ProjektNr && p.ProjektNr.toLowerCase().includes(filters.projectNumber.toLowerCase()));
     }
     if (filters.projectType) { 
        const type = filters.projectType as keyof Project;
-       results = results.filter(p => p[type] === true); 
-    }
-    if (filters.date) {
-       results = results.filter(p => 
-         (p.Abgabedatum && p.Abgabedatum.startsWith(filters.date)) ||
-         (p.estimatedCompletionDate && p.estimatedCompletionDate.startsWith(filters.date))
-       );
+       results = results.filter(p => (p as any)[type] === true); 
     }
     if (filters.finalCheck) { results = results.filter(p => p.Abschlusskontrolle === true); }
     if (filters.isLongTermProject) { results = results.filter(p => p.Langzeitprojekt === true); }
-    if (filters.isSfb118Project) { results = results.filter(p => p.isSfb118Project === true); }
+    if (filters.isSfb118Project) { results = results.filter(p => (p as any).isSfb118Project === true); }
 
     return results;
   },
