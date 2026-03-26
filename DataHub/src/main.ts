@@ -19,6 +19,9 @@ import router from './router';
 import { createPinia } from 'pinia';
 
 // Vuetify-spezifische Imports
+import './assets/didata-styles/entry.css';
+import './assets/didata-styles/default.css';
+import './assets/didata-styles/FormRendering.css';
 import 'vuetify/styles';
 import { createVuetify } from 'vuetify';
 import * as components from 'vuetify/components';
