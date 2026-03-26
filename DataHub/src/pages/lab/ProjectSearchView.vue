@@ -8,7 +8,7 @@
           
           <!-- Haupt-Suchleiste -->
           <div class="d-flex align-center ga-2 mb-2">
-            <v-text-field
+            <DidataTextField
               v-model="filters.generalSearch"
               label="Allgemeine Suche"
               clearable
@@ -19,7 +19,7 @@
               class="flex-grow-1"
               @keydown.enter="performSearch"
               @click:clear="performSearch"
-            ></v-text-field>
+            ></DidataTextField>
             <v-btn color="primary" height="40" prepend-icon="mdi-magnify" @click="performSearch" :loading="loading">Search</v-btn>
           </div>
 
@@ -31,16 +31,16 @@
               </v-expansion-panel-title>
               <v-expansion-panel-text class="pt-4">
                  <v-row dense>
-                    <v-col cols="12" md="3"><v-select v-model="filters.projectType" label="Projekttyp" :items="options.projectTypes" item-title="title" item-value="value" density="compact" variant="outlined"></v-select></v-col>
-                    <v-col cols="12" md="3"><v-select v-model="filters.status" label="Status" :items="options.statuses" item-title="title" item-value="value" density="compact" variant="outlined"></v-select></v-col>
-                    <v-col cols="12" md="3"><v-select v-model="filters.technicalAssistantId" label="TA" :items="options.technicalAssistants" item-title="fullName" item-value="id" density="compact" variant="outlined"></v-select></v-col>
+                    <v-col cols="12" md="3"><DidataSelect v-model="filters.projectType" label="Projekttyp" :items="options.projectTypes" item-title="title" item-value="value" density="compact" variant="outlined"></DidataSelect></v-col>
+                    <v-col cols="12" md="3"><DidataSelect v-model="filters.status" label="Status" :items="options.statuses" item-title="title" item-value="value" density="compact" variant="outlined"></DidataSelect></v-col>
+                    <v-col cols="12" md="3"><DidataSelect v-model="filters.technicalAssistantId" label="TA" :items="options.technicalAssistants" item-title="fullName" item-value="id" density="compact" variant="outlined"></DidataSelect></v-col>
                     
                     <!-- KORREKTUR: Variable muss cooperationPartnerId heißen, damit API sie findet -->
-                    <v-col cols="12" md="3"><v-select v-model="filters.cooperationPartnerId" label="Arzt" :items="options.cooperationPartners" item-title="fullName" item-value="id" density="compact" variant="outlined"></v-select></v-col>
+                    <v-col cols="12" md="3"><DidataSelect v-model="filters.cooperationPartnerId" label="Arzt" :items="options.cooperationPartners" item-title="fullName" item-value="id" density="compact" variant="outlined"></DidataSelect></v-col>
                     
-                    <v-col cols="12" md="4"><v-text-field v-model="filters.projectNumber" label="Projekt-Nr." density="compact" variant="outlined"></v-text-field></v-col>
-                    <v-col cols="12" md="4"><v-select v-model="filters.workgroupId" label="Arbeitsgruppe" :items="options.workgroups" item-title="name" item-value="id" density="compact" variant="outlined"></v-select></v-col>
-                    <v-col cols="12" md="4"><v-text-field v-model="filters.date" type="date" label="Datum" density="compact" variant="outlined"></v-text-field></v-col>
+                    <v-col cols="12" md="4"><DidataTextField v-model="filters.projectNumber" label="Projekt-Nr." density="compact" variant="outlined"></DidataTextField></v-col>
+                    <v-col cols="12" md="4"><DidataSelect v-model="filters.workgroupId" label="Arbeitsgruppe" :items="options.workgroups" item-title="name" item-value="id" density="compact" variant="outlined"></DidataSelect></v-col>
+                    <v-col cols="12" md="4"><DidataTextField v-model="filters.date" type="date" label="Datum" density="compact" variant="outlined"></DidataTextField></v-col>
                     
                     <v-col cols="12">
                       <div class="d-flex flex-wrap ga-6">

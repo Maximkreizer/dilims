@@ -45,23 +45,23 @@
         <v-divider></v-divider>
         <v-card-text class="flex-grow-1" style="overflow-y: auto;">
           <!-- Gemeinsame Felder -->
-          <v-textarea v-model="activeService.remarks" label="Bemerkung" rows="2" variant="outlined" class="mb-4"></v-textarea>
+          <DidataTextarea v-model="activeService.remarks" label="Bemerkung" rows="2" variant="outlined" class="mb-4"></DidataTextarea>
           <!-- ... (Hier könnten weitere gemeinsame Felder wie Abgabedatum hin) ... -->
           <v-divider class="my-6"></v-divider>
           
           <!-- Spezifische Felder -->
           <div v-if="activeService.serviceType === 'ihc'">
-            <v-text-field v-model.number="activeService.slideCount" label="Anzahl IHC Schnitte" type="number" variant="outlined"></v-text-field>
-            <v-select v-model="activeService.stainingDevice" label="Färbegerät" :items="ihcStainingDevices" variant="outlined" class="mt-4"></v-select>
+            <DidataTextField v-model.number="activeService.slideCount" label="Anzahl IHC Schnitte" type="number" variant="outlined"></DidataTextField>
+            <DidataSelect v-model="activeService.stainingDevice" label="Färbegerät" :items="ihcStainingDevices" variant="outlined" class="mt-4"></DidataSelect>
           </div>
           <div v-if="activeService.serviceType === 'paraffin_sections'">
-             <v-text-field v-model.number="activeService.sampleCount" label="Anzahl Proben" type="number" variant="outlined"></v-text-field>
-             <v-text-field v-model.number="activeService.unstainedSectionsPerSample" label="OT pro Probe (ohne HE)" type="number" variant="outlined" class="mt-4"></v-text-field>
+             <DidataTextField v-model.number="activeService.sampleCount" label="Anzahl Proben" type="number" variant="outlined"></DidataTextField>
+             <DidataTextField v-model.number="activeService.unstainedSectionsPerSample" label="OT pro Probe (ohne HE)" type="number" variant="outlined" class="mt-4"></DidataTextField>
              <!-- Fügen Sie hier weitere Paraffin-Felder hinzu -->
           </div>
           <!-- ... Fügen Sie hier v-if Blöcke für JEDEN anderen Service-Typ mit Feldern hinzu ... -->
           <div v-if="activeService.serviceType === 'paraffin_embedding'">
-            <v-text-field v-model.number="activeService.count" label="Anzahl Einbettungen" type="number" variant="outlined"></v-text-field>
+            <DidataTextField v-model.number="activeService.count" label="Anzahl Einbettungen" type="number" variant="outlined"></DidataTextField>
           </div>
 
         </v-card-text>

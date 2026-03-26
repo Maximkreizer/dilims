@@ -19,7 +19,7 @@
         <v-card border>
           <v-card-text>
             <!-- Projekttyp -->
-            <v-select
+            <DidataSelect
               v-model="selectedProjectType"
               :items="props.projectTypes"
               item-title="title"
@@ -28,26 +28,26 @@
               density="compact"
               variant="outlined"
               class="mb-4"
-            ></v-select>
+            ></DidataSelect>
             
             <!-- ProjektNr & Folgeprojekt -->
             <div class="d-flex align-center ga-4 mb-4">
-              <v-text-field v-model="formData.projectNumber" label="Projekt-Nr." density="compact" variant="outlined" hide-details></v-text-field>
+              <DidataTextField v-model="formData.projectNumber" label="Projekt-Nr." density="compact" variant="outlined" hide-details></DidataTextField>
               <v-checkbox v-model="formData.isFollowUpProject" label="Folgeprojekt" density="compact" hide-details></v-checkbox>
             </div>
 
             <!-- Bearbeitung -->
-            <v-select v-model="formData.status" label="Bearbeitung" :items="props.statusOptions" item-title="title" item-value="value" density="compact" variant="outlined" class="mb-4"></v-select>
+            <DidataSelect v-model="formData.status" label="Bearbeitung" :items="props.statusOptions" item-title="title" item-value="value" density="compact" variant="outlined" class="mb-4"></DidataSelect>
             
             <!-- Aufgaben -->
-            <v-textarea v-model="formData.taskDescription" label="Aufgaben" rows="3" variant="outlined" class="mb-4"></v-textarea>
+            <DidataTextarea v-model="formData.taskDescription" label="Aufgaben" rows="3" variant="outlined" class="mb-4"></DidataTextarea>
 
             <!-- TA & Arzt -->
-            <v-select v-model="formData.technicalAssistantId" label="TA" :items="props.assistantOptions" item-title="fullName" item-value="id" density="compact" variant="outlined" class="mb-4"></v-select>
-            <v-select v-model="formData.cooperationPartnerId" label="Arzt / Koop.-Partner" :items="props.partnerOptions" item-title="fullName" item-value="id" density="compact" variant="outlined" class="mb-4"></v-select>
+            <DidataSelect v-model="formData.technicalAssistantId" label="TA" :items="props.assistantOptions" item-title="fullName" item-value="id" density="compact" variant="outlined" class="mb-4"></DidataSelect>
+            <DidataSelect v-model="formData.cooperationPartnerId" label="Arzt / Koop.-Partner" :items="props.partnerOptions" item-title="fullName" item-value="id" density="compact" variant="outlined" class="mb-4"></DidataSelect>
 
             <!-- NEUES FELD: Abgabedatum -->
-            <v-text-field v-model="completionDateForInput" type="date" label="Ganzes Projekt Abgeschlossen" density="compact" variant="outlined" hide-details class="mb-4"></v-text-field>
+            <DidataTextField v-model="completionDateForInput" type="date" label="Ganzes Projekt Abgeschlossen" density="compact" variant="outlined" hide-details class="mb-4"></DidataTextField>
 
             <!-- NEUE CHECKBOXEN -->
             <div class="d-flex flex-wrap ga-x-6">
@@ -57,8 +57,8 @@
             
             <!-- Arbeitsgruppe -->
             <div class="d-flex align-center ga-4 mt-4">
-              <v-select v-model="formData.workgroupId" label="Arbeitsgruppe" :items="props.workgroupOptions" item-title="name" item-value="id" density="compact" variant="outlined" hide-details></v-select>
-              <v-text-field :model-value="formData.workgroupId" label="ID" density="compact" variant="outlined" readonly hide-details style="max-width: 80px;"></v-text-field>
+              <DidataSelect v-model="formData.workgroupId" label="Arbeitsgruppe" :items="props.workgroupOptions" item-title="name" item-value="id" density="compact" variant="outlined" hide-details></DidataSelect>
+              <DidataTextField :model-value="formData.workgroupId" label="ID" density="compact" variant="outlined" readonly hide-details style="max-width: 80px;"></DidataTextField>
             </div>
           </v-card-text>
         </v-card>
@@ -80,27 +80,27 @@
               Hole Daten aus Antragsbearbeitung
             </v-btn>
             <!-- FÜGEN SIE HIER UND BEI DEN FOLGENDEN FELDER 'disabled' HINZU -->
-            <v-select label="AB_Studie" v-model="formData.applicationStudy" readonly disabled density="compact" variant="outlined" class="mb-4"></v-select>
-            <v-text-field label="AB_Bearbeitung" v-model="formData.applicationProcessingStatus" readonly disabled density="compact" variant="outlined" class="mb-4"></v-text-field>
+            <DidataSelect label="AB_Studie" v-model="formData.applicationStudy" readonly disabled density="compact" variant="outlined" class="mb-4"></DidataSelect>
+            <DidataTextField label="AB_Bearbeitung" v-model="formData.applicationProcessingStatus" readonly disabled density="compact" variant="outlined" class="mb-4"></DidataTextField>
             
             <!-- Diese zwei bleiben editierbar -->
-            <v-textarea label="AB_Projekttitel" v-model="formData.applicationTitle" density="compact" variant="outlined" rows="2" class="mb-4"></v-textarea>
-            <v-textarea label="AB_Anforderung" v-model="formData.applicationRequest" density="compact" variant="outlined" rows="3" class="mb-4"></v-textarea>
+            <DidataTextarea label="AB_Projekttitel" v-model="formData.applicationTitle" density="compact" variant="outlined" rows="2" class="mb-4"></DidataTextarea>
+            <DidataTextarea label="AB_Anforderung" v-model="formData.applicationRequest" density="compact" variant="outlined" rows="3" class="mb-4"></DidataTextarea>
             
-            <v-text-field label="AB_Koop_Partner" v-model="formData.applicationCoopPartner" readonly disabled density="compact" variant="outlined" class="mb-4"></v-text-field>
+            <DidataTextField label="AB_Koop_Partner" v-model="formData.applicationCoopPartner" readonly disabled density="compact" variant="outlined" class="mb-4"></DidataTextField>
             
             <v-row>
-              <v-col cols="8"><v-text-field label="AB_Rückmeldung" v-model="formData.applicationFeedback" readonly disabled density="compact" variant="outlined" hide-details></v-text-field></v-col>
-              <v-col cols="4"><v-text-field label="AB_Genehmigung" v-model="formData.applicationApproval" readonly disabled density="compact" variant="outlined" hide-details></v-text-field></v-col>
+              <v-col cols="8"><DidataTextField label="AB_Rückmeldung" v-model="formData.applicationFeedback" readonly disabled density="compact" variant="outlined" hide-details></DidataTextField></v-col>
+              <v-col cols="4"><DidataTextField label="AB_Genehmigung" v-model="formData.applicationApproval" readonly disabled density="compact" variant="outlined" hide-details></DidataTextField></v-col>
             </v-row>
             
             <v-row class="mt-2">
-              <v-col cols="8"><v-text-field label="AB_Abgabe" v-model="formData.applicationCompletionDate" readonly disabled density="compact" variant="outlined" hide-details></v-text-field></v-col>
+              <v-col cols="8"><DidataTextField label="AB_Abgabe" v-model="formData.applicationCompletionDate" readonly disabled density="compact" variant="outlined" hide-details></DidataTextField></v-col>
               <v-col cols="4" class="d-flex align-center"><v-checkbox v-model="formData.applicationIsLongTermProject" label="Langzeit" readonly disabled density="compact" hide-details></v-checkbox></v-col>
             </v-row>
 
-            <v-text-field label="AB_Projektleiter" v-model="formData.applicationProjectLead" readonly disabled density="compact" variant="outlined" class="mt-4"></v-text-field>
-            <v-text-field label="AB_Ansprechpartner" v-model="formData.applicationContactPerson" readonly disabled density="compact" variant="outlined" class="mt-2"></v-text-field>
+            <DidataTextField label="AB_Projektleiter" v-model="formData.applicationProjectLead" readonly disabled density="compact" variant="outlined" class="mt-4"></DidataTextField>
+            <DidataTextField label="AB_Ansprechpartner" v-model="formData.applicationContactPerson" readonly disabled density="compact" variant="outlined" class="mt-2"></DidataTextField>
           </v-card-text>
         </v-card>
       </v-col>

@@ -75,7 +75,7 @@
 
       <template v-slot:item.smartCount="{ item }">
         <div @click="startEdit(item, 'smartCount')" class="editable-cell">
-          <v-text-field 
+          <DidataTextField 
             v-if="editingCellId === item.id + '-smartCount'" 
             v-model.number="editingValue" 
             type="number"
@@ -83,21 +83,21 @@
             @keydown.enter="saveSmartCount(item)" 
             @blur="cancelEdit"
             @click.stop
-          ></v-text-field>
+          ></DidataTextField>
           <span v-else>{{ getSmartCount(item) }}</span>
         </div>
       </template>
 
       <template v-slot:item.remarks="{ item }">
         <div @click="startEdit(item, 'remarks')" class="editable-cell text-wrap">
-          <v-text-field v-if="editingCellId === item.id + '-remarks'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'remarks')" @blur="cancelEdit" @click.stop></v-text-field>
+          <DidataTextField v-if="editingCellId === item.id + '-remarks'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'remarks')" @blur="cancelEdit" @click.stop></DidataTextField>
           <span v-else>{{ item.remarks || '-' }}</span>
         </div>
       </template>
 
       <template v-slot:item.deliveryDate="{ item }">
         <div @click="startEdit(item, 'deliveryDate')" class="editable-cell">
-          <v-text-field v-if="editingCellId === item.id + '-deliveryDate'" v-model="editingValue" type="date" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'deliveryDate')" @blur="cancelEdit" @click.stop></v-text-field>
+          <DidataTextField v-if="editingCellId === item.id + '-deliveryDate'" v-model="editingValue" type="date" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'deliveryDate')" @blur="cancelEdit" @click.stop></DidataTextField>
           <span v-else>{{ formatDate(item.deliveryDate) }}</span>
         </div>
       </template>

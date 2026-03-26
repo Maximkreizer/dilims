@@ -10,6 +10,9 @@ Funktionalität:
 
 import { createApp } from 'vue';
 import App from './App.vue';
+import DidataTextField from './didata-mocks/DidataTextField.vue';
+import DidataSelect from './didata-mocks/DidataSelect.vue';
+import DidataTextarea from './didata-mocks/DidataTextarea.vue';
 import router from './router';
 
 // KORREKTUR 1: Importieren Sie 'createPinia' direkt aus der Pinia-Bibliothek
@@ -38,6 +41,10 @@ const pinia = createPinia();
 app.use(pinia); // Pinia zuerst, damit Stores in Komponenten/Routen verfügbar sind
 app.use(router);
 app.use(vuetify);
+
+app.component('DidataTextField', DidataTextField);
+app.component('DidataSelect', DidataSelect);
+app.component('DidataTextarea', DidataTextarea);
 
 // Mounten Sie die App an das DOM
 app.mount('#app');

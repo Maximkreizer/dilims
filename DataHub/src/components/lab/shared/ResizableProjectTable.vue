@@ -82,7 +82,7 @@
           :class="readonly ? 'readonly-cell' : 'editable-cell'" 
           class="text-wrap"
         >
-          <v-text-field v-if="editingCellId === item.id + '-projectNumber'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'projectNumber')" @blur="cancelEdit"></v-text-field>
+          <DidataTextField v-if="editingCellId === item.id + '-projectNumber'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'projectNumber')" @blur="cancelEdit"></DidataTextField>
           <span v-else>{{ item.projectNumber }}</span>
         </div>
       </template>
@@ -92,7 +92,7 @@
           @click.stop="startEdit(item, 'status')" 
           :class="readonly ? 'readonly-cell' : 'editable-cell'"
         >
-          <v-select v-if="editingCellId === item.id + '-status'" v-model="editingValue" :items="options.statuses" item-title="title" item-value="value" variant="plain" density="compact" hide-details menu-icon="" open-on-mount @update:model-value="saveEdit(item, 'status')"></v-select>
+          <DidataSelect v-if="editingCellId === item.id + '-status'" v-model="editingValue" :items="options.statuses" item-title="title" item-value="value" variant="plain" density="compact" hide-details menu-icon="" open-on-mount @update:model-value="saveEdit(item, 'status')"></DidataSelect>
           <v-chip v-else size="x-small" :color="getStatusColor(item.status)" class="px-1" style="max-width: 100%;"><span class="text-truncate">{{ getStatusText(item.status) }}</span></v-chip>
         </div>
       </template>
@@ -103,7 +103,7 @@
           :class="readonly ? 'readonly-cell' : 'editable-cell'" 
           class="text-wrap"
         >
-          <v-text-field v-if="editingCellId === item.id + '-taskDescription'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'taskDescription')" @blur="cancelEdit"></v-text-field>
+          <DidataTextField v-if="editingCellId === item.id + '-taskDescription'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'taskDescription')" @blur="cancelEdit"></DidataTextField>
           <span v-else>{{ item.taskDescription || '...' }}</span>
         </div>
       </template>
@@ -113,7 +113,7 @@
           @click.stop="startEdit(item, 'technicalAssistantId')" 
           :class="readonly ? 'readonly-cell' : 'editable-cell'"
         >
-          <v-select v-if="editingCellId === item.id + '-technicalAssistantId'" v-model="editingValue" :items="options.technicalAssistants" item-title="fullName" item-value="id" variant="plain" density="compact" hide-details menu-icon="" open-on-mount @update:model-value="saveEdit(item, 'technicalAssistantId')"></v-select>
+          <DidataSelect v-if="editingCellId === item.id + '-technicalAssistantId'" v-model="editingValue" :items="options.technicalAssistants" item-title="fullName" item-value="id" variant="plain" density="compact" hide-details menu-icon="" open-on-mount @update:model-value="saveEdit(item, 'technicalAssistantId')"></DidataSelect>
           <span v-else class="text-truncate">{{ taMap[item.technicalAssistantId] || '-' }}</span>
         </div>
       </template>

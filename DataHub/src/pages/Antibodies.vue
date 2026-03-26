@@ -8,7 +8,7 @@
           
           <!-- HAUPT-SUCHLEISTE -->
           <div class="d-flex align-center ga-2 mb-4">
-            <v-text-field
+            <DidataTextField
               v-model="filters.generalSearch"
               :label="searchLabel"
               clearable
@@ -19,7 +19,7 @@
               class="flex-grow-1"
               @keydown.enter="performSearch"
               @click:clear="performSearch"
-            ></v-text-field>
+            ></DidataTextField>
             <v-btn color="primary" height="40" prepend-icon="mdi-magnify" @click="performSearch" :loading="loading">Search</v-btn>
           </div>
 
@@ -46,27 +46,27 @@
                   <!-- 1. ANTIKÖRPER SUCHE -->
                   <v-window-item value="antibody" class="pa-1">
                     <v-row dense>
-                      <v-col cols="12" md="2"><v-text-field v-model="filters.antibody.akId" label="AK_ID" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="2"><v-text-field v-model="filters.antibody.refNr" label="Ref-Nr" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="3"><v-text-field v-model="filters.antibody.name" label="AK_Name" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="2"><v-text-field v-model="filters.antibody.lotNr" label="Lot-Nr" density="compact" variant="outlined"></v-text-field></v-col>
+                      <v-col cols="12" md="2"><DidataTextField v-model="filters.antibody.akId" label="AK_ID" density="compact" variant="outlined"></DidataTextField></v-col>
+                      <v-col cols="12" md="2"><DidataTextField v-model="filters.antibody.refNr" label="Ref-Nr" density="compact" variant="outlined"></DidataTextField></v-col>
+                      <v-col cols="12" md="3"><DidataTextField v-model="filters.antibody.name" label="AK_Name" density="compact" variant="outlined"></DidataTextField></v-col>
+                      <v-col cols="12" md="2"><DidataTextField v-model="filters.antibody.lotNr" label="Lot-Nr" density="compact" variant="outlined"></DidataTextField></v-col>
                       <!-- Hersteller ist jetzt null-safe im Script -->
-                      <v-col cols="12" md="3"><v-select v-model="filters.antibody.manufacturer" label="Hersteller" :items="options.manufacturers" density="compact" variant="outlined"></v-select></v-col>
+                      <v-col cols="12" md="3"><DidataSelect v-model="filters.antibody.manufacturer" label="Hersteller" :items="options.manufacturers" density="compact" variant="outlined"></DidataSelect></v-col>
                       
-                      <v-col cols="12" md="3"><v-select v-model="filters.antibody.owner" label="Eigentümer" :items="options.owners" density="compact" variant="outlined"></v-select></v-col>
-                      <v-col cols="12" md="3"><v-select v-model="filters.antibody.status" label="Status" :items="['Aktiv', 'Leer', 'Verworfen']" density="compact" variant="outlined"></v-select></v-col>
+                      <v-col cols="12" md="3"><DidataSelect v-model="filters.antibody.owner" label="Eigentümer" :items="options.owners" density="compact" variant="outlined"></DidataSelect></v-col>
+                      <v-col cols="12" md="3"><DidataSelect v-model="filters.antibody.status" label="Status" :items="['Aktiv', 'Leer', 'Verworfen']" density="compact" variant="outlined"></DidataSelect></v-col>
                     </v-row>
                   </v-window-item>
 
                   <!-- 2. PROJEKTE SUCHE -->
                   <v-window-item value="project" class="pa-1">
                     <v-row dense>
-                      <v-col cols="12" md="3"><v-select v-model="filters.project.status" label="Status" :items="options.projectStatuses" density="compact" variant="outlined"></v-select></v-col>
-                      <v-col cols="12" md="3"><v-select v-model="filters.project.type" label="Projekttyp" :items="['NCT', 'pCCC', 'DZiF', 'CMCP']" density="compact" variant="outlined"></v-select></v-col>
-                      <v-col cols="12" md="3"><v-select v-model="filters.project.ta" label="Mitarbeiter (TA)" :items="['MK', 'MF', 'MA']" density="compact" variant="outlined"></v-select></v-col>
-                      <v-col cols="12" md="3"><v-select v-model="filters.project.doctor" label="Ärzte" :items="['Dr. Sommerfeld', 'Prof. Conrad', 'Dr. Brunner']" density="compact" variant="outlined"></v-select></v-col>
+                      <v-col cols="12" md="3"><DidataSelect v-model="filters.project.status" label="Status" :items="options.projectStatuses" density="compact" variant="outlined"></DidataSelect></v-col>
+                      <v-col cols="12" md="3"><DidataSelect v-model="filters.project.type" label="Projekttyp" :items="['NCT', 'pCCC', 'DZiF', 'CMCP']" density="compact" variant="outlined"></DidataSelect></v-col>
+                      <v-col cols="12" md="3"><DidataSelect v-model="filters.project.ta" label="Mitarbeiter (TA)" :items="['MK', 'MF', 'MA']" density="compact" variant="outlined"></DidataSelect></v-col>
+                      <v-col cols="12" md="3"><DidataSelect v-model="filters.project.doctor" label="Ärzte" :items="['Dr. Sommerfeld', 'Prof. Conrad', 'Dr. Brunner']" density="compact" variant="outlined"></DidataSelect></v-col>
 
-                      <v-col cols="12" md="3"><v-text-field v-model="filters.project.number" label="Projektnummer" density="compact" variant="outlined"></v-text-field></v-col>
+                      <v-col cols="12" md="3"><DidataTextField v-model="filters.project.number" label="Projektnummer" density="compact" variant="outlined"></DidataTextField></v-col>
                       
                       <v-col cols="12" md="9" class="d-flex align-center ga-4">
                         <v-checkbox v-model="filters.project.finalCheck" label="Abschlusskontrolle" density="compact" hide-details></v-checkbox>
@@ -77,21 +77,21 @@
                   <!-- 3. FÄRBELAUF SUCHE -->
                   <v-window-item value="run" class="pa-1">
                     <v-row dense>
-                      <v-col cols="12" md="2"><v-text-field v-model="filters.run.akId" label="AK_ID" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="2"><v-text-field v-model="filters.run.runId" label="Färbe-ID" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="3"><v-text-field v-model="filters.run.akName" label="AK_Name" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="2"><v-text-field v-model="filters.run.date" label="Färbe-Datum" type="date" density="compact" variant="outlined"></v-text-field></v-col>
-                      <v-col cols="12" md="3"><v-select v-model="filters.run.tissue" label="Gewebe" :items="['Tonsille', 'Leber', 'Niere']" density="compact" variant="outlined"></v-select></v-col>
+                      <v-col cols="12" md="2"><DidataTextField v-model="filters.run.akId" label="AK_ID" density="compact" variant="outlined"></DidataTextField></v-col>
+                      <v-col cols="12" md="2"><DidataTextField v-model="filters.run.runId" label="Färbe-ID" density="compact" variant="outlined"></DidataTextField></v-col>
+                      <v-col cols="12" md="3"><DidataTextField v-model="filters.run.akName" label="AK_Name" density="compact" variant="outlined"></DidataTextField></v-col>
+                      <v-col cols="12" md="2"><DidataTextField v-model="filters.run.date" label="Färbe-Datum" type="date" density="compact" variant="outlined"></DidataTextField></v-col>
+                      <v-col cols="12" md="3"><DidataSelect v-model="filters.run.tissue" label="Gewebe" :items="['Tonsille', 'Leber', 'Niere']" density="compact" variant="outlined"></DidataSelect></v-col>
                       
-                      <v-col cols="12" md="3"><v-select v-model="filters.run.type" label="Lauftyp" :items="['Testlauf', 'Projektlauf', 'Etablierungslauf (final)']" density="compact" variant="outlined"></v-select></v-col>
+                      <v-col cols="12" md="3"><DidataSelect v-model="filters.run.type" label="Lauftyp" :items="['Testlauf', 'Projektlauf', 'Etablierungslauf (final)']" density="compact" variant="outlined"></DidataSelect></v-col>
                     </v-row>
                   </v-window-item>
 
                   <!-- 4. BESTELLUNGEN SUCHE -->
                   <v-window-item value="order" class="pa-1">
                     <v-row dense>
-                      <v-col cols="12" md="4"><v-select v-model="filters.order.workgroup" label="AG" :items="['AG Immunologie', 'AG Onkologie']" density="compact" variant="outlined"></v-select></v-col>
-                      <v-col cols="12" md="4"><v-text-field v-model="filters.order.applicant" label="Antragsteller (Name, Vorname)" density="compact" variant="outlined"></v-text-field></v-col>
+                      <v-col cols="12" md="4"><DidataSelect v-model="filters.order.workgroup" label="AG" :items="['AG Immunologie', 'AG Onkologie']" density="compact" variant="outlined"></DidataSelect></v-col>
+                      <v-col cols="12" md="4"><DidataTextField v-model="filters.order.applicant" label="Antragsteller (Name, Vorname)" density="compact" variant="outlined"></DidataTextField></v-col>
                     </v-row>
                   </v-window-item>
 

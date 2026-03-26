@@ -6,18 +6,18 @@
       <v-card-title class="text-subtitle-2 font-weight-bold bg-grey-lighten-4 py-2">Allgemein</v-card-title>
       <v-card-text class="pt-4">
         <v-row dense>
-          <v-col cols="12" md="3"><v-text-field v-model="formData.projectNumber" label="Projekt" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="12" md="3"><v-text-field v-model="formData.runId" label="Lauf n berechnen (ID)" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="12" md="3"><v-select v-model="formData.technicalAssistantId" label="TA" :items="assistantOptions" item-title="fullName" item-value="id" density="compact" variant="outlined"></v-select></v-col>
-          <v-col cols="12" md="3"><v-select v-model="formData.stainingType" label="Färb.-Typ" :items="['IHC', 'HE', 'Spezial']" density="compact" variant="outlined"></v-select></v-col>
+          <v-col cols="12" md="3"><DidataTextField v-model="formData.projectNumber" label="Projekt" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="12" md="3"><DidataTextField v-model="formData.runId" label="Lauf n berechnen (ID)" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="12" md="3"><DidataSelect v-model="formData.technicalAssistantId" label="TA" :items="assistantOptions" item-title="fullName" item-value="id" density="compact" variant="outlined"></DidataSelect></v-col>
+          <v-col cols="12" md="3"><DidataSelect v-model="formData.stainingType" label="Färb.-Typ" :items="['IHC', 'HE', 'Spezial']" density="compact" variant="outlined"></DidataSelect></v-col>
           
-          <v-col cols="12" md="3"><v-text-field v-model="dateInput" type="date" label="Datum" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="12" md="3"><v-text-field v-model="formData.device" label="Gerät" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="12" md="3"><v-text-field v-model="formData.kit" label="KIT" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="12" md="3"><v-text-field v-model.number="formData.cutCount" label="Anzahl Schnitte" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+          <v-col cols="12" md="3"><DidataTextField v-model="dateInput" type="date" label="Datum" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="12" md="3"><DidataTextField v-model="formData.device" label="Gerät" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="12" md="3"><DidataTextField v-model="formData.kit" label="KIT" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="12" md="3"><DidataTextField v-model.number="formData.cutCount" label="Anzahl Schnitte" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
           
-          <v-col cols="12" md="6"><v-text-field v-model="formData.tissue" label="Gewebe" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="12" md="6"><v-text-field v-model="formData.material" label="Material" density="compact" variant="outlined"></v-text-field></v-col>
+          <v-col cols="12" md="6"><DidataTextField v-model="formData.tissue" label="Gewebe" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="12" md="6"><DidataTextField v-model="formData.material" label="Material" density="compact" variant="outlined"></DidataTextField></v-col>
         </v-row>
       </v-card-text>
     </v-card>
@@ -27,9 +27,9 @@
       <v-card-title class="text-subtitle-2 font-weight-bold bg-grey-lighten-4 py-2">Vorbehandlung</v-card-title>
       <v-card-text class="pt-4">
         <v-row dense>
-          <v-col cols="12" md="4"><v-text-field v-model="formData.pretreatDemasking" label="Demaskierung" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="12" md="4"><v-text-field v-model="formData.pretreatReagent" label="Reagenz" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="12" md="4"><v-text-field v-model="formData.pretreatTime" label="Vorbehandlungszeit" density="compact" variant="outlined"></v-text-field></v-col>
+          <v-col cols="12" md="4"><DidataTextField v-model="formData.pretreatDemasking" label="Demaskierung" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="12" md="4"><DidataTextField v-model="formData.pretreatReagent" label="Reagenz" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="12" md="4"><DidataTextField v-model="formData.pretreatTime" label="Vorbehandlungszeit" density="compact" variant="outlined"></DidataTextField></v-col>
         </v-row>
       </v-card-text>
     </v-card>
@@ -50,8 +50,8 @@
         <v-card border flat class="h-100">
           <v-card-title class="text-subtitle-2 font-weight-bold bg-grey-lighten-4 py-2">VENTANA-OptiView</v-card-title>
           <v-card-text class="pt-4">
-            <v-text-field v-model="formData.ventanaHqLinkerTime" label="HQ_LINKER_ZEIT" density="compact" variant="outlined"></v-text-field>
-            <v-text-field v-model="formData.ventanaHqMultiTime" label="HQ_MULTI_ZEIT" density="compact" variant="outlined"></v-text-field>
+            <DidataTextField v-model="formData.ventanaHqLinkerTime" label="HQ_LINKER_ZEIT" density="compact" variant="outlined"></DidataTextField>
+            <DidataTextField v-model="formData.ventanaHqMultiTime" label="HQ_MULTI_ZEIT" density="compact" variant="outlined"></DidataTextField>
             <v-checkbox v-model="formData.ventanaPeroxidaseInhibitor" label="PEROXIDASE HEMMER" density="compact" hide-details></v-checkbox>
           </v-card-text>
         </v-card>
@@ -65,11 +65,11 @@
         <!-- Primär AK -->
         <div class="text-caption font-weight-bold text-grey-darken-1 mb-2">Primär-Antikörper</div>
         <v-row dense>
-          <v-col cols="6" md="2"><v-text-field v-model="formData.primaryAkLotId" label="PRI_AK_LOT_ID" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="6" md="2"><v-text-field v-model="formData.primaryAkId" label="P_AK_ID" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="12" md="4"><v-text-field v-model="formData.primaryAkName" label="PRI_AK_NAME" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="6" md="2"><v-text-field v-model="formData.primaryDilution" label="PRI_VERDÜNNUNG" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="6" md="2"><v-text-field v-model="formData.primaryIncubationTime" label="PRI_INKUBATIONSZEIT" density="compact" variant="outlined"></v-text-field></v-col>
+          <v-col cols="6" md="2"><DidataTextField v-model="formData.primaryAkLotId" label="PRI_AK_LOT_ID" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="6" md="2"><DidataTextField v-model="formData.primaryAkId" label="P_AK_ID" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="12" md="4"><DidataTextField v-model="formData.primaryAkName" label="PRI_AK_NAME" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="6" md="2"><DidataTextField v-model="formData.primaryDilution" label="PRI_VERDÜNNUNG" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="6" md="2"><DidataTextField v-model="formData.primaryIncubationTime" label="PRI_INKUBATIONSZEIT" density="compact" variant="outlined"></DidataTextField></v-col>
         </v-row>
         
         <v-divider class="my-3"></v-divider>
@@ -77,11 +77,11 @@
         <!-- Sekundär AK -->
         <div class="text-caption font-weight-bold text-grey-darken-1 mb-2">Sekundär-Antikörper</div>
         <v-row dense>
-          <v-col cols="6" md="2"><v-text-field v-model="formData.secondaryAkLotId" label="SEK_AK_LOT_ID" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="6" md="2"><v-text-field v-model="formData.secondaryAkId" label="S_AK_ID" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="12" md="4"><v-text-field v-model="formData.secondaryAkName" label="SEK_AK_NAME" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="6" md="2"><v-text-field v-model="formData.secondaryDilution" label="SEK_VERDÜNNUNG" density="compact" variant="outlined"></v-text-field></v-col>
-          <v-col cols="6" md="2"><v-text-field v-model="formData.secondaryIncubationTime" label="SEK_INKUBATIONSZEIT" density="compact" variant="outlined"></v-text-field></v-col>
+          <v-col cols="6" md="2"><DidataTextField v-model="formData.secondaryAkLotId" label="SEK_AK_LOT_ID" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="6" md="2"><DidataTextField v-model="formData.secondaryAkId" label="S_AK_ID" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="12" md="4"><DidataTextField v-model="formData.secondaryAkName" label="SEK_AK_NAME" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="6" md="2"><DidataTextField v-model="formData.secondaryDilution" label="SEK_VERDÜNNUNG" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="6" md="2"><DidataTextField v-model="formData.secondaryIncubationTime" label="SEK_INKUBATIONSZEIT" density="compact" variant="outlined"></DidataTextField></v-col>
         </v-row>
       </v-card-text>
     </v-card>
@@ -100,7 +100,7 @@
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <v-textarea v-model="formData.remarks" label="Bemerkung" variant="outlined" rows="3"></v-textarea>
+    <DidataTextarea v-model="formData.remarks" label="Bemerkung" variant="outlined" rows="3"></DidataTextarea>
 
   </v-form>
 </template>

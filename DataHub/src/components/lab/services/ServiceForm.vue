@@ -28,45 +28,45 @@
 
           <!-- 1. PARAFFIN SCHNITTE -->
           <template v-if="formData.serviceType === 'paraffin_sections'">
-            <v-col cols="6"><v-text-field v-model.number="formData.sampleCount" label="P_Anz_Proben" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.slidesPerSample" label="P_Anz_OT_pro_Probe (ohne HE)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heRequestor" label="P_HE_Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heTissueBank" label="P_HE_Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveSlidesCases" label="P_Archiv_Anz_Schnittpräparate (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveBlocksCases" label="P_Archiv_Anz_Blöcke (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.sampleCount" label="P_Anz_Proben" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.slidesPerSample" label="P_Anz_OT_pro_Probe (ohne HE)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.heRequestor" label="P_HE_Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.heTissueBank" label="P_HE_Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.archiveSlidesCases" label="P_Archiv_Anz_Schnittpräparate (Fälle)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.archiveBlocksCases" label="P_Archiv_Anz_Blöcke (Fälle)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
           </template>
 
           <!-- 2. PARAFFIN TUBE -->
           <template v-if="formData.serviceType === 'paraffin_tubes'">
-            <v-col cols="6"><v-text-field v-model.number="formData.sampleCount" label="P_Anz_Proben" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.tubesPerSample" label="P_Anz_Tubes_pro_Probe" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.scrollsPerTubeCount" label="P_Röllchen pro Tube" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heRequestor" label="P_HE_Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heTissueBank" label="P_HE_Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveSlidesCases" label="P_Archiv_Anz_Schnittpräparate (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveBlocksCases" label="P_Archiv_Anz_Blöcke (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.sampleCount" label="P_Anz_Proben" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.tubesPerSample" label="P_Anz_Tubes_pro_Probe" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.scrollsPerTubeCount" label="P_Röllchen pro Tube" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.heRequestor" label="P_HE_Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.heTissueBank" label="P_HE_Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.archiveSlidesCases" label="P_Archiv_Anz_Schnittpräparate (Fälle)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.archiveBlocksCases" label="P_Archiv_Anz_Blöcke (Fälle)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
           </template>
 
           <!-- 3. PARAFFIN EINBETTUNG -->
           <template v-if="formData.serviceType === 'paraffin_embedding'">
-            <v-col cols="12"><v-text-field v-model.number="formData.archiveBlocksCases" label="Anz_Einbettung" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="12"><DidataTextField v-model.number="formData.archiveBlocksCases" label="Anz_Einbettung" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
           </template>
 
           <!-- 4. KRYO SCHNITTE -->
           <template v-if="formData.serviceType === 'cryo_sections'">
-            <v-col cols="6"><v-text-field v-model.number="formData.sampleCount" label="K_Anz_Proben" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.slidesPerSample" label="K_Anz_OT_pro_Probe (ohne HE)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heRequestor" label="K_HE_Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heTissueBank" label="K_HE_Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="12"><v-text-field v-model.number="formData.archiveSampleCases" label="K_Archiv_Anz_Proben (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.sampleCount" label="K_Anz_Proben" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.slidesPerSample" label="K_Anz_OT_pro_Probe (ohne HE)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.heRequestor" label="K_HE_Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.heTissueBank" label="K_HE_Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="12"><DidataTextField v-model.number="formData.archiveSampleCases" label="K_Archiv_Anz_Proben (Fälle)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
           </template>
 
           <!-- 5. KRYO SERVICE -->
           <template v-if="formData.serviceType === 'cryo_service' || formData.serviceType === 'cryo_tubes'">
-            <v-col cols="6"><v-text-field v-model.number="formData.sampleCount" label="K_Anz_Proben" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.slidesPerSample" label="K_Anz_OT_pro_Probe (ohne HE)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heRequestor" label="K_HE-Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heTissueBank" label="K_HE-Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.sampleCount" label="K_Anz_Proben" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.slidesPerSample" label="K_Anz_OT_pro_Probe (ohne HE)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.heRequestor" label="K_HE-Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.heTissueBank" label="K_HE-Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
             
             <v-col cols="6"><v-checkbox v-model="formData.isSampleTaken" label="Probe entnommen" density="compact" hide-details></v-checkbox></v-col>
             <v-col cols="6"><v-checkbox v-model="formData.isSampleDelivered" label="Probe abgegeben" density="compact" hide-details></v-checkbox></v-col>
@@ -74,9 +74,9 @@
 
           <!-- 6. IHC -->
           <template v-if="formData.serviceType === 'ihc'">
-            <v-col cols="6"><v-text-field v-model.number="formData.slideCount" label="IHC_Schnitte" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.slideCount" label="IHC_Schnitte" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
             <v-col cols="6">
-              <v-select v-model="formData.stainingDevice" label="IHC_Färbegerät" :items="['Dako', 'Ventana', 'Bond', 'Manuell']" density="compact" variant="outlined"></v-select>
+              <DidataSelect v-model="formData.stainingDevice" label="IHC_Färbegerät" :items="['Dako', 'Ventana', 'Bond', 'Manuell']" density="compact" variant="outlined"></DidataSelect>
             </v-col>
             <v-col cols="6"><v-checkbox v-model="formData.isSampleTaken" label="Probe entnommen" density="compact" hide-details></v-checkbox></v-col>
             <v-col cols="6"><v-checkbox v-model="formData.isSampleDelivered" label="Probe abgegeben" density="compact" hide-details></v-checkbox></v-col>
@@ -91,39 +91,39 @@
 
           <!-- 8. DNA/RNA EXTRAKTION -->
           <template v-if="formData.serviceType === 'dna_rna_extraction'">
-            <v-col cols="12"><v-text-field v-model.number="formData.extractionCount" label="Anz_DNA_RNA_Extraktion" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="12"><DidataTextField v-model.number="formData.extractionCount" label="Anz_DNA_RNA_Extraktion" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
           </template>
 
           <!-- 9. PATHOLOGISCHE BEURTEILUNG -->
           <template v-if="formData.serviceType === 'pathological_assessment'">
-            <v-col cols="12"><v-text-field v-model.number="formData.assessmentCount" label="Anz_Pathol_Beurteilung" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="12"><DidataTextField v-model.number="formData.assessmentCount" label="Anz_Pathol_Beurteilung" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
           </template>
 
           <!-- 10. TMA ERSTELLUNG -->
           <template v-if="formData.serviceType === 'tma_creation'">
-            <v-col cols="6"><v-text-field v-model="formData.tmaNumber" label="TMA_Nr" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.tmaHeCount" label="TMA_Anz_HE_Schnitte" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model="formData.tmaDate" label="Datum" type="date" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.punchesPerBlock" label="TMA_Anz_Stanzen_pro_Bl" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="12"><v-text-field v-model="formData.blockNumbers" label="Blocknummern" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.patientCount" label="TMA_Anz_Patienten" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.excludedCount" label="Ausgeschieden" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="6"><DidataTextField v-model="formData.tmaNumber" label="TMA_Nr" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.tmaHeCount" label="TMA_Anz_HE_Schnitte" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model="formData.tmaDate" label="Datum" type="date" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.punchesPerBlock" label="TMA_Anz_Stanzen_pro_Bl" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="12"><DidataTextField v-model="formData.blockNumbers" label="Blocknummern" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.patientCount" label="TMA_Anz_Patienten" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.excludedCount" label="Ausgeschieden" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
           </template>
 
           <!-- 11. TMA SCHNITTE -->
           <template v-if="formData.serviceType === 'tma_sections'">
-            <v-col cols="6"><v-text-field v-model="formData.tmaName" label="TMA_NAME" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model="formData.tmaNumber" label="TMA_NR" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.blockCount" label="Anz_Bloecke" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.sectionsPerBlock" label="Anz_Schnitte_pro_Bloecke" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="12"><v-text-field v-model="formData.blockNumbers" label="Blocknummern" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="6"><DidataTextField v-model="formData.tmaName" label="TMA_NAME" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model="formData.tmaNumber" label="TMA_NR" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.blockCount" label="Anz_Bloecke" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.sectionsPerBlock" label="Anz_Schnitte_pro_Bloecke" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="12"><DidataTextField v-model="formData.blockNumbers" label="Blocknummern" density="compact" variant="outlined"></DidataTextField></v-col>
           </template>
 
           <!-- 12. VIRTUELLE MIKROSKOPIE -->
           <template v-if="formData.serviceType === 'virtual_microscopy'">
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveSlidesCases" label="P_Archiv_Anz_Schnittpräparate (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveBlocksCases" label="P_Anz_Blöcke (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="12"><v-text-field v-model.number="formData.scanCount" label="Virtuelle_Mikroskopie (Anz. Scans)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.archiveSlidesCases" label="P_Archiv_Anz_Schnittpräparate (Fälle)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><DidataTextField v-model.number="formData.archiveBlocksCases" label="P_Anz_Blöcke (Fälle)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="12"><DidataTextField v-model.number="formData.scanCount" label="Virtuelle_Mikroskopie (Anz. Scans)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
             <v-col cols="6"><v-checkbox v-model="formData.isBrightfield" label="Hellfeld" density="compact" hide-details></v-checkbox></v-col>
             <v-col cols="6"><v-checkbox v-model="formData.isFluorescence" label="Fluoreszenz" density="compact" hide-details></v-checkbox></v-col>
           </template>
@@ -139,19 +139,19 @@
           </v-col>
 
           <v-col cols="12">
-            <v-text-field label="Pathologische Beurteilung" disabled density="compact" variant="outlined"></v-text-field>
+            <DidataTextField label="Pathologische Beurteilung" disabled density="compact" variant="outlined"></DidataTextField>
           </v-col>
 
           <v-col cols="12">
-            <v-text-field v-model="formData.partialDeliveryDate" label="Datum Teilabgabe" type="date" density="compact" variant="outlined"></v-text-field>
+            <DidataTextField v-model="formData.partialDeliveryDate" label="Datum Teilabgabe" type="date" density="compact" variant="outlined"></DidataTextField>
           </v-col>
 
           <v-col cols="12">
-            <v-textarea v-model="formData.remarks" label="Bemerkung" rows="2" density="compact" variant="outlined"></v-textarea>
+            <DidataTextarea v-model="formData.remarks" label="Bemerkung" rows="2" density="compact" variant="outlined"></DidataTextarea>
           </v-col>
           
           <v-col cols="12">
-            <v-text-field v-model="deliveryDateInput" label="Abgabedatum" type="date" density="compact" variant="outlined"></v-text-field>
+            <DidataTextField v-model="deliveryDateInput" label="Abgabedatum" type="date" density="compact" variant="outlined"></DidataTextField>
           </v-col>
 
         </v-row>
