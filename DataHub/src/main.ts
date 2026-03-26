@@ -13,10 +13,8 @@ import App from './App.vue';
 import DidataTextField from './didata-mocks/DidataTextField.vue';
 import DidataSelect from './didata-mocks/DidataSelect.vue';
 import DidataTextarea from './didata-mocks/DidataTextarea.vue';
-import router from './router';
 
 // KORREKTUR 1: Importieren Sie 'createPinia' direkt aus der Pinia-Bibliothek
-import { createPinia } from 'pinia';
 
 // Vuetify-spezifische Imports
 import './assets/didata-styles/entry.css';
@@ -55,11 +53,8 @@ const vuetify = createVuetify({
 const app = createApp(App);
 
 // KORREKTUR 2: Erstellen Sie die Pinia-Instanz direkt hier
-const pinia = createPinia();
 
 // Verwenden Sie die Plugins in der richtigen Reihenfolge
-app.use(pinia); // Pinia zuerst, damit Stores in Komponenten/Routen verfügbar sind
-app.use(router);
 app.use(vuetify);
 
 app.component('DidataTextField', DidataTextField);
