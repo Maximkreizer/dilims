@@ -18,7 +18,7 @@
     </div>
     <v-divider></v-divider>
 
-    <v-card-text class="flex-grow-1">
+    <v-card-text class="flex-grow-1" style="overflow-y: auto;">
       <v-form ref="form">
         <v-row dense>
           
@@ -161,7 +161,7 @@
     <v-divider></v-divider>
     
     <v-card-actions class="pa-4 bg-grey-lighten-5">
-      <v-btn color="error" variant="tonal" @click="resetForm">Formular leeren</v-btn>
+      <v-btn variant="text" color="error" prepend-icon="mdi-delete-sweep-outline" @click="resetForm">Formular leeren</v-btn>
       <v-spacer></v-spacer>
       <v-btn variant="text" @click="$emit('cancel')">Abbrechen</v-btn>
       <v-btn color="primary" variant="flat" prepend-icon="mdi-content-save" @click="save">Speichern</v-btn>

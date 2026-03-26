@@ -188,9 +188,9 @@ const completionDateForInput = computed({
 watch(() => formData.value?.status, (newStatus) => {
   if (newStatus === 'completed' && !formData.value?.completionDate) {
     const today = new Date().toISOString().split('T')[0];
-    formData.value!.completionDate = `${today}T00:00:00.000Z`;
+    formData.value.completionDate = `${today}T00:00:00.000Z`;
   }
-});
+}, { flush: 'sync' });
 </script>
 
 <style scoped>
