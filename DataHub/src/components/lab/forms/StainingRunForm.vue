@@ -6,9 +6,9 @@
       <v-card-title class="text-subtitle-2 font-weight-bold bg-grey-lighten-4 py-2">Allgemein</v-card-title>
       <v-card-text class="pt-4">
         <v-row dense>
-          <v-col cols="12" md="3"><DidataTextField v-model="formData.projectNumber" label="Projekt" density="compact" variant="outlined"></DidataTextField></v-col>
+          <v-col cols="12" md="3"><DidataTextField v-model="formData.ProjektNr" label="Projekt" density="compact" variant="outlined"></DidataTextField></v-col>
           <v-col cols="12" md="3"><DidataTextField v-model="formData.runId" label="Lauf n berechnen (ID)" density="compact" variant="outlined"></DidataTextField></v-col>
-          <v-col cols="12" md="3"><DidataSelect v-model="formData.technicalAssistantId" label="TA" :items="assistantOptions" item-title="fullName" item-value="id" density="compact" variant="outlined"></DidataSelect></v-col>
+          <v-col cols="12" md="3"><DidataSelect v-model="formData.TA" label="TA" :items="assistantOptions" item-title="LANGTEXT" item-value="ORIGREC" density="compact" variant="outlined"></DidataSelect></v-col>
           <v-col cols="12" md="3"><DidataSelect v-model="formData.stainingType" label="Färb.-Typ" :items="['IHC', 'HE', 'Spezial']" density="compact" variant="outlined"></DidataSelect></v-col>
           
           <v-col cols="12" md="3"><DidataTextField v-model="dateInput" type="date" label="Datum" density="compact" variant="outlined"></DidataTextField></v-col>

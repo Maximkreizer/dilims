@@ -45,21 +45,21 @@ export const useProjectStore = defineStore('projects', {
     },
     prepareNewProject() {
       this.activeProject = {
-        id: 0,
-        projectNumber: '',
-        status: 'in_progress',
+        ORIGREC: 0,
+        ProjektNr: '',
+        Bearbeitung: 'in_progress',
         isNctTbb: false, isPccc: false, isDzif: false, isCmcp: false, isSfb118Project: false,
-        isFollowUpProject: false, isLongTermProject: false, finalCheck: false,
-        taskDescription: '',
-        projectStatusText: '',
-        technicalAssistantId: null,
-        cooperationPartnerId: null,
-        workgroupId: null,
+        isFollowUpProject: false, Langzeitprojekt: false, Abschlusskontrolle: false,
+        Aufgaben: '',
+        Projektstand: '',
+        TA: null,
+        Arzt: null,
+        AB_P_Kundennummer: null,
         estimatedCompletionDate: null,
         lastThursdayOfMonth: null,
-        completionDate: null,
+        Abgabedatum: null,
         services: []
-      };
+      } as any;
       this.projects = [];
       this.projectVersion++;
     },
@@ -90,8 +90,8 @@ export const useProjectStore = defineStore('projects', {
         this.activeProject = {
           ...this.activeProject,
           ...appData,
-          applicationTitle: this.activeProject.applicationTitle || '',
-          applicationRequest: this.activeProject.applicationRequest || '',
+          AB_Projekttitel: this.activeProject.AB_Projekttitel || '',
+          AB_Anforderung: this.activeProject.AB_Anforderung || '',
         };
         this.projectVersion++;
         alert('Daten aus der Antragsbearbeitung wurden erfolgreich geladen!');

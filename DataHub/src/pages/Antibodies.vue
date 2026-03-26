@@ -202,11 +202,11 @@ const currentHeaders = computed(() => {
       ];
     case 'project':
       return [...actions,
-        { title: 'Nr.', key: 'projectNumber', width: 100 },
-        { title: 'Status', key: 'status', width: 120 },
+        { title: 'Nr.', key: 'ProjektNr', width: 100 },
+        { title: 'Status', key: 'Bearbeitung', width: 120 },
         { title: 'Typ', key: 'projectType', width: 100 },
-        { title: 'Aufgabe', key: 'tasks', width: 300 },
-        { title: 'Antragsteller', key: 'applicant', width: 150 },
+        { title: 'Aufgabe', key: 'Aufgaben', width: 300 },
+        { title: 'Antragsteller', key: 'AB_P_Nachname_Vorname', width: 150 },
       ];
     case 'run':
       return [...actions,

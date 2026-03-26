@@ -76,7 +76,7 @@
       <template v-slot:item.smartCount="{ item }">
         <div @click="startEdit(item, 'smartCount')" class="editable-cell">
           <DidataTextField 
-            v-if="editingCellId === item.id + '-smartCount'" 
+            v-if="editingCellId === item.ORIGREC + '-smartCount'" 
             v-model.number="editingValue" 
             type="number"
             variant="plain" density="compact" hide-details autofocus 
@@ -90,15 +90,15 @@
 
       <template v-slot:item.remarks="{ item }">
         <div @click="startEdit(item, 'remarks')" class="editable-cell text-wrap">
-          <DidataTextField v-if="editingCellId === item.id + '-remarks'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'remarks')" @blur="cancelEdit" @click.stop></DidataTextField>
+          <DidataTextField v-if="editingCellId === item.ORIGREC + '-remarks'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'remarks')" @blur="cancelEdit" @click.stop></DidataTextField>
           <span v-else>{{ item.remarks || '-' }}</span>
         </div>
       </template>
 
-      <template v-slot:item.deliveryDate="{ item }">
-        <div @click="startEdit(item, 'deliveryDate')" class="editable-cell">
-          <DidataTextField v-if="editingCellId === item.id + '-deliveryDate'" v-model="editingValue" type="date" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'deliveryDate')" @blur="cancelEdit" @click.stop></DidataTextField>
-          <span v-else>{{ formatDate(item.deliveryDate) }}</span>
+      <template v-slot:item.Abgabedatum="{ item }">
+        <div @click="startEdit(item, 'Abgabedatum')" class="editable-cell">
+          <DidataTextField v-if="editingCellId === item.ORIGREC + '-Abgabedatum'" v-model="editingValue" type="date" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'Abgabedatum')" @blur="cancelEdit" @click.stop></DidataTextField>
+          <span v-else>{{ formatDate(item.Abgabedatum) }}</span>
         </div>
       </template>
 
@@ -148,13 +148,13 @@ const headers = ref<any[]>([
   { title: 'Dienstleistung', key: 'serviceType', width: 200 },
   { title: 'Anzahl', key: 'smartCount', width: 80, align: 'end' },
   { title: 'Bemerkung', key: 'remarks', width: 300 },
-  { title: 'Lieferdatum', key: 'deliveryDate', width: 120 },
+  { title: 'Lieferdatum', key: 'Abgabedatum', width: 120 },
 ]);
 
 // Helper
 function getIcon(type: string) { return icons[type] || 'mdi-circle-small'; }
 function getLabel(type: string) { return labels[type] || type; }
-function formatDate(iso: string | null) { return iso ? iso.split('T')[0] : '-'; }
+function formatDate(iso: string | null | undefined) { return iso ? iso.split('T')[0] : '-'; }
 
 // --- WICHTIG: KORRIGIERTE LOGIK FÜR DIE ANZAHL ---
 function getSmartCount(item: any): number | string {
@@ -239,10 +239,10 @@ function saveSmartCount(item: any) {
 }
 
 // Editing & Resizing
-const editingCellId = computed(() => editingCell.value ? editingCell.value.id + '-' + editingCell.value.field : null);
-const editingCell = ref<{ id: number, field: string } | null>(null);
+const editingCellId = computed(() => editingCell.value ? editingCell.value.ORIGREC + '-' + editingCell.value.field : null);
+const editingCell = ref<{ ORIGREC: number, field: string } | null>(null);
 const editingValue = ref<any>(null);
-function startEdit(item: ProjectService, field: string) { if(editingCell.value) cancelEdit(); editingCell.value = { id: item.id, field }; if (field === 'smartCount') { const val = getSmartCount(item); editingValue.value = val === '-' ? 0 : val; } else { editingValue.value = (item as any)[field]; } }
+function startEdit(item: ProjectService, field: string) { if(editingCell.value) cancelEdit(); editingCell.value = { ORIGREC: item.ORIGREC, field }; if (field === 'smartCount') { const val = getSmartCount(item); editingValue.value = val === '-' ? 0 : val; } else { editingValue.value = (item as any)[field]; } }
 function cancelEdit() { setTimeout(() => { editingCell.value = null; editingValue.value = null; }, 150); }
 function saveEdit(item: ProjectService, field: string) { if (editingCell.value) { (item as any)[field] = editingValue.value; emit('update', item); editingCell.value = null; } }
 const activeListeners = { move: null as any, up: null as any };

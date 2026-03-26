@@ -23,7 +23,7 @@
     <v-list v-else density="compact">
       <v-list-item
         v-for="service in services"
-        :key="service.id"
+        :key="service.ORIGREC"
         @click="$emit('select', service)"
         link
       >

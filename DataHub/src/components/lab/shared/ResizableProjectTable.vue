@@ -76,57 +76,57 @@
 
       <!-- ==================== DATEN SPALTEN (Jetzt mit Readonly-Check) ==================== -->
 
-      <template v-slot:item.projectNumber="{ item }">
+      <template v-slot:item.ProjektNr="{ item }">
         <div 
-          @click="startEdit(item, 'projectNumber')" 
+          @click="startEdit(item, 'ProjektNr')" 
           :class="readonly ? 'readonly-cell' : 'editable-cell'" 
           class="text-wrap"
         >
-          <DidataTextField v-if="editingCellId === item.id + '-projectNumber'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'projectNumber')" @blur="cancelEdit"></DidataTextField>
-          <span v-else>{{ item.projectNumber }}</span>
+          <DidataTextField v-if="editingCellId === item.ORIGREC + '-ProjektNr'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'ProjektNr')" @blur="cancelEdit"></DidataTextField>
+          <span v-else>{{ item.ProjektNr }}</span>
         </div>
       </template>
 
-      <template v-slot:item.status="{ item }">
+      <template v-slot:item.Bearbeitung="{ item }">
         <div 
-          @click.stop="startEdit(item, 'status')" 
+          @click.stop="startEdit(item, 'Bearbeitung')" 
           :class="readonly ? 'readonly-cell' : 'editable-cell'"
         >
-          <DidataSelect v-if="editingCellId === item.id + '-status'" v-model="editingValue" :items="options.statuses" item-title="title" item-value="value" variant="plain" density="compact" hide-details menu-icon="" open-on-mount @update:model-value="saveEdit(item, 'status')"></DidataSelect>
-          <v-chip v-else size="x-small" :color="getStatusColor(item.status)" class="px-1" style="max-width: 100%;"><span class="text-truncate">{{ getStatusText(item.status) }}</span></v-chip>
+          <DidataSelect v-if="editingCellId === item.ORIGREC + '-Bearbeitung'" v-model="editingValue" :items="options.statuses" item-title="title" item-value="value" variant="plain" density="compact" hide-details menu-icon="" open-on-mount @update:model-value="saveEdit(item, 'Bearbeitung')"></DidataSelect>
+          <v-chip v-else size="x-small" :color="getStatusColor(item.Bearbeitung)" class="px-1" style="max-width: 100%;"><span class="text-truncate">{{ getStatusText(item.Bearbeitung) }}</span></v-chip>
         </div>
       </template>
 
-      <template v-slot:item.taskDescription="{ item }">
+      <template v-slot:item.Aufgaben="{ item }">
         <div 
-          @click="startEdit(item, 'taskDescription')" 
+          @click="startEdit(item, 'Aufgaben')" 
           :class="readonly ? 'readonly-cell' : 'editable-cell'" 
           class="text-wrap"
         >
-          <DidataTextField v-if="editingCellId === item.id + '-taskDescription'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'taskDescription')" @blur="cancelEdit"></DidataTextField>
-          <span v-else>{{ item.taskDescription || '...' }}</span>
+          <DidataTextField v-if="editingCellId === item.ORIGREC + '-Aufgaben'" v-model="editingValue" variant="plain" density="compact" hide-details autofocus @keydown.enter="saveEdit(item, 'Aufgaben')" @blur="cancelEdit"></DidataTextField>
+          <span v-else>{{ item.Aufgaben || '...' }}</span>
         </div>
       </template>
 
-      <template v-slot:item.technicalAssistantId="{ item }">
+      <template v-slot:item.TA="{ item }">
         <div 
-          @click.stop="startEdit(item, 'technicalAssistantId')" 
+          @click.stop="startEdit(item, 'TA')" 
           :class="readonly ? 'readonly-cell' : 'editable-cell'"
         >
-          <DidataSelect v-if="editingCellId === item.id + '-technicalAssistantId'" v-model="editingValue" :items="options.technicalAssistants" item-title="fullName" item-value="id" variant="plain" density="compact" hide-details menu-icon="" open-on-mount @update:model-value="saveEdit(item, 'technicalAssistantId')"></DidataSelect>
-          <span v-else class="text-truncate">{{ taMap[item.technicalAssistantId] || '-' }}</span>
+          <DidataSelect v-if="editingCellId === item.ORIGREC + '-TA'" v-model="editingValue" :items="options.technicalAssistants" item-title="LANGTEXT" item-value="ORIGREC" variant="plain" density="compact" hide-details menu-icon="" open-on-mount @update:model-value="saveEdit(item, 'TA')"></DidataSelect>
+          <span v-else class="text-truncate">{{ taMap[item.TA] || '-' }}</span>
         </div>
       </template>
 
-      <template v-slot:item.cooperationPartnerId="{ value }">{{ cpMap[value] || '-' }}</template>
-      <template v-slot:item.workgroupId="{ value }">{{ wgMap[value] || '-' }}</template>
+      <template v-slot:item.Arzt="{ value }">{{ cpMap[value] || '-' }}</template>
+      <template v-slot:item.AB_P_Kundennummer="{ value }">{{ wgMap[value] || '-' }}</template>
       
       <!-- Checkboxen: Wenn readonly, dann disabled -->
-      <template v-slot:item.finalCheck="{ item }">
-        <v-checkbox-btn v-model="item.finalCheck" density="compact" :disabled="readonly" @change="quickSave(item)"></v-checkbox-btn>
+      <template v-slot:item.Abschlusskontrolle="{ item }">
+        <v-checkbox-btn v-model="item.Abschlusskontrolle" density="compact" :disabled="readonly" @change="quickSave(item)"></v-checkbox-btn>
       </template>
-      <template v-slot:item.isLongTermProject="{ item }">
-        <v-checkbox-btn v-model="item.isLongTermProject" density="compact" :disabled="readonly" @change="quickSave(item)"></v-checkbox-btn>
+      <template v-slot:item.Langzeitprojekt="{ item }">
+        <v-checkbox-btn v-model="item.Langzeitprojekt" density="compact" :disabled="readonly" @change="quickSave(item)"></v-checkbox-btn>
       </template>
     </v-data-table>
 
@@ -138,7 +138,7 @@
     <v-dialog v-model="deleteDialog" max-width="400">
       <v-card>
         <v-card-title class="text-h6 text-error">Projekt löschen?</v-card-title>
-        <v-card-text>Möchten Sie das Projekt <strong>{{ itemToDelete?.projectNumber }}</strong> wirklich löschen?</v-card-text>
+        <v-card-text>Möchten Sie das Projekt <strong>{{ itemToDelete?.ProjektNr }}</strong> wirklich löschen?</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="grey-darken-1" variant="text" @click="deleteDialog = false">Abbrechen</v-btn>
@@ -179,21 +179,21 @@ const headers = ref<any[]>([
   { title: 'Tab', key: 'action_tab', width: 50, sortable: false, align: 'center', fixed: true },
   { title: 'Löschen', key: 'action_delete', width: 60, sortable: false, align: 'center', fixed: true },
   
-  { title: 'Nr.', key: 'projectNumber', width: 80 },
-  { title: 'Status', key: 'status', width: 100 },
-  { title: 'Aufgabe', key: 'taskDescription', width: 300 },
-  { title: 'TA', key: 'technicalAssistantId', width: 100 },
-  { title: 'Partner', key: 'cooperationPartnerId', width: 120 },
-  { title: 'AG', key: 'workgroupId', width: 100 },
-  { title: 'Abschl.', key: 'finalCheck', width: 60, align: 'center' },
-  { title: 'Langzeit', key: 'isLongTermProject', width: 60, align: 'center' },
+  { title: 'Nr.', key: 'ProjektNr', width: 80 },
+  { title: 'Status', key: 'Bearbeitung', width: 100 },
+  { title: 'Aufgabe', key: 'Aufgaben', width: 300 },
+  { title: 'TA', key: 'TA', width: 100 },
+  { title: 'Partner', key: 'Arzt', width: 120 },
+  { title: 'AG', key: 'AB_P_Kundennummer', width: 100 },
+  { title: 'Abschl.', key: 'Abschlusskontrolle', width: 60, align: 'center' },
+  { title: 'Langzeit', key: 'Langzeitprojekt', width: 60, align: 'center' },
 ]);
 
 
 // O(1) Lookups for relations
-const taMap = computed(() => { const m: Record<number, string> = {}; (props.options.technicalAssistants || []).forEach((x:any) => m[x.id] = x.fullName); return m; });
-const cpMap = computed(() => { const m: Record<number, string> = {}; (props.options.cooperationPartners || []).forEach((x:any) => m[x.id] = x.fullName); return m; });
-const wgMap = computed(() => { const m: Record<number, string> = {}; (props.options.workgroups || []).forEach((x:any) => m[x.id] = x.name); return m; });
+const taMap = computed(() => { const m: Record<number, string> = {}; (props.options.technicalAssistants || []).forEach((x:any) => m[x.ORIGREC] = x.LANGTEXT); return m; });
+const cpMap = computed(() => { const m: Record<number, string> = {}; (props.options.cooperationPartners || []).forEach((x:any) => m[x.ID] = x.Vorname_Name); return m; });
+const wgMap = computed(() => { const m: Record<number, string> = {}; (props.options.workgroups || []).forEach((x:any) => m[x.ID] = x.LOOKUP_VALUE); return m; });
 const statusMap = computed(() => { const m: Record<string, string> = {}; (props.options.statuses || []).forEach((x:any) => m[x.value] = x.title); return m; });
 
 // Helper
@@ -207,9 +207,9 @@ function executeDelete() { if (itemToDelete.value) { emit('delete', itemToDelete
 
 // Editing
 
-const editingCellId = computed(() => editingCell.value ? editingCell.value.id + '-' + editingCell.value.field : null);
+const editingCellId = computed(() => editingCell.value ? editingCell.value.ORIGREC + '-' + editingCell.value.field : null);
 
-const editingCell = ref<{ id: number, field: string } | null>(null);
+const editingCell = ref<{ ORIGREC: number, field: string } | null>(null);
 const editingValue = ref<any>(null);
 
 
@@ -218,7 +218,7 @@ function startEdit(item: Project, field: string) {
   if (props.readonly) return;
 
   if(editingCell.value) cancelEdit(); 
-  editingCell.value = { id: item.id, field }; 
+  editingCell.value = { ORIGREC: item.ORIGREC, field }; 
   editingValue.value = (item as any)[field]; 
 }
 

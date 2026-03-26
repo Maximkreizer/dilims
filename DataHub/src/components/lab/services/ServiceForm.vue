@@ -196,8 +196,8 @@ watch(() => props.service, (newVal) => {
 
 // Datumskonvertierung für Input
 const deliveryDateInput = computed({
-  get: () => formData.value.deliveryDate ? formData.value.deliveryDate.split('T')[0] : '',
-  set: (val) => { formData.value.deliveryDate = val ? `${val}T00:00:00.000Z` : null; }
+  get: () => formData.value.Abgabedatum ? formData.value.Abgabedatum.split('T')[0] : '',
+  set: (val) => { formData.value.Abgabedatum = val ? `${val}T00:00:00.000Z` : null; }
 });
 
 // Mapping für Titel
@@ -229,10 +229,10 @@ function save() {
 
 function resetForm() {
   const type = formData.value.serviceType;
-  const id = formData.value.id;
+  const id = formData.value.ORIGREC;
   const projId = formData.value.projectId;
   formData.value = {
-    id,
+    ORIGREC: id,
     projectId: projId,
     serviceType: type,
     status: 'in_progress',

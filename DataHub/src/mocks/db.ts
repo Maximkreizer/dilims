@@ -5,28 +5,28 @@
  */
 
 export interface TechnicalAssistant {
-  id: number;
-  code: string;
-  fullName: string;
+  ORIGREC: number;
+  KUERZEL: string;
+  LANGTEXT: string;
 }
 
 export interface CooperationPartner {
-  id: number;
-  code: string;
-  fullName: string;
+  ID: number;
+  KUERZEL?: string; // Optional, da Kunden oft kein Kürzel haben
+  Vorname_Name: string;
 }
 
 export interface Workgroup {
-  id: number;
-  name: string;
+  ID: number;
+  LOOKUP_VALUE: string;
 }
 
 // Basis-Eigenschaften für alle Services
 export interface BaseService {
-  id: number;
+  ORIGREC: number;
   serviceType: string; // Wichtig für die Unterscheidung
   remarks: string;     // Bemerkung
-  deliveryDate: string | null; // Abgabedatum
+  Abgabedatum: string | null; // Abgabedatum
 }
 
 /**
@@ -125,49 +125,49 @@ export type ProjectService =
   | GenericService;
 
 export interface Project {
-  id: number;
-  projectNumber: string;
+  ORIGREC: number;
+  ProjektNr: string;
 
-  // Flags
+  // Flags (Legacy Access nutzt bit/Boolean-Werte)
   isNctTbb: boolean;
   isPccc: boolean;
   isDzif: boolean;
   isCmcp: boolean;
   isSfb118Project: boolean;
   isFollowUpProject: boolean;
-  isLongTermProject: boolean;
-  finalCheck: boolean;
+  Langzeitprojekt: boolean;
+  Abschlusskontrolle: boolean;
 
   // Status & Text
-  status: 'clarified' | 'pending_number' | 'in_progress' | 'completed' | 'inquiry' | 'rejected' | 'cancelled' | 'on_hold';
-  taskDescription: string;
-  projectStatusText: string;
+  Bearbeitung: 'clarified' | 'pending_number' | 'in_progress' | 'completed' | 'inquiry' | 'rejected' | 'cancelled' | 'on_hold' | string;
+  Aufgaben: string;
+  Projektstand: string;
 
-  // Relationen
-  technicalAssistantId: number | null | undefined;
-  cooperationPartnerId: number | null | undefined;
-  workgroupId: number | null | undefined;
+  // Relationen (Legacy Access speichert meist die Fremdschlüssel-ID)
+  TA: number | null | undefined;
+  Arzt: number | null | undefined;
+  AB_P_Kundennummer: number | null | undefined; // Korrespondiert oft mit Workgroup ID
 
   // Daten
+  Abgabedatum: string | null | undefined;
   estimatedCompletionDate: string | null | undefined;
   lastThursdayOfMonth: string | null | undefined;
-  completionDate: string | null | undefined;
   
-  // Die Liste der Services
+  // Die Liste der Services (Sub-Entitäten)
   services: ProjectService[];
 
   // Antragsdaten (Readonly View)
-  applicationStudy?: string | null;
-  applicationProcessingStatus?: string | null;
-  applicationTitle?: string | null;
-  applicationRequest?: string | null;
-  applicationCoopPartner?: string | null;
-  applicationFeedback?: string | null;
-  applicationApproval?: string | null;
-  applicationCompletionDate?: string | null;
-  applicationIsLongTermProject?: boolean;
-  applicationProjectLead?: string | null;
-  applicationContactPerson?: string | null;
+  AB_Studie?: string | null;
+  AB_Bearbeitung?: string | null;
+  AB_Projekttitel?: string | null;
+  AB_Anforderung?: string | null;
+  AB_Koop_Vorname_Nachname?: string | null;
+  AB_Rueckmeldung?: string | null;
+  AB_Genehmigung?: string | null;
+  AB_Abgabe?: string | null;
+  AB_Langzeitprojekt?: boolean;
+  AB_P_Nachname_Vorname?: string | null;
+  AB_Ansprechpartner?: string | null;
 }
 
 // =======================================================================================

@@ -99,7 +99,7 @@
                 <ServiceForm
                   v-if="currentService"
                   :service="currentService"
-                  :project-number="project?.projectNumber || '-'"
+                  :project-number="project?.ProjektNr || '-'"
                   :is-follow-up="project?.isFollowUpProject || false"
                   @save="handleSave"
                   @cancel="closeEditor"
@@ -219,10 +219,10 @@ const otherCategories = [
 
 async function createNewService(type: string) {
   currentService.value = {
-    id: 0, 
+    ORIGREC: 0, 
     serviceType: type,
     remarks: '',
-    deliveryDate: null
+    Abgabedatum: null
   } as any;
 }
 
@@ -243,11 +243,11 @@ async function handleSave(serviceToSave: ProjectService) {
   if (!project.value) return;
 
   const list = [...project.value.services];
-  if (serviceToSave.id === 0) {
-    serviceToSave.id = Math.floor(Math.random() * 1000000);
+  if (serviceToSave.ORIGREC === 0) {
+    serviceToSave.ORIGREC = Math.floor(Math.random() * 1000000);
     list.push(serviceToSave);
   } else {
-    const idx = list.findIndex(s => s.id === serviceToSave.id);
+    const idx = list.findIndex(s => s.ORIGREC === serviceToSave.ORIGREC);
     if (idx !== -1) list[idx] = serviceToSave;
   }
 
@@ -260,7 +260,7 @@ async function handleSave(serviceToSave: ProjectService) {
 
 async function handleTableUpdate(service: ProjectService) {
   if (!project.value) return;
-  const idx = services.value.findIndex(s => s.id === service.id);
+  const idx = services.value.findIndex(s => s.ORIGREC === service.ORIGREC);
   if (idx !== -1) services.value[idx] = service;
   project.value.services = services.value;
   await api.saveProject(project.value);
@@ -268,11 +268,11 @@ async function handleTableUpdate(service: ProjectService) {
 
 async function handleDelete(service: ProjectService) {
   if (!project.value) return;
-  services.value = services.value.filter(s => s.id !== service.id);
+  services.value = services.value.filter(s => s.ORIGREC !== service.ORIGREC);
   project.value.services = services.value;
   await api.saveProject(project.value);
   
-  if (currentService.value && currentService.value.id === service.id) {
+  if (currentService.value && currentService.value.ORIGREC === service.ORIGREC) {
     currentService.value = null;
   }
 }
@@ -282,7 +282,7 @@ async function loadData() {
   loading.value = true;
   try {
     const all = await api.findProjects({});
-    const found = all.find(p => p.id === Number(props.projectId));
+    const found = all.find(p => p.ORIGREC === Number(props.projectId));
     if (found) {
       project.value = found;
       services.value = found.services || [];
@@ -307,7 +307,7 @@ function updateNav() {
     [
       { title: 'Navigation', to: '/' },
       { title: 'Projekterfassung', to: {name:'ServiceSearch'} },
-      { title: `Projekt ${project.value?.projectNumber}`, to: {name:'ServiceProjectEdit', params:{projectId: props.projectId}} },
+      { title: `Projekt ${project.value?.ProjektNr}`, to: {name:'ServiceProjectEdit', params:{projectId: props.projectId}} },
       { title: 'Dienstleistungen', disabled: true }
     ],
     true // NEU Button aktivieren

@@ -119,7 +119,7 @@ import { ref, reactive, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { api } from '@/services/api';
-import type { Project } from '@/mocks/db';
+import type { Project, TechnicalAssistant, CooperationPartner, Workgroup } from '@/mocks/db';
 
 import ProjectDataForm from '@/components/lab/forms/ProjectDataForm.vue';
 import ResizableProjectTable from '@/components/lab/shared/ResizableProjectTable.vue';
@@ -140,9 +140,33 @@ const clearDialog = ref(false);
 const projectData = ref<Project | null>(null);
 const allProjects = ref<Project[]>([]);
 
-const emptyProject = { id: 0, projectNumber: '', status: 'inquiry', services: [], isNctTbb: false, isPccc: false, isDzif: false, isCmcp: false, isSfb118Project: false, isFollowUpProject: false, isLongTermProject: false, finalCheck: false, taskDescription: '', projectStatusText: '', technicalAssistantId: null, cooperationPartnerId: null, workgroupId: null, estimatedCompletionDate: null, lastThursdayOfMonth: null, completionDate: null } as Project;
+const emptyProject = { 
+  ORIGREC: 0, 
+  ProjektNr: '', 
+  Bearbeitung: 'inquiry', 
+  services: [], 
+  isNctTbb: false, isPccc: false, isDzif: false, isCmcp: false, isSfb118Project: false, 
+  isFollowUpProject: false, Langzeitprojekt: false, Abschlusskontrolle: false, 
+  Aufgaben: '', Projektstand: '', 
+  TA: null, Arzt: null, AB_P_Kundennummer: null, 
+  estimatedCompletionDate: null, lastThursdayOfMonth: null, Abgabedatum: null 
+} as Project;
 
-const options = reactive({ technicalAssistants: [] as any[], cooperationPartners: [] as any[], workgroups: [] as any[], projectTypes: [] as any[], statuses: [] as any[] });
+interface SearchOptions {
+  technicalAssistants: TechnicalAssistant[];
+  cooperationPartners: CooperationPartner[];
+  workgroups: Workgroup[];
+  projectTypes: { value: string; title: string }[];
+  statuses: { value: string; title: string }[];
+}
+
+const options = reactive<SearchOptions>({ 
+  technicalAssistants: [], 
+  cooperationPartners: [], 
+  workgroups: [], 
+  projectTypes: [], 
+  statuses: [] 
+});
 
 watch(() => props.projectId, async (newId, oldId) => {
   if (newId !== oldId) await switchProjectData(newId);
@@ -154,14 +178,14 @@ watch(() => navStore.activeTabId, () => updateNavigation());
 // --- SYNC ---
 function handleFormInput(updatedProject: Project) {
   projectData.value = updatedProject;
-  const index = allProjects.value.findIndex(p => p.id === updatedProject.id);
+  const index = allProjects.value.findIndex(p => p.ORIGREC === updatedProject.ORIGREC);
   if (index !== -1) allProjects.value[index] = updatedProject;
 }
 
 // --- STANDARD LOGIC ---
 
 function handleProjectSelect(project: Project) {
-  router.push({ name: 'ServiceProjectEdit', params: { projectId: project.id } });
+  router.push({ name: 'ServiceProjectEdit', params: { projectId: project.ORIGREC } });
 }
 
 // WICHTIG: Das ist die Funktion für den "Neu"-Button oben rechts im Header
@@ -170,14 +194,14 @@ async function createNewProject() {
 }
 
 function handleOpenInNewTab(project: Project) {
-  navStore.addTab(`/services/project/${project.id}`);
+  navStore.addTab(`/services/project/${project.ORIGREC}`);
 }
 
 async function handleDeleteProject(project: Project) {
   isTableLoading.value = true;
   try {
-    await api.deleteProject(project.id);
-    if (projectData.value && projectData.value.id === project.id) {
+    await api.deleteProject(project.ORIGREC);
+    if (projectData.value && projectData.value.ORIGREC === project.ORIGREC) {
       await createNewProject();
     }
     await loadTableData();
@@ -212,7 +236,7 @@ async function switchProjectData(id: string | number) {
     if (id === 'new' || id === 0 || id === '0') {
       projectData.value = JSON.parse(JSON.stringify(emptyProject));
     } else {
-      const found = allProjects.value.find(p => p.id === Number(id));
+      const found = allProjects.value.find(p => p.ORIGREC === Number(id));
       if (found) {
         projectData.value = JSON.parse(JSON.stringify(found));
       }
@@ -237,9 +261,9 @@ async function loadPage() {
 }
 
 function handleTableUpdate(updatedProject: Project) {
-  const index = allProjects.value.findIndex(p => p.id === updatedProject.id);
+  const index = allProjects.value.findIndex(p => p.ORIGREC === updatedProject.ORIGREC);
   if (index !== -1) allProjects.value[index] = updatedProject;
-  if (projectData.value && projectData.value.id === updatedProject.id) {
+  if (projectData.value && projectData.value.ORIGREC === updatedProject.ORIGREC) {
     projectData.value = { ...updatedProject };
   }
 }
@@ -253,8 +277,8 @@ async function handleSave(updatedProject: Project) {
   try {
     const saved = await api.saveProject(updatedProject);
     projectData.value = saved;
-    if (updatedProject.id === 0) {
-       router.replace({ name: 'ServiceProjectEdit', params: { projectId: saved.id } });
+    if (updatedProject.ORIGREC === 0) {
+       router.replace({ name: 'ServiceProjectEdit', params: { projectId: saved.ORIGREC } });
     }
     await api.findProjects({}).then(res => allProjects.value = res);
     updateNavigation();
@@ -268,7 +292,7 @@ async function loadTableData() {
 }
 
 function updateNavigation() {
-  const title = (!projectData.value?.id || projectData.value.id === 0) ? 'Neues Projekt' : `Projekt ${projectData.value?.projectNumber}`;
+  const title = (!projectData.value?.ORIGREC || projectData.value.ORIGREC === 0) ? 'Neues Projekt' : `Projekt ${projectData.value?.ProjektNr}`;
   
   // WICHTIG: Hier aktivieren wir den "Neu" Button oben rechts (3. Parameter = true)
   navStore.setContext(

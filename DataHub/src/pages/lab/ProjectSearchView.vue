@@ -33,13 +33,13 @@
                  <v-row dense>
                     <v-col cols="12" md="3"><DidataSelect v-model="filters.projectType" label="Projekttyp" :items="options.projectTypes" item-title="title" item-value="value" density="compact" variant="outlined"></DidataSelect></v-col>
                     <v-col cols="12" md="3"><DidataSelect v-model="filters.status" label="Status" :items="options.statuses" item-title="title" item-value="value" density="compact" variant="outlined"></DidataSelect></v-col>
-                    <v-col cols="12" md="3"><DidataSelect v-model="filters.technicalAssistantId" label="TA" :items="options.technicalAssistants" item-title="fullName" item-value="id" density="compact" variant="outlined"></DidataSelect></v-col>
+                    <v-col cols="12" md="3"><DidataSelect v-model="filters.technicalAssistantId" label="TA" :items="options.technicalAssistants" item-title="LANGTEXT" item-value="ORIGREC" density="compact" variant="outlined"></DidataSelect></v-col>
                     
                     <!-- KORREKTUR: Variable muss cooperationPartnerId heißen, damit API sie findet -->
-                    <v-col cols="12" md="3"><DidataSelect v-model="filters.cooperationPartnerId" label="Arzt" :items="options.cooperationPartners" item-title="fullName" item-value="id" density="compact" variant="outlined"></DidataSelect></v-col>
+                    <v-col cols="12" md="3"><DidataSelect v-model="filters.cooperationPartnerId" label="Arzt" :items="options.cooperationPartners" item-title="Vorname_Name" item-value="ID" density="compact" variant="outlined"></DidataSelect></v-col>
                     
                     <v-col cols="12" md="4"><DidataTextField v-model="filters.projectNumber" label="Projekt-Nr." density="compact" variant="outlined"></DidataTextField></v-col>
-                    <v-col cols="12" md="4"><DidataSelect v-model="filters.workgroupId" label="Arbeitsgruppe" :items="options.workgroups" item-title="name" item-value="id" density="compact" variant="outlined"></DidataSelect></v-col>
+                    <v-col cols="12" md="4"><DidataSelect v-model="filters.workgroupId" label="Arbeitsgruppe" :items="options.workgroups" item-title="LOOKUP_VALUE" item-value="ID" density="compact" variant="outlined"></DidataSelect></v-col>
                     <v-col cols="12" md="4"><DidataTextField v-model="filters.date" type="date" label="Datum" density="compact" variant="outlined"></DidataTextField></v-col>
                     
                     <v-col cols="12">
@@ -88,8 +88,8 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useNavigationStore } from '@/stores/navigationStore';
-import { api } from '@/services/api';
-import type { Project } from '@/mocks/db';
+import { api, type ProjectFilters } from '@/services/api';
+import type { Project, TechnicalAssistant, CooperationPartner, Workgroup } from '@/mocks/db';
 
 // Importieren Sie die Komponente
 import ResizableProjectTable from '@/components/lab/shared/ResizableProjectTable.vue';
@@ -101,24 +101,38 @@ const loading = ref(false);
 const projects = ref<Project[]>([]);
 const panel = ref<number[]>([0]);
 
+interface SearchOptions {
+  technicalAssistants: TechnicalAssistant[];
+  cooperationPartners: CooperationPartner[];
+  workgroups: Workgroup[];
+  projectTypes: { value: string; title: string }[];
+  statuses: { value: string; title: string }[];
+}
+
 // Filter & Options
-const filters = reactive<any>({ generalSearch: '', status: null });
-const options = reactive<any>({ projectTypes: [], statuses: [], technicalAssistants: [], cooperationPartners: [], workgroups: [] });
+const filters = reactive<ProjectFilters>({ generalSearch: '', status: undefined });
+const options = reactive<SearchOptions>({ 
+  projectTypes: [], 
+  statuses: [], 
+  technicalAssistants: [], 
+  cooperationPartners: [], 
+  workgroups: [] 
+});
 
 // --- ACTIONS ---
 
 function handleProjectSelect(project: Project) {
-  router.push({ name: 'ServiceProjectEdit', params: { projectId: project.id } });
+  router.push({ name: 'ServiceProjectEdit', params: { projectId: project.ORIGREC } });
 }
 
 function handleOpenInNewTab(project: Project) {
-  navStore.addTab(`/services/project/${project.id}`);
+  navStore.addTab(`/services/project/${project.ORIGREC}`);
 }
 
 async function handleDeleteProject(project: Project) {
   loading.value = true;
   try {
-    await api.deleteProject(project.id);
+    await api.deleteProject(project.ORIGREC);
     // Nach Löschen Liste aktualisieren
     await performSearch(); 
   } finally {
@@ -138,7 +152,10 @@ async function performSearch() {
 }
 
 function resetFilters() { 
-  Object.keys(filters).forEach(k => { (filters as any)[k] = (typeof (filters as any)[k] === 'boolean') ? false : null; });
+  Object.keys(filters).forEach(k => { 
+    const key = k as keyof ProjectFilters;
+    (filters as any)[key] = (typeof filters[key] === 'boolean') ? false : undefined; 
+  });
   filters.generalSearch = '';
   performSearch(); 
 }

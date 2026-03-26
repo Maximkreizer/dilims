@@ -32,12 +32,26 @@ function formatDateForSearch(isoString: string | null | undefined): string {
   }
 }
 
+export interface ProjectFilters {
+  generalSearch?: string;
+  status?: string;
+  technicalAssistantId?: string | number;
+  cooperationPartnerId?: string | number;
+  workgroupId?: string | number;
+  projectNumber?: string;
+  projectType?: string;
+  date?: string;
+  finalCheck?: boolean;
+  isLongTermProject?: boolean;
+  isSfb118Project?: boolean;
+}
+
 export const api = {
   
   /**
    * Lädt Projekte vom PHP-Backend und filtert sie im Frontend.
    */
-  async findProjects(filters: any): Promise<Project[]> {
+  async findProjects(filters: ProjectFilters): Promise<Project[]> {
     const allProjects = await fetchBackend<Project[]>('Projekte_Labor.php');
     let results = [...allProjects];
 
@@ -51,9 +65,9 @@ export const api = {
       results = results.filter(p => {
         const searchTerms: string[] = [];
 
-        searchTerms.push(p.projectNumber);
-        searchTerms.push(p.taskDescription);
-        searchTerms.push(p.projectStatusText);
+        searchTerms.push(p.ProjektNr);
+        searchTerms.push(p.Aufgaben);
+        searchTerms.push(p.Projektstand);
 
         const statusMap: Record<string, string> = {
           'in_progress': 'In Bearbeitung',
@@ -65,12 +79,12 @@ export const api = {
           'rejected': 'Abgelehnt',
           'cancelled': 'Storniert'
         };
-        if (p.status && statusMap[p.status]) {
-          searchTerms.push(statusMap[p.status]);
+        if (p.Bearbeitung && statusMap[p.Bearbeitung]) {
+          searchTerms.push(statusMap[p.Bearbeitung]);
         }
 
-        if (p.finalCheck) searchTerms.push('Abschlusskontrolle');
-        if (p.isLongTermProject) searchTerms.push('Langzeitprojekt');
+        if (p.Abschlusskontrolle) searchTerms.push('Abschlusskontrolle');
+        if (p.Langzeitprojekt) searchTerms.push('Langzeitprojekt');
         if (p.isFollowUpProject) searchTerms.push('Folgeprojekt');
         if (p.isSfb118Project) searchTerms.push('SFB118');
         
@@ -79,27 +93,27 @@ export const api = {
         if (p.isDzif) searchTerms.push('DZIF');
         if (p.isCmcp) searchTerms.push('CMCP');
 
-        const ta = options.technicalAssistants.find(t => t.id === p.technicalAssistantId);
+        const ta = options.technicalAssistants.find(t => t.ORIGREC === p.TA);
         if (ta) {
-          searchTerms.push(ta.fullName);
-          searchTerms.push(ta.code);
+          searchTerms.push(ta.LANGTEXT);
+          searchTerms.push(ta.KUERZEL);
         }
 
-        const partner = options.cooperationPartners.find(c => c.id === p.cooperationPartnerId);
+        const partner = options.cooperationPartners.find(c => c.ID === p.Arzt);
         if (partner) {
-          searchTerms.push(partner.fullName);
-          searchTerms.push(partner.code);
+          searchTerms.push(partner.Vorname_Name);
+          searchTerms.push(partner.KUERZEL || '');
         }
 
-        const wg = options.workgroups.find(w => w.id === p.workgroupId);
+        const wg = options.workgroups.find(w => w.ID === p.AB_P_Kundennummer);
         if (wg) {
-          searchTerms.push(wg.name);
+          searchTerms.push(wg.LOOKUP_VALUE);
         }
 
-        if (p.completionDate) searchTerms.push(p.completionDate);
+        if (p.Abgabedatum) searchTerms.push(p.Abgabedatum);
         if (p.estimatedCompletionDate) searchTerms.push(p.estimatedCompletionDate);
         
-        searchTerms.push(formatDateForSearch(p.completionDate));
+        searchTerms.push(formatDateForSearch(p.Abgabedatum));
         searchTerms.push(formatDateForSearch(p.estimatedCompletionDate));
         if (p.lastThursdayOfMonth) {
             searchTerms.push(p.lastThursdayOfMonth);
@@ -112,31 +126,32 @@ export const api = {
 
     // --- 2. RESTLICHE FILTER ---
     if (filters.status) {
-      results = results.filter(p => p.status === filters.status);
+      results = results.filter(p => p.Bearbeitung === filters.status);
     }
     if (filters.technicalAssistantId) {
-      results = results.filter(p => p.technicalAssistantId === Number(filters.technicalAssistantId));
+      results = results.filter(p => p.TA === Number(filters.technicalAssistantId));
     }
     if (filters.cooperationPartnerId) {
-      results = results.filter(p => p.cooperationPartnerId === Number(filters.cooperationPartnerId));
+      results = results.filter(p => p.Arzt === Number(filters.cooperationPartnerId));
     }
     if (filters.workgroupId) {
-      results = results.filter(p => p.workgroupId === Number(filters.workgroupId));
+      results = results.filter(p => p.AB_P_Kundennummer === Number(filters.workgroupId));
     }
     if (filters.projectNumber && filters.projectNumber !== filters.generalSearch) {
-      results = results.filter(p => p.projectNumber.toLowerCase().includes(filters.projectNumber.toLowerCase()));
+      results = results.filter(p => p.ProjektNr.toLowerCase().includes(filters.projectNumber.toLowerCase()));
     }
     if (filters.projectType) { 
-       results = results.filter(p => (p as any)[filters.projectType] === true); 
+       const type = filters.projectType as keyof Project;
+       results = results.filter(p => p[type] === true); 
     }
     if (filters.date) {
        results = results.filter(p => 
-         (p.completionDate && p.completionDate.startsWith(filters.date)) ||
+         (p.Abgabedatum && p.Abgabedatum.startsWith(filters.date)) ||
          (p.estimatedCompletionDate && p.estimatedCompletionDate.startsWith(filters.date))
        );
     }
-    if (filters.finalCheck) { results = results.filter(p => p.finalCheck === true); }
-    if (filters.isLongTermProject) { results = results.filter(p => p.isLongTermProject === true); }
+    if (filters.finalCheck) { results = results.filter(p => p.Abschlusskontrolle === true); }
+    if (filters.isLongTermProject) { results = results.filter(p => p.Langzeitprojekt === true); }
     if (filters.isSfb118Project) { results = results.filter(p => p.isSfb118Project === true); }
 
     return results;
@@ -206,8 +221,8 @@ export const api = {
     if (filters.generalSearch) {
       const term = filters.generalSearch.toLowerCase();
       results = results.filter(p => 
-        p.projectNumber.toLowerCase().includes(term) || 
-        p.taskDescription.toLowerCase().includes(term)
+        p.ProjektNr.toLowerCase().includes(term) || 
+        p.Aufgaben.toLowerCase().includes(term)
       );
     }
     return results;

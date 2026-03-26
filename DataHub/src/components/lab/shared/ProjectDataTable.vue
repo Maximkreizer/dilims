@@ -42,9 +42,9 @@ const emit = defineEmits<{
 }>();
 
 const headers = [
-  { title: 'Projekt-Nr.', key: 'projectNumber', width: '150px' },
-  { title: 'Aufgabe', key: 'taskDescription' },
-  { title: 'Status', key: 'status', width: '150px' },
+  { title: 'Projekt-Nr.', key: 'ProjektNr', width: '150px' },
+  { title: 'Aufgabe', key: 'Aufgaben' },
+  { title: 'Status', key: 'Bearbeitung', width: '150px' },
 ];
 
 /**
