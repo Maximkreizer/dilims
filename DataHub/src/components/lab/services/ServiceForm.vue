@@ -58,7 +58,9 @@
             <v-col cols="6"><DidataTextField v-model.number="formData.slidesPerSample" label="K_Anz_OT_pro_Probe (ohne HE)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
             <v-col cols="6"><DidataTextField v-model.number="formData.heRequestor" label="K_HE_Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
             <v-col cols="6"><DidataTextField v-model.number="formData.heTissueBank" label="K_HE_Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
-            <v-col cols="12"><DidataTextField v-model.number="formData.archiveSampleCases" label="K_Archiv_Anz_Proben (Fälle)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="12"><DidataTextField v-model.number="formData.archiveSampleCases" label="Archiv Anzahl Proben (Fälle)" type="number" density="compact" variant="outlined"></DidataTextField></v-col>
+            <v-col cols="6"><v-checkbox v-model="formData.isSampleTaken" label="Probe entnommen" density="compact" hide-details></v-checkbox></v-col>
+            <v-col cols="6"><v-checkbox v-model="formData.isSampleDelivered" label="Probe abgegeben" density="compact" hide-details></v-checkbox></v-col>
           </template>
 
           <!-- 5. KRYO SERVICE -->
