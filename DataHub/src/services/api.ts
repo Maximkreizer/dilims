@@ -1,24 +1,43 @@
-// src/services/api.ts
-/**
-API-Layer (Service) für das Frontend.
-Umgestellt auf PHP-Backend in Phase 3.
-*/
-
 import type { Project, Antibody, AntibodyOrder, StainingRun, TechnicalAssistant, CooperationPartner, Workgroup } from '@/mocks/db';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-const BACKEND_PATH = '/src/backend';
-const BASE_URL = `${API_BASE_URL}${BACKEND_PATH}`;
+declare global {
+  interface Window {
+    getUserRouteURLByName?: (name: string) => string;
+  }
+}
 
 /**
- * Hilfsfunktion für Fetch-Requests
+ * Dual-Mode Fetch Wrapper
+ * Nutzt DiLims-Routing in Produktion, lokales PHP-Backend in Entwicklung
  */
-async function fetchBackend<T>(endpoint: string): Promise<T> {
-  const response = await fetch(`${BASE_URL}/${endpoint}`);
-  if (!response.ok) {
-    throw new Error(`Backend-Fehler: ${response.statusText} (${response.status})`);
+async function fetchData<T>(routeAndQuery: string, options: RequestInit = {}): Promise<T> {
+  let url = '';
+  const isDiLims = typeof window !== 'undefined' && typeof window.getUserRouteURLByName === 'function';
+  
+  const [routeName, queryString] = routeAndQuery.split('?');
+  const queryPart = queryString ? `?${queryString}` : '';
+
+  if (isDiLims) {
+    url = window.getUserRouteURLByName!(routeName);
+    if (!url) {
+      throw new Error(`Route '${routeName}' in DiLims nicht gefunden.`);
+    }
+    url += queryPart;
+  } else {
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+    url = `${baseUrl}/src/backend/${routeName}.php${queryPart}`;
   }
-  return await response.json();
+
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    throw new Error(`API Fehler: ${response.statusText} (${response.status}) bei ${url}`);
+  }
+  
+  // Wenn DELETE, gibt es vielleicht kein JSON zurück
+  if (options.method === 'DELETE' && response.status === 204) {
+    return undefined as unknown as T;
+  }
+  return response.json();
 }
 
 function formatDateForSearch(isoString: string | null | undefined): string {
@@ -47,40 +66,32 @@ export interface ProjectFilters {
 }
 
 export const api = {
-  
-  /**
-   * Lädt Projekte vom PHP-Backend und filtert sie im Frontend.
-   */
   async findProjects(filters: ProjectFilters): Promise<Project[]> {
-    const rawProjects = await fetchBackend<Project[]>('Projekte_Labor.php');
+    const rawProjects = await fetchData<Project[]>('Projekte_Labor');
     
-    // --- 4. ROBUSTHEIT: DEFAULT-WERTE FÜR FEHLENDE FELDER ---
     const allProjects = rawProjects.map(p => ({
       ...p,
       Abschlusskontrolle: p.Abschlusskontrolle ?? false,
       Langzeitprojekt: p.Langzeitprojekt ?? false,
-      isSfb118Project: p.isSfb118Project ?? false,
-      isNctTbb: p.isNctTbb ?? false,
-      isDzif: p.isDzif ?? false,
-      isPccc: p.isPccc ?? false,
-      isCmcp: p.isCmcp ?? false,
+      isSfb118Project: (p as any).isSfb118Project ?? false,
+      isNctTbb: (p as any).isNctTbb ?? false,
+      isDzif: (p as any).isDzif ?? false,
+      isPccc: (p as any).isPccc ?? false,
+      isCmcp: (p as any).isCmcp ?? false,
       Bearbeitung: p.Bearbeitung ?? '',
-      TA: p.TA ?? '',
-      Arzt: p.Arzt ?? '',
-      AB_P_Kundennummer: p.AB_P_Kundennummer ?? '',
+      TA: p.TA ?? null,
+      Arzt: p.Arzt ?? null,
+      AB_P_Kundennummer: p.AB_P_Kundennummer ?? null,
       ProjektNr: p.ProjektNr ?? '',
       Aufgaben: p.Aufgaben ?? '',
       Projektstand: p.Projektstand ?? '',
-      Projekttyp: p.Projekttyp ?? ''
-    }));
+      Projekttyp: (p as any).Projekttyp ?? ''
+    } as unknown as Project));
 
     let results = [...allProjects];
 
-    // --- 1. INTELLIGENTE VOLLTEXTSUCHE ---
     if (filters.generalSearch && filters.generalSearch.trim() !== '') {
       const term = filters.generalSearch.toLowerCase().trim();
-      
-      // Wir brauchen die Optionen für die Namensauflösung im Frontend-Filter
       const options = await this.getSearchOptions();
 
       results = results.filter(p => {
@@ -147,29 +158,22 @@ export const api = {
       });
     }
 
-    // --- 2. RESTLICHE FILTER ---
     if (filters.status) {
       results = results.filter(p => p.Bearbeitung === filters.status);
     }
     if (filters.technicalAssistantId) {
-      // 1. FILTER-FIX: Direkter Vergleich ohne Number-Konvertierung
       results = results.filter(p => p.TA === filters.technicalAssistantId);
     }
     if (filters.cooperationPartnerId) {
-      // 1. FILTER-FIX: Direkter Vergleich ohne Number-Konvertierung
       results = results.filter(p => p.Arzt === filters.cooperationPartnerId);
     }
     if (filters.workgroupId) {
-      // 1. FILTER-FIX: Direkter Vergleich ohne Number-Konvertierung
       results = results.filter(p => p.AB_P_Kundennummer === filters.workgroupId);
     }
     if (filters.projectNumber && filters.projectNumber !== filters.generalSearch) {
       results = results.filter(p => p.ProjektNr && p.ProjektNr.toLowerCase().includes(filters.projectNumber.toLowerCase()));
     }
     if (filters.projectType) { 
-      // 2. PROJEKTTYP-FIX: Filter nach Feld 'Projekttyp' (String-Vergleich)
-      // Wir mappen die Filter-Dropdown-Werte (z.B. 'isNctTbb') auf die tatsächlichen Backend-Werte falls nötig
-      // Falls der Nutzer nach dem String im Feld 'Projekttyp' sucht:
       results = results.filter(p => p.Projekttyp === filters.projectType);
     }
     if (filters.finalCheck) { results = results.filter(p => p.Abschlusskontrolle === true); }
@@ -179,14 +183,11 @@ export const api = {
     return results;
   },
 
-  /**
-   * Ruft Optionen von verschiedenen PHP-Skripten ab.
-   */
   async getSearchOptions() {
     const [tas, partners, wgs] = await Promise.all([
-      fetchBackend<TechnicalAssistant[]>('Kuerzel.php'),
-      fetchBackend<CooperationPartner[]>('Kunden.php'),
-      fetchBackend<Workgroup[]>('Lookup_Values.php') // Annahme: WGs sind hier
+      fetchData<TechnicalAssistant[]>('Kuerzel'),
+      fetchData<CooperationPartner[]>('Kunden'),
+      fetchData<Workgroup[]>('Lookup_Values')
     ]);
 
     return {
@@ -211,33 +212,23 @@ export const api = {
   },
 
   async saveProject(projectData: Project): Promise<Project> {
-    const response = await fetch(`${BASE_URL}/Projekte_Labor.php`, {
+    return fetchData<Project>('Projekte_Labor', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(projectData)
     });
-    if (!response.ok) throw new Error('Fehler beim Speichern');
-    return await response.json();
   },
 
   async deleteProject(id: number): Promise<void> {
-    const response = await fetch(`${BASE_URL}/Projekte_Labor.php?id=${id}`, {
-      method: 'DELETE'
-    });
-    if (!response.ok) throw new Error('Fehler beim Löschen');
+    await fetchData<void>(`Projekte_Labor?id=${id}`, { method: 'DELETE' });
   },
   
   async fetchApplicationData() {
-    // Hier könnte ein spezifisches PHP-Skript für Antragsdaten stehen
-    // Falls noch nicht vorhanden, nutzen wir ein Fallback oder das Hauptskript
-    return await fetchBackend<any>('Projekte_Labor.php?type=application_data');
+    return fetchData<any>('Projekte_Labor?type=application_data');
   },
 
-  // --- ANTIKÖRPER DATENBANK ---
-
   async searchAntibodyProjects(filters: any): Promise<Project[]> {
-    // In der Mock-Welt war dies getrennt, im PHP-Backend evtl. über denselben Endpunkt mit Filter
-    const all = await fetchBackend<Project[]>('Projekte_Labor.php?context=antibody');
+    const all = await fetchData<Project[]>('Projekte_Labor?context=antibody');
     let results = [...all];
 
     if (filters.generalSearch) {
@@ -251,7 +242,7 @@ export const api = {
   },
 
   async searchAntibodies(filters: any): Promise<Antibody[]> {
-    const all = await fetchBackend<Antibody[]>('Antikoerper.php');
+    const all = await fetchData<Antibody[]>('Antikoerper');
     let results = [...all];
 
     const term = filters.general ? filters.general.toLowerCase() : '';
@@ -271,7 +262,7 @@ export const api = {
   },
 
   async searchOrders(filters: any): Promise<AntibodyOrder[]> {
-    const all = await fetchBackend<AntibodyOrder[]>('Bestellungen.php');
+    const all = await fetchData<AntibodyOrder[]>('Bestellungen');
     let results = [...all];
     
     const term = filters.general ? filters.general.toLowerCase() : '';
@@ -285,7 +276,7 @@ export const api = {
   },
 
   async searchStainingRuns(filters: any): Promise<StainingRun[]> {
-    const all = await fetchBackend<StainingRun[]>('Faerbelaeufe.php');
+    const all = await fetchData<StainingRun[]>('Faerbelaeufe');
     let results = [...all];
     
     const term = filters.general ? filters.general.toLowerCase() : '';
