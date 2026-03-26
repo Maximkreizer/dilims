@@ -191,9 +191,9 @@ const headers = ref<any[]>([
 
 
 // O(1) Lookups for relations
-const taMap = computed(() => { const m: Record<number, string> = {}; (props.options.technicalAssistants || []).forEach((x:any) => m[x.ORIGREC] = x.LANGTEXT); return m; });
-const cpMap = computed(() => { const m: Record<number, string> = {}; (props.options.cooperationPartners || []).forEach((x:any) => m[x.ID] = x.Vorname_Name); return m; });
-const wgMap = computed(() => { const m: Record<number, string> = {}; (props.options.workgroups || []).forEach((x:any) => m[x.ID] = x.LOOKUP_VALUE); return m; });
+const taMap = computed(() => { const m: Record<string, string> = {}; (props.options.technicalAssistants || []).forEach((x:any) => m[x.ORIGREC] = x.LANGTEXT); return m; });
+const cpMap = computed(() => { const m: Record<string, string> = {}; (props.options.cooperationPartners || []).forEach((x:any) => m[x.ID] = x.Vorname_Name); return m; });
+const wgMap = computed(() => { const m: Record<string, string> = {}; (props.options.workgroups || []).forEach((x:any) => m[x.ID] = x.LOOKUP_VALUE); return m; });
 const statusMap = computed(() => { const m: Record<string, string> = {}; (props.options.statuses || []).forEach((x:any) => m[x.value] = x.title); return m; });
 
 // Helper

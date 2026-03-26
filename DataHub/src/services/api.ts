@@ -52,7 +52,28 @@ export const api = {
    * Lädt Projekte vom PHP-Backend und filtert sie im Frontend.
    */
   async findProjects(filters: ProjectFilters): Promise<Project[]> {
-    const allProjects = await fetchBackend<Project[]>('Projekte_Labor.php');
+    const rawProjects = await fetchBackend<Project[]>('Projekte_Labor.php');
+    
+    // --- 4. ROBUSTHEIT: DEFAULT-WERTE FÜR FEHLENDE FELDER ---
+    const allProjects = rawProjects.map(p => ({
+      ...p,
+      Abschlusskontrolle: p.Abschlusskontrolle ?? false,
+      Langzeitprojekt: p.Langzeitprojekt ?? false,
+      isSfb118Project: p.isSfb118Project ?? false,
+      isNctTbb: p.isNctTbb ?? false,
+      isDzif: p.isDzif ?? false,
+      isPccc: p.isPccc ?? false,
+      isCmcp: p.isCmcp ?? false,
+      Bearbeitung: p.Bearbeitung ?? '',
+      TA: p.TA ?? '',
+      Arzt: p.Arzt ?? '',
+      AB_P_Kundennummer: p.AB_P_Kundennummer ?? '',
+      ProjektNr: p.ProjektNr ?? '',
+      Aufgaben: p.Aufgaben ?? '',
+      Projektstand: p.Projektstand ?? '',
+      Projekttyp: p.Projekttyp ?? ''
+    }));
+
     let results = [...allProjects];
 
     // --- 1. INTELLIGENTE VOLLTEXTSUCHE ---
@@ -131,20 +152,25 @@ export const api = {
       results = results.filter(p => p.Bearbeitung === filters.status);
     }
     if (filters.technicalAssistantId) {
-      results = results.filter(p => p.TA === Number(filters.technicalAssistantId));
+      // 1. FILTER-FIX: Direkter Vergleich ohne Number-Konvertierung
+      results = results.filter(p => p.TA === filters.technicalAssistantId);
     }
     if (filters.cooperationPartnerId) {
-      results = results.filter(p => p.Arzt === Number(filters.cooperationPartnerId));
+      // 1. FILTER-FIX: Direkter Vergleich ohne Number-Konvertierung
+      results = results.filter(p => p.Arzt === filters.cooperationPartnerId);
     }
     if (filters.workgroupId) {
-      results = results.filter(p => p.AB_P_Kundennummer === Number(filters.workgroupId));
+      // 1. FILTER-FIX: Direkter Vergleich ohne Number-Konvertierung
+      results = results.filter(p => p.AB_P_Kundennummer === filters.workgroupId);
     }
     if (filters.projectNumber && filters.projectNumber !== filters.generalSearch) {
       results = results.filter(p => p.ProjektNr && p.ProjektNr.toLowerCase().includes(filters.projectNumber.toLowerCase()));
     }
     if (filters.projectType) { 
-       const type = filters.projectType as keyof Project;
-       results = results.filter(p => (p as any)[type] === true); 
+      // 2. PROJEKTTYP-FIX: Filter nach Feld 'Projekttyp' (String-Vergleich)
+      // Wir mappen die Filter-Dropdown-Werte (z.B. 'isNctTbb') auf die tatsächlichen Backend-Werte falls nötig
+      // Falls der Nutzer nach dem String im Feld 'Projekttyp' sucht:
+      results = results.filter(p => p.Projekttyp === filters.projectType);
     }
     if (filters.finalCheck) { results = results.filter(p => p.Abschlusskontrolle === true); }
     if (filters.isLongTermProject) { results = results.filter(p => p.Langzeitprojekt === true); }

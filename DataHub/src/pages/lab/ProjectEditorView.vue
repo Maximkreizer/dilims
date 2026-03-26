@@ -236,7 +236,8 @@ async function switchProjectData(id: string | number) {
     if (id === 'new' || id === 0 || id === '0') {
       projectData.value = JSON.parse(JSON.stringify(emptyProject));
     } else {
-      const found = allProjects.value.find(p => p.ORIGREC === Number(id));
+      // 3. TABELLEN-SYNC: Vergleich als String oder Number, da ORIGREC aus PHP oft als String kommt
+      const found = allProjects.value.find(p => String(p.ORIGREC) === String(id));
       if (found) {
         projectData.value = JSON.parse(JSON.stringify(found));
       }
