@@ -94,7 +94,7 @@ import type { Project, TechnicalAssistant, CooperationPartner, Workgroup } from 
 // Importieren Sie die Komponente
 import ResizableProjectTable from '@/components/lab/shared/ResizableProjectTable.vue';
 
-const router = useRouter();
+
 
 const loading = ref(false);
 const projects = ref<Project[]>([]);
@@ -121,7 +121,7 @@ const options = reactive<SearchOptions>({
 // --- ACTIONS ---
 
 function handleProjectSelect(project: Project) {
-  router.push({ name: 'ServiceProjectEdit', params: { projectId: project.ORIGREC } });
+  push({ name: 'ServiceProjectEdit', params: { projectId: project.ORIGREC } });
 }
 
 function handleOpenInNewTab(project: Project) {
@@ -164,7 +164,7 @@ function resetFilters() {
 onMounted(async () => {
   // 1. Overlay sofort setzen (Layout stabilisieren)
   state.nav.setContext('mdi-beaker-check-outline', [{ title: 'Navigation', to: '/' }, { title: 'Projekterfassung', disabled: true }], true);
-  state.nav.setNewAction(() => router.push({ name: 'ServiceProjectEdit', params: { projectId: 'new' } }));
+  state.nav.setNewAction(() => push({ name: 'ServiceProjectEdit', params: { projectId: 'new' } }));
   
   // 2. Dann Daten laden
   loading.value = true; // Loading Spinner an

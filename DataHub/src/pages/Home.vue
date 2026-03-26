@@ -23,13 +23,13 @@ Funktionalität:
 </template>
 
 <script setup lang="ts">
-import { useRouter } from "@/state";
+import { push, back, state } from "@/state";
 
 // Der Typ bleibt derselbe
 type Tile = { route: string; icon: string; aria: string };
 
 // useRouter wird direkt aufgerufen
-const router = useRouter();
+
 
 // Die Daten sind direkt verfügbar
 const tiles: Tile[] = [

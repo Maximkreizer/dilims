@@ -32,10 +32,10 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { useRouter } from "@/state";
+import { push, back, state } from "@/state";
 import { useNavigationStore } from '@/stores/navigationStore';
 
-const router = useRouter();
+
 
 // Beim Laden des Dashboards setzen wir das Layout zurück
 // (Standard-Icon, keine Breadcrumbs außer 'Navigation')
@@ -48,11 +48,11 @@ onMounted(() => {
 
 function openServiceContext() {
   // Leitet weiter zur Projektsuche im Bereich Dienstleistungen
-  router.push('/services/search');
+  push({ name: 'ServiceSearch' });
 }
 
 function openAntibodyContext() {
   // Leitet weiter zum Bereich Antikörper
-  router.push('/antibodies');
+  push({ name: 'AntibodyDashboard' });
 }
 </script>

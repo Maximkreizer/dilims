@@ -149,7 +149,7 @@ import ResizableServiceTable from '@/components/lab/shared/ResizableServiceTable
 import ServiceForm from '@/components/lab/services/ServiceForm.vue';
 
 const props = defineProps<{ projectId: string | number }>();
-const router = useRouter();
+
 
 const loading = ref(true);
 const project = ref<Project | null>(null);

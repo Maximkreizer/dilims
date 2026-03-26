@@ -75,14 +75,14 @@ Funktionalität:
 import { useRouter } from "@/state";
 
 // Wir benötigen den Router, um die Navigation programmgesteuert auszulösen.
-const router = useRouter();
+
 
 /**
  * Navigiert den Benutzer aus dem Labor-Workflow zurück
  * zur Startseite der gesamten Anwendung.
  */
 function closeWorkflow() {
-  router.push('/'); // Annahme: '/' ist Ihre Haupt-Startseite/Dashboard
+  push('/'); // Annahme: '/' ist Ihre Haupt-Startseite/Dashboard
 }
 </script>
 

@@ -125,7 +125,7 @@ import ProjectDataForm from '@/components/lab/forms/ProjectDataForm.vue';
 import ResizableProjectTable from '@/components/lab/shared/ResizableProjectTable.vue';
 
 const props = defineProps<{ projectId: string | number; }>();
-const router = useRouter();
+
 
 const initialLoading = ref(true);
 const isFormLoading = ref(false);
@@ -184,12 +184,12 @@ function handleFormInput(updatedProject: Project) {
 // --- STANDARD LOGIC ---
 
 function handleProjectSelect(project: Project) {
-  router.push({ name: 'ServiceProjectEdit', params: { projectId: project.ORIGREC } });
+  push({ name: 'ServiceProjectEdit', params: { projectId: project.ORIGREC } });
 }
 
 // WICHTIG: Das ist die Funktion für den "Neu"-Button oben rechts im Header
 async function createNewProject() {
-  router.push({ name: 'ServiceProjectEdit', params: { projectId: 'new' } });
+  push({ name: 'ServiceProjectEdit', params: { projectId: 'new' } });
 }
 
 function handleOpenInNewTab(project: Project) {
@@ -314,7 +314,7 @@ function goToServices(id: number) {
     alert("Bitte speichern Sie das Projekt zuerst, bevor Sie Dienstleistungen erfassen.");
     return;
   }
-  router.push({ name: 'ServiceProjectServices', params: { projectId: id } });
+  push({ name: 'ServiceProjectServices', params: { projectId: id } });
 }
 
 async function handleFetchApplicationData() { /* ... */ }

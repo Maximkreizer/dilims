@@ -54,7 +54,7 @@
     <!-- OBEN: Header                          -->
     <!-- ===================================== -->
     <v-app-bar flat border="b" height="64" color="white" class="primary-action-bar">
-      <div class="d-flex align-center px-4 cursor-pointer" style="min-width: 200px;" @click="router.push('/')">
+      <div class="d-flex align-center px-4 cursor-pointer" style="min-width: 200px;" @click="push('/')">
         <v-icon color="primary" class="mr-2">mdi-flask-outline</v-icon>
         <span class="font-weight-bold text-h6 text-grey-darken-3">LAB<span class="text-primary">OS</span></span>
       </div>
@@ -118,18 +118,18 @@
 
 <script setup lang="ts">
 import { computed, watch } from 'vue';
-import { useRouter, useRoute } from "@/state";
+import { push, back, state, views } from "@/state";
 import { useNavigationStore } from '@/stores/navigationStore';
 
-const router = useRouter();
-const route = useRoute();
 
-const isDashboard = computed(() => route.path === '/');
+
+
+const isDashboard = computed(() => "/" === '/');
 
 // WICHTIG: Wenn sich die URL ändert (User klickt irgendwo),
 // speichern wir den Pfad im aktuellen Tab.
 watch(
-  () => route.fullPath,
+  () => state.currentView.name,
   (newPath) => {
     state.nav.updateActiveTabPath(newPath);
   }
