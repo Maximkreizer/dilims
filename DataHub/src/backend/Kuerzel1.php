@@ -1,51 +1,49 @@
 <?php
-header("Access-Control-Allow-Origin: *");
 header('Content-Type: application/json');
 echo '[
-  {
-    "ORIGREC": 10040,
-    "TYP": "INSTITUTION",
-    "KUERZEL": "100",
-    "LANGTEXT": "Patho",
-    "SORTER": 100,
-    "AUSGESCHIEDEN": false,
-    "TimestampX": "F632E0CC0C0A6652"
-  },
-  {
-    "ORIGREC": 10041,
-    "TYP": "INSTITUTION",
-    "KUERZEL": "110",
-    "LANGTEXT": "Neuropatho",
-    "SORTER": 110,
-    "AUSGESCHIEDEN": false,
-    "TimestampX": "CEE52EA80F0EE533"
-  },
-  {
-    "ORIGREC": 10042,
-    "TYP": "INSTITUTION",
-    "KUERZEL": "200",
-    "LANGTEXT": "NCT",
-    "SORTER": 200,
-    "AUSGESCHIEDEN": false,
-    "TimestampX": "2DA26B6D92C2B5B5"
-  },
-  {
-    "ORIGREC": 10043,
-    "TYP": "INSTITUTION",
-    "KUERZEL": "300",
-    "LANGTEXT": "Uniklinikum",
-    "SORTER": 300,
-    "AUSGESCHIEDEN": false,
-    "TimestampX": "2C3D8852DCA1652E"
-  },
-  {
-    "ORIGREC": 10044,
-    "TYP": "INSTITUTION",
-    "KUERZEL": "310",
-    "LANGTEXT": "Uniklinikum Hautklinik",
-    "SORTER": 310,
-    "AUSGESCHIEDEN": false,
-    "TimestampX": "50FD11967675D3B2"
-  }
+    {
+        "ORIGREC": 150,
+        "TYP": "Anonymisierte_Daten_Dummy",
+        "KUERZEL": "P011",
+        "LANGTEXT": "Mitarbeiter_008",
+        "SORTER": 100,
+        "AUSGESCHIEDEN": false,
+        "TimestampX": "AAAAAAAAMNY="
+    },
+    {
+        "ORIGREC": 151,
+        "TYP": "Anonymisierte_Daten_Dummy",
+        "KUERZEL": "P012",
+        "LANGTEXT": "Mitarbeiter_009",
+        "SORTER": 110,
+        "AUSGESCHIEDEN": false,
+        "TimestampX": "AAAAAAAAMNc="
+    },
+    {
+        "ORIGREC": 152,
+        "TYP": "Anonymisierte_Daten_Dummy",
+        "KUERZEL": "P013",
+        "LANGTEXT": "Mitarbeiter_010",
+        "SORTER": 200,
+        "AUSGESCHIEDEN": false,
+        "TimestampX": "AAAAAAAAMNg="
+    },
+    {
+        "ORIGREC": 153,
+        "TYP": "Anonymisierte_Daten_Dummy",
+        "KUERZEL": "P014",
+        "LANGTEXT": "Mitarbeiter_011",
+        "SORTER": 300,
+        "AUSGESCHIEDEN": false,
+        "TimestampX": "AAAAAAAAMNk="
+    },
+    {
+        "ORIGREC": 154,
+        "TYP": "Anonymisierte_Daten_Dummy",
+        "KUERZEL": "P015",
+        "LANGTEXT": "Mitarbeiter_012",
+        "SORTER": 310,
+        "AUSGESCHIEDEN": false,
+        "TimestampX": "AAAAAAAAMNo="
+    }
 ]';
-?>
