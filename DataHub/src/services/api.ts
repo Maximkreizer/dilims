@@ -6,7 +6,9 @@ Umgestellt auf PHP-Backend in Phase 3.
 
 import type { Project, Antibody, AntibodyOrder, StainingRun, TechnicalAssistant, CooperationPartner, Workgroup } from '@/mocks/db';
 
-const BASE_URL = '/src/backend';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const BACKEND_PATH = '/src/backend';
+const BASE_URL = `${API_BASE_URL}${BACKEND_PATH}`;
 
 /**
  * Hilfsfunktion für Fetch-Requests
