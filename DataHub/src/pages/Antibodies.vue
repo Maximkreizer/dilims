@@ -153,13 +153,14 @@
 </template>
 
 <script setup lang="ts">
+import { state, push, back } from '@/state';
 import { ref, reactive, computed, onMounted, watch } from 'vue';
-import { useRouter } from "@/state";
-import { useNavigationStore } from '@/stores/navigationStore';
+
+
 import { api } from '@/services/api';
 import ResizableGenericTable from '@/components/lab/shared/ResizableGenericTable.vue';
 
-const router = useRouter();
+
 
 const loading = ref(false);
 const panel = ref<any[]>(['options']);
@@ -267,7 +268,7 @@ function handleOpen(item: any) {
   // Auch wenn wir noch keine Detailseiten für Antibody/Order haben,
   // zeigt das alert() dass der Button geht.
   if (activeTab.value === 'run') {
-    router.push({ name: 'StainingRunEditor', params: { id: item.id } });
+    push({ name: 'StainingRunEditor', params: { id: item.id } });
   } else {
     alert(`Öffne ${activeTab.value}: ${item.id} (Ansicht folgt)`);
   }

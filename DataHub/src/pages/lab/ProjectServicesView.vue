@@ -140,9 +140,10 @@
 </template>
 
 <script setup lang="ts">
+import { state, push, back } from '@/state';
 import { ref, onMounted, computed, watch } from 'vue';
-import { useRouter } from "@/state";
-import { useNavigationStore } from '@/stores/navigationStore';
+
+
 import { api } from '@/services/api';
 import type { Project, ProjectService } from '@/mocks/db';
 import ResizableServiceTable from '@/components/lab/shared/ResizableServiceTable.vue';

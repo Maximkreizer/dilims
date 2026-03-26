@@ -23,7 +23,7 @@ Funktionalität:
 </template>
 
 <script setup lang="ts">
-import { push, back, state } from "@/state";
+import { push, back, state } from '@/state';
 
 // Der Typ bleibt derselbe
 type Tile = { route: string; icon: string; aria: string };
@@ -39,8 +39,14 @@ const tiles: Tile[] = [
 ];
 
 // Die Funktion ist direkt verfügbar
+const routeMap: Record<string, string> = {
+  '/search': 'ServiceSearch',
+  '/lab': 'ServiceProjectServices',
+  '/antibodies': 'AntibodyDashboard',
+};
+
 const goTo = (route: string) => {
-  router.push(route);
+  push({ name: routeMap[route] || 'Dashboard' });
 };
 </script>
 

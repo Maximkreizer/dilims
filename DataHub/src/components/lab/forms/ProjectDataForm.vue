@@ -109,9 +109,10 @@
 </template>
 
 <script setup lang="ts">
+import { state } from '@/state';
 import { ref, watch, computed } from 'vue';
 import type { Project, TechnicalAssistant, CooperationPartner, Workgroup } from '@/mocks/db';
-import { useProjectStore } from '@/stores/projectStore';
+
 
 
 const props = defineProps<{

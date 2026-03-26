@@ -85,9 +85,10 @@
 </template>
 
 <script setup lang="ts">
+import { state, push, back } from '@/state';
 import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from "@/state";
-import { useNavigationStore } from '@/stores/navigationStore';
+
+
 import { api, type ProjectFilters } from '@/services/api';
 import type { Project, TechnicalAssistant, CooperationPartner, Workgroup } from '@/mocks/db';
 

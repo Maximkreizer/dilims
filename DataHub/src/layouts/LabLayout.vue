@@ -72,7 +72,8 @@ Funktionalität:
 </template>
 
 <script setup lang="ts">
-import { useRouter } from "@/state";
+import { state, push, back } from '@/state';
+
 
 // Wir benötigen den Router, um die Navigation programmgesteuert auszulösen.
 
@@ -82,7 +83,7 @@ import { useRouter } from "@/state";
  * zur Startseite der gesamten Anwendung.
  */
 function closeWorkflow() {
-  push('/'); // Annahme: '/' ist Ihre Haupt-Startseite/Dashboard
+  push({ name: 'Dashboard' }); // Annahme: '/' ist Ihre Haupt-Startseite/Dashboard
 }
 </script>
 

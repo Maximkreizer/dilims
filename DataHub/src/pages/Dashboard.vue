@@ -32,8 +32,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { push, back, state } from "@/state";
-import { useNavigationStore } from '@/stores/navigationStore';
+import { push, back, state } from '@/state';
+
 
 
 

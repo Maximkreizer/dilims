@@ -115,9 +115,10 @@
 </template>
 
 <script setup lang="ts">
+import { state, push, back } from '@/state';
 import { ref, reactive, onMounted, computed, watch } from 'vue';
-import { useRouter } from "@/state";
-import { useNavigationStore } from '@/stores/navigationStore';
+
+
 import { api } from '@/services/api';
 import type { Project, TechnicalAssistant, CooperationPartner, Workgroup } from '@/mocks/db';
 
@@ -220,7 +221,7 @@ function executeClear() {
   
   // Wir ändern die URL auf 'new', falls wir gerade ein bestehendes Projekt bearbeitet haben,
   // damit man nicht versehentlich das bestehende Projekt mit leeren Daten überschreibt.
-  router.replace({ name: 'ServiceProjectEdit', params: { projectId: 'new' } });
+  push({ name: 'ServiceProjectEdit', params: { projectId: 'new' } });
   
   clearDialog.value = false;
   updateNavigation();
@@ -278,7 +279,7 @@ async function handleSave(updatedProject: Project) {
     const saved = await api.saveProject(updatedProject);
     projectData.value = saved;
     if (updatedProject.ORIGREC === 0) {
-       router.replace({ name: 'ServiceProjectEdit', params: { projectId: saved.ORIGREC } });
+       push({ name: 'ServiceProjectEdit', params: { projectId: saved.ORIGREC } });
     }
     await api.findProjects({}).then(res => allProjects.value = res);
     updateNavigation();

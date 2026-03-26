@@ -22,7 +22,7 @@
         <v-card-actions class="d-flex justify-end pa-4 bg-grey-lighten-5 ga-2">
           <v-btn variant="outlined" color="error" prepend-icon="mdi-delete" @click="handleDelete">Löschen</v-btn>
           <v-spacer></v-spacer>
-          <v-btn variant="text" @click="router.back()">Abbrechen</v-btn>
+          <v-btn variant="text" @click="back()">Abbrechen</v-btn>
           <v-btn color="primary" variant="flat" prepend-icon="mdi-content-save" @click="handleSave" :loading="saving">Speichern</v-btn>
         </v-card-actions>
       </v-card>
@@ -32,15 +32,16 @@
 </template>
 
 <script setup lang="ts">
+import { state, push, back } from '@/state';
 import { ref, onMounted } from 'vue';
-import { useRouter } from "@/state";
-import { useNavigationStore } from '@/stores/navigationStore';
+
+
 import { api } from '@/services/api';
 import type { StainingRun } from '@/mocks/db';
 import StainingRunForm from '@/components/lab/forms/StainingRunForm.vue';
 
 const props = defineProps<{ id: string }>(); // ID aus URL
-const router = useRouter();
+
 
 const loading = ref(true);
 const saving = ref(false);
@@ -88,13 +89,13 @@ async function handleSave() {
   // await api.saveStainingRun(runData.value); // Müssten wir in api.ts noch anlegen
   await new Promise(r => setTimeout(r, 500)); // Simuliere Speichern
   saving.value = false;
-  router.back(); // Oder auf der Seite bleiben
+  back(); // Oder auf der Seite bleiben
 }
 
 async function handleDelete() {
   if(confirm("Löschen?")) {
     // await api.deleteStainingRun(runData.value.id);
-    router.back();
+    back();
   }
 }
 

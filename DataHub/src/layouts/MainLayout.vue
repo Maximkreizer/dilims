@@ -54,7 +54,7 @@
     <!-- OBEN: Header                          -->
     <!-- ===================================== -->
     <v-app-bar flat border="b" height="64" color="white" class="primary-action-bar">
-      <div class="d-flex align-center px-4 cursor-pointer" style="min-width: 200px;" @click="push('/')">
+      <div class="d-flex align-center px-4 cursor-pointer" style="min-width: 200px;" @click="push({name: 'Dashboard'})">
         <v-icon color="primary" class="mr-2">mdi-flask-outline</v-icon>
         <span class="font-weight-bold text-h6 text-grey-darken-3">LAB<span class="text-primary">OS</span></span>
       </div>
@@ -62,7 +62,7 @@
       <v-divider vertical inset></v-divider>
 
       <!-- Breadcrumbs aus dem Store -->
-      <v-breadcrumbs :items="state.nav.breadcrumbs" class="px-4">
+      <v-breadcrumbs :items="(state.nav.tabs.find(t => t.id === state.nav.activeTabId)?.breadcrumbs || [])" class="px-4">
         <template v-slot:divider>
           <v-icon icon="mdi-chevron-right"></v-icon>
         </template>
@@ -78,7 +78,7 @@
       <!-- Action Buttons -->
       <div class="d-flex align-center px-4 ga-2">
         <v-btn 
-          v-if="state.nav.showNewButton"
+          v-if="(state.nav.tabs.find(t => t.id === state.nav.activeTabId)?.showNewButton || false)"
           prepend-icon="mdi-plus" 
           variant="tonal" 
           color="primary"
@@ -89,7 +89,7 @@
 
         <v-divider vertical class="mx-2" style="height: 24px"></v-divider>
 
-        <v-btn icon variant="text" color="grey-darken-2" @click="router.back()" :disabled="isDashboard">
+        <v-btn icon variant="text" color="grey-darken-2" @click="back()" :disabled="isDashboard">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
 
@@ -118,21 +118,22 @@
 
 <script setup lang="ts">
 import { computed, watch } from 'vue';
-import { push, back, state, views } from "@/state";
-import { useNavigationStore } from '@/stores/navigationStore';
+import { push, back, state, views } from '@/state';
 
 
 
 
-const isDashboard = computed(() => "/" === '/');
+
+const isDashboard = computed(() => state.currentView.name === 'Dashboard');
 
 // WICHTIG: Wenn sich die URL ändert (User klickt irgendwo),
 // speichern wir den Pfad im aktuellen Tab.
 watch(
-  () => state.currentView.name,
-  (newPath) => {
-    state.nav.updateActiveTabPath(newPath);
-  }
+  () => state.currentView,
+  (newView) => {
+    state.nav.updateActiveTabPath(newView.name, newView.params);
+  },
+  { deep: true }
 );
 
 function handleNewClick() {
