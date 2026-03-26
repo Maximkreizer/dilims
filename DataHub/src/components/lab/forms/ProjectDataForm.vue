@@ -190,6 +190,7 @@ const completionDateForInput = computed({
 watch(() => formData.value?.Bearbeitung, (newStatus) => {
   if (newStatus === 'completed' && !formData.value?.Abgabedatum) {
     const today = new Date().toISOString().split('T')[0];
+    if (!formData.value) return;
     formData.value.Abgabedatum = `${today}T00:00:00.000Z`;
   }
 }, { flush: 'sync' });

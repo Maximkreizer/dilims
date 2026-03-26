@@ -171,7 +171,12 @@ export const api = {
       results = results.filter(p => p.AB_P_Kundennummer === filters.workgroupId);
     }
     if (filters.projectNumber && filters.projectNumber !== filters.generalSearch) {
-      results = results.filter(p => p.ProjektNr && p.ProjektNr.toLowerCase().includes(filters.projectNumber.toLowerCase()));
+      results = results.filter(p => {
+        if (filters.projectNumber && p.ProjektNr) {
+          return p.ProjektNr.toLowerCase().includes(filters.projectNumber.toLowerCase());
+        }
+        return false;
+      });
     }
     if (filters.projectType) { 
       results = results.filter(p => p.Projekttyp === filters.projectType);

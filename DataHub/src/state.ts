@@ -104,12 +104,12 @@ export const state = reactive({
     projectVersion: 0,
     isLoading: false,
     searchOptions: {
-      technicalAssistants: [],
-      cooperationPartners: [],
-      projectTypes: [],
-      workgroups: [],
-      statuses: [],
-    },
+      technicalAssistants: [] as any[],
+      cooperationPartners: [] as any[],
+      projectTypes: [] as any[],
+      workgroups: [] as any[],
+      statuses: [] as any[],
+    } as any,
     async searchProjects(filters: any) {
       this.isLoading = true;
       this.projects = await api.findProjects(filters);

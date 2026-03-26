@@ -114,12 +114,12 @@
           :class="readonly ? 'readonly-cell' : 'editable-cell'"
         >
           <DidataSelect v-if="editingCellId === item.ORIGREC + '-TA'" v-model="editingValue" :items="options.technicalAssistants" item-title="LANGTEXT" item-value="ORIGREC" variant="plain" density="compact" hide-details menu-icon="" open-on-mount @update:model-value="saveEdit(item, 'TA')"></DidataSelect>
-          <span v-else class="text-truncate">{{ taMap[item.TA] || '-' }}</span>
+          <span v-else class="text-truncate">{{ item.TA ? taMap[item.TA] : '-' }}</span>
         </div>
       </template>
 
-      <template v-slot:item.Arzt="{ value }">{{ cpMap[value] || '-' }}</template>
-      <template v-slot:item.AB_P_Kundennummer="{ value }">{{ wgMap[value] || '-' }}</template>
+      <template v-slot:item.Arzt="{ value }">{{ value ? cpMap[value] : '-' }}</template>
+      <template v-slot:item.AB_P_Kundennummer="{ value }">{{ value ? wgMap[value] : '-' }}</template>
       
       <!-- Checkboxen: Wenn readonly, dann disabled -->
       <template v-slot:item.Abschlusskontrolle="{ item }">
