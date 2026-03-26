@@ -32,6 +32,23 @@ import '@mdi/font/css/materialdesignicons.css'; // Für die Icons
 const vuetify = createVuetify({
   components,
   directives,
+  theme: {
+    defaultTheme: 'didataTheme',
+    themes: {
+      didataTheme: {
+        dark: false,
+        colors: {
+          primary: '#0072ce',
+          secondary: '#00c389',
+          accent: '#041e42',
+          error: '#d92d20',
+          info: '#3e95dc',
+          success: '#00c389',
+          warning: '#dc6803',
+        },
+      },
+    },
+  },
 });
 
 // Erstellen Sie die Haupt-Vue-App-Instanz

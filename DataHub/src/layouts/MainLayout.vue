@@ -4,7 +4,7 @@
     <!-- ===================================== -->
     <!-- LINKS: Sidebar (Tab-Liste)            -->
     <!-- ===================================== -->
-    <v-navigation-drawer rail permanent color="grey-lighten-4">
+    <v-navigation-drawer rail permanent class="didata-sidebar">
       <div class="d-flex flex-column align-center py-4 fill-height">
         
         <!-- SCHLEIFE: Alle offenen Tabs -->
@@ -53,7 +53,7 @@
     <!-- ===================================== -->
     <!-- OBEN: Header                          -->
     <!-- ===================================== -->
-    <v-app-bar flat border="b" height="64" color="white">
+    <v-app-bar flat border="b" height="64" color="white" class="primary-action-bar">
       <div class="d-flex align-center px-4 cursor-pointer" style="min-width: 200px;" @click="router.push('/')">
         <v-icon color="primary" class="mr-2">mdi-flask-outline</v-icon>
         <span class="font-weight-bold text-h6 text-grey-darken-3">LAB<span class="text-primary">OS</span></span>
