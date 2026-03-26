@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter } from "@/state";
 import { useNavigationStore } from '@/stores/navigationStore';
 import { api, type ProjectFilters } from '@/services/api';
 import type { Project, TechnicalAssistant, CooperationPartner, Workgroup } from '@/mocks/db';
@@ -95,7 +95,6 @@ import type { Project, TechnicalAssistant, CooperationPartner, Workgroup } from 
 import ResizableProjectTable from '@/components/lab/shared/ResizableProjectTable.vue';
 
 const router = useRouter();
-const navStore = useNavigationStore();
 
 const loading = ref(false);
 const projects = ref<Project[]>([]);
@@ -126,7 +125,7 @@ function handleProjectSelect(project: Project) {
 }
 
 function handleOpenInNewTab(project: Project) {
-  navStore.addTab(`/services/project/${project.ORIGREC}`);
+  state.nav.addTab(`/services/project/${project.ORIGREC}`);
 }
 
 async function handleDeleteProject(project: Project) {
@@ -164,8 +163,8 @@ function resetFilters() {
 
 onMounted(async () => {
   // 1. Overlay sofort setzen (Layout stabilisieren)
-  navStore.setContext('mdi-beaker-check-outline', [{ title: 'Navigation', to: '/' }, { title: 'Projekterfassung', disabled: true }], true);
-  navStore.setNewAction(() => router.push({ name: 'ServiceProjectEdit', params: { projectId: 'new' } }));
+  state.nav.setContext('mdi-beaker-check-outline', [{ title: 'Navigation', to: '/' }, { title: 'Projekterfassung', disabled: true }], true);
+  state.nav.setNewAction(() => router.push({ name: 'ServiceProjectEdit', params: { projectId: 'new' } }));
   
   // 2. Dann Daten laden
   loading.value = true; // Loading Spinner an

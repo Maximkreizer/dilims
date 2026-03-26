@@ -113,7 +113,6 @@ import { ref, watch, computed } from 'vue';
 import type { Project, TechnicalAssistant, CooperationPartner, Workgroup } from '@/mocks/db';
 import { useProjectStore } from '@/stores/projectStore';
 
-const projectStore = useProjectStore();
 
 const props = defineProps<{
   project: Project | null;

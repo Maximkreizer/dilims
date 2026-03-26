@@ -72,7 +72,7 @@ Funktionalität:
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { useRouter } from "@/state";
 
 // Wir benötigen den Router, um die Navigation programmgesteuert auszulösen.
 const router = useRouter();

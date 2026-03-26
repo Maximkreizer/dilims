@@ -116,7 +116,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter } from "@/state";
 import { useNavigationStore } from '@/stores/navigationStore';
 import { api } from '@/services/api';
 import type { Project, TechnicalAssistant, CooperationPartner, Workgroup } from '@/mocks/db';
@@ -126,7 +126,6 @@ import ResizableProjectTable from '@/components/lab/shared/ResizableProjectTable
 
 const props = defineProps<{ projectId: string | number; }>();
 const router = useRouter();
-const navStore = useNavigationStore();
 
 const initialLoading = ref(true);
 const isFormLoading = ref(false);
@@ -173,7 +172,7 @@ watch(() => props.projectId, async (newId, oldId) => {
 });
 
 // Watcher für Tab-Wechsel (Icon Fix)
-watch(() => navStore.activeTabId, () => updateNavigation());
+watch(() => state.nav.activeTabId, () => updateNavigation());
 
 // --- SYNC ---
 function handleFormInput(updatedProject: Project) {
@@ -194,7 +193,7 @@ async function createNewProject() {
 }
 
 function handleOpenInNewTab(project: Project) {
-  navStore.addTab(`/services/project/${project.ORIGREC}`);
+  state.nav.addTab(`/services/project/${project.ORIGREC}`);
 }
 
 async function handleDeleteProject(project: Project) {
@@ -296,7 +295,7 @@ function updateNavigation() {
   const title = (!projectData.value?.ORIGREC || projectData.value.ORIGREC === 0) ? 'Neues Projekt' : `Projekt ${projectData.value?.ProjektNr}`;
   
   // WICHTIG: Hier aktivieren wir den "Neu" Button oben rechts (3. Parameter = true)
-  navStore.setContext(
+  state.nav.setContext(
     'mdi-beaker-check-outline', 
     [
       { title: 'Navigation', to: '/' }, 
@@ -307,7 +306,7 @@ function updateNavigation() {
   );
   
   // Und wir sagen dem Button, was er tun soll (createNewProject aufrufen)
-  navStore.setNewAction(createNewProject);
+  state.nav.setNewAction(createNewProject);
 }
 
 function goToServices(id: number) {

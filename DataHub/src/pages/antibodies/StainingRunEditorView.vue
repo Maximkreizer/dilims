@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter } from "@/state";
 import { useNavigationStore } from '@/stores/navigationStore';
 import { api } from '@/services/api';
 import type { StainingRun } from '@/mocks/db';
@@ -41,7 +41,6 @@ import StainingRunForm from '@/components/lab/forms/StainingRunForm.vue';
 
 const props = defineProps<{ id: string }>(); // ID aus URL
 const router = useRouter();
-const navStore = useNavigationStore();
 
 const loading = ref(true);
 const saving = ref(false);
@@ -101,7 +100,7 @@ async function handleDelete() {
 
 function updateNav() {
   const title = props.id === 'new' ? 'Neuer Färbelauf' : `Färbelauf ${runData.value?.runId || props.id}`;
-  navStore.setContext('mdi-palette-swatch', [
+  state.nav.setContext('mdi-palette-swatch', [
     { title: 'Navigation', to: '/' },
     { title: 'Antikörper', to: { name: 'AntibodyDashboard' } }, // Zurück zur Suche
     { title: title, disabled: true }

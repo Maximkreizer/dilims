@@ -154,13 +154,12 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter } from "@/state";
 import { useNavigationStore } from '@/stores/navigationStore';
 import { api } from '@/services/api';
 import ResizableGenericTable from '@/components/lab/shared/ResizableGenericTable.vue';
 
 const router = useRouter();
-const navStore = useNavigationStore();
 
 const loading = ref(false);
 const panel = ref<any[]>(['options']);
@@ -276,7 +275,7 @@ function handleOpen(item: any) {
 
 function handleOpenInNewTab(item: any) {
   if (activeTab.value === 'run') {
-    navStore.addTab(`/antibodies/run/${item.id}`);
+    state.nav.addTab(`/antibodies/run/${item.id}`);
   } else {
     alert("Neuer Tab für diesen Typ noch nicht verfügbar");
   }
@@ -297,8 +296,8 @@ watch(activeTab, () => {
 });
 
 onMounted(() => {
-  navStore.setContext('mdi-molecule', [{ title: 'Navigation', to: '/' }, { title: 'Antikörper', disabled: true }], true);
-  navStore.setNewAction(() => alert("Neues Element anlegen"));
+  state.nav.setContext('mdi-molecule', [{ title: 'Navigation', to: '/' }, { title: 'Antikörper', disabled: true }], true);
+  state.nav.setNewAction(() => alert("Neues Element anlegen"));
   performSearch();
 });
 </script>

@@ -141,7 +141,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter } from "@/state";
 import { useNavigationStore } from '@/stores/navigationStore';
 import { api } from '@/services/api';
 import type { Project, ProjectService } from '@/mocks/db';
@@ -150,7 +150,6 @@ import ServiceForm from '@/components/lab/services/ServiceForm.vue';
 
 const props = defineProps<{ projectId: string | number }>();
 const router = useRouter();
-const navStore = useNavigationStore();
 
 const loading = ref(true);
 const project = ref<Project | null>(null);
@@ -232,7 +231,7 @@ function openServiceForEdit(service: ProjectService) {
 
 function handleOpenInNewTab(service: ProjectService) {
   // Da ein Service keine eigene Seite hat, öffnen wir das ganze Projektmodul in neuem Tab
-  navStore.addTab(`/services/project/${props.projectId}/services`);
+  state.nav.addTab(`/services/project/${props.projectId}/services`);
 }
 
 function closeEditor() {
@@ -302,7 +301,7 @@ async function loadData() {
 }
 
 function updateNav() {
-  navStore.setContext(
+  state.nav.setContext(
     'mdi-beaker-check-outline', 
     [
       { title: 'Navigation', to: '/' },
@@ -314,11 +313,11 @@ function updateNav() {
   );
   
   // Action für Neu Button
-  navStore.setNewAction(handleHeaderNewClick);
+  state.nav.setNewAction(handleHeaderNewClick);
 }
 
 // Tab Icon Fix
-watch(() => navStore.activeTabId, () => updateNav());
+watch(() => state.nav.activeTabId, () => updateNav());
 
 onMounted(loadData);
 </script>

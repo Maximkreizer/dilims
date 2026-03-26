@@ -32,16 +32,15 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter } from "@/state";
 import { useNavigationStore } from '@/stores/navigationStore';
 
 const router = useRouter();
-const navStore = useNavigationStore();
 
 // Beim Laden des Dashboards setzen wir das Layout zurück
 // (Standard-Icon, keine Breadcrumbs außer 'Navigation')
 onMounted(() => {
-  navStore.setContext(
+  state.nav.setContext(
     'mdi-monitor-dashboard', 
     [{ title: 'Navigation', disabled: true }]
   );

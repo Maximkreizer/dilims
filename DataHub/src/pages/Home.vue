@@ -23,7 +23,7 @@ Funktionalität:
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { useRouter } from "@/state";
 
 // Der Typ bleibt derselbe
 type Tile = { route: string; icon: string; aria: string };

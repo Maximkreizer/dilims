@@ -8,21 +8,21 @@
       <div class="d-flex flex-column align-center py-4 fill-height">
         
         <!-- SCHLEIFE: Alle offenen Tabs -->
-        <div v-for="(tab, index) in navStore.tabs" :key="tab.id" class="mb-3">
+        <div v-for="(tab, index) in state.nav.tabs" :key="tab.id" class="mb-3">
           <v-tooltip :text="`Tab ${index + 1}`" location="end">
             <template v-slot:activator="{ props }">
               <v-card
                 v-bind="props"
-                :color="navStore.activeTabId === tab.id ? 'primary' : 'white'"
-                :variant="navStore.activeTabId === tab.id ? 'flat' : 'outlined'"
+                :color="state.nav.activeTabId === tab.id ? 'primary' : 'white'"
+                :variant="state.nav.activeTabId === tab.id ? 'flat' : 'outlined'"
                 class="d-flex align-center justify-center rounded-lg transition-swing"
-                :class="navStore.activeTabId === tab.id ? 'elevation-4' : 'elevation-0 opacity-70'"
+                :class="state.nav.activeTabId === tab.id ? 'elevation-4' : 'elevation-0 opacity-70'"
                 width="48"
                 height="48"
                 link
-                @click="navStore.switchTab(tab.id)"
+                @click="state.nav.switchTab(tab.id)"
               >
-                <v-icon :color="navStore.activeTabId === tab.id ? 'white' : 'grey-darken-1'">
+                <v-icon :color="state.nav.activeTabId === tab.id ? 'white' : 'grey-darken-1'">
                   {{ tab.icon }}
                 </v-icon>
               </v-card>
@@ -33,12 +33,12 @@
         <!-- PLUS BUTTON: Neuer Tab (Max 8) -->
         <v-fade-transition>
           <v-btn 
-            v-if="navStore.tabs.length < 8"
+            v-if="state.nav.tabs.length < 8"
             icon="mdi-plus" 
             variant="text" 
             color="grey-darken-2"
             size="large"
-            @click="navStore.addTab()"
+            @click="state.nav.addTab()"
           >
             <v-icon size="28">mdi-plus</v-icon>
             <v-tooltip activator="parent" location="end">Neuen Tab öffnen</v-tooltip>
@@ -62,7 +62,7 @@
       <v-divider vertical inset></v-divider>
 
       <!-- Breadcrumbs aus dem Store -->
-      <v-breadcrumbs :items="navStore.breadcrumbs" class="px-4">
+      <v-breadcrumbs :items="state.nav.breadcrumbs" class="px-4">
         <template v-slot:divider>
           <v-icon icon="mdi-chevron-right"></v-icon>
         </template>
@@ -78,7 +78,7 @@
       <!-- Action Buttons -->
       <div class="d-flex align-center px-4 ga-2">
         <v-btn 
-          v-if="navStore.showNewButton"
+          v-if="state.nav.showNewButton"
           prepend-icon="mdi-plus" 
           variant="tonal" 
           color="primary"
@@ -97,11 +97,11 @@
           icon 
           variant="text" 
           color="error" 
-          @click="navStore.closeTab(navStore.activeTabId)"
+          @click="state.nav.closeTab(state.nav.activeTabId)"
         >
           <v-icon>mdi-close-box-outline</v-icon>
           <v-tooltip activator="parent" location="bottom">
-            {{ navStore.tabs.length === 1 ? 'Zurück zum Dashboard' : 'Tab schließen' }}
+            {{ state.nav.tabs.length === 1 ? 'Zurück zum Dashboard' : 'Tab schließen' }}
           </v-tooltip>
         </v-btn>
       </div>
@@ -111,26 +111,18 @@
     <!-- MITTE: Content                        -->
     <!-- ===================================== -->
     <v-main class="bg-grey-lighten-5" style="height: 100vh; overflow: auto;">  
-    <router-view v-slot="{ Component }">
-      <v-fade-transition mode="out-in">
-        <!-- Key geändert auf route.name! -->
-        <div :key="route.name?.toString()" class="fill-height">
-          <component :is="Component" />
-        </div>
-      </v-fade-transition>
-    </router-view>
+    <component :is="views[state.currentView.name]" v-bind="state.currentView.params" />
     </v-main>
   </v-app>
 </template>
 
 <script setup lang="ts">
 import { computed, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter, useRoute } from "@/state";
 import { useNavigationStore } from '@/stores/navigationStore';
 
 const router = useRouter();
 const route = useRoute();
-const navStore = useNavigationStore();
 
 const isDashboard = computed(() => route.path === '/');
 
@@ -139,13 +131,13 @@ const isDashboard = computed(() => route.path === '/');
 watch(
   () => route.fullPath,
   (newPath) => {
-    navStore.updateActiveTabPath(newPath);
+    state.nav.updateActiveTabPath(newPath);
   }
 );
 
 function handleNewClick() {
-  if (navStore.onNewButtonClick) {
-    navStore.onNewButtonClick();
+  if (state.nav.onNewButtonClick) {
+    state.nav.onNewButtonClick();
   }
 }
 </script>
