@@ -190,9 +190,7 @@ export const api = {
       workgroups: mockWorkgroups,
       projectTypes: [
         { value: 'isNctTbb', title: 'NCT-TBB' },
-        { value: 'isPccc', title: 'pCCC' },
         { value: 'isDzif', title: 'DZIF' },
-        { value: 'isCmcp', title: 'CMCP' },
       ],
       statuses: [
         { value: 'in_progress', title: 'In Bearbeitung' },

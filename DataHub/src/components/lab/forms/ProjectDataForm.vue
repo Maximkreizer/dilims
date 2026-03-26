@@ -39,22 +39,15 @@
             <!-- Bearbeitung -->
             <v-select v-model="formData.status" label="Bearbeitung" :items="props.statusOptions" item-title="title" item-value="value" density="compact" variant="outlined" class="mb-4"></v-select>
             
-            <!-- Aufgaben & Projektstand -->
+            <!-- Aufgaben -->
             <v-textarea v-model="formData.taskDescription" label="Aufgaben" rows="3" variant="outlined" class="mb-4"></v-textarea>
-            <v-textarea v-model="formData.projectStatusText" label="Projektstand" rows="2" variant="outlined" class="mb-4"></v-textarea>
 
             <!-- TA & Arzt -->
             <v-select v-model="formData.technicalAssistantId" label="TA" :items="props.assistantOptions" item-title="fullName" item-value="id" density="compact" variant="outlined" class="mb-4"></v-select>
             <v-select v-model="formData.cooperationPartnerId" label="Arzt / Koop.-Partner" :items="props.partnerOptions" item-title="fullName" item-value="id" density="compact" variant="outlined" class="mb-4"></v-select>
-            
-            <!-- Daten -->
-            <div class="d-flex ga-4 mb-4">
-              <v-text-field v-model="estimatedDateForInput" type="date" label="Voraussichtl. Abgabe" density="compact" variant="outlined" hide-details></v-text-field>
-              <v-select v-model="formData.lastThursdayOfMonth" label="Letzter Do./Monat" :items="[]" density="compact" variant="outlined" hide-details></v-select>
-            </div>
 
             <!-- NEUES FELD: Abgabedatum -->
-            <v-text-field v-model="completionDateForInput" type="date" label="Abgabe" density="compact" variant="outlined" hide-details class="mb-4"></v-text-field>
+            <v-text-field v-model="completionDateForInput" type="date" label="Ganzes Projekt Abgeschlossen" density="compact" variant="outlined" hide-details class="mb-4"></v-text-field>
 
             <!-- NEUE CHECKBOXEN -->
             <div class="d-flex flex-wrap ga-x-6">
@@ -177,26 +170,26 @@ const selectedProjectType = computed({
   get() {
     if (!formData.value) return null;
     if (formData.value.isNctTbb) return 'isNctTbb';
-    if (formData.value.isPccc) return 'isPccc';
     if (formData.value.isDzif) return 'isDzif';
-    if (formData.value.isCmcp) return 'isCmcp';
     return null;
   },
   set(newValue) {
     if (!formData.value) return;
-    ['isNctTbb', 'isPccc', 'isDzif', 'isCmcp'].forEach(flag => { formData.value[flag] = false; });
+    ['isNctTbb', 'isDzif'].forEach(flag => { formData.value[flag] = false; });
     if (newValue) { formData.value[newValue] = true; }
   }
-});
-
-const estimatedDateForInput = computed({
-  get: () => formData.value?.estimatedCompletionDate?.split('T')[0] || '',
-  set: (value) => { if (formData.value) { formData.value.estimatedCompletionDate = value ? `${value}T00:00:00.000Z` : null; } }
 });
 
 const completionDateForInput = computed({
   get: () => formData.value?.completionDate?.split('T')[0] || '',
   set: (value) => { if (formData.value) { formData.value.completionDate = value ? `${value}T00:00:00.000Z` : null; } }
+});
+
+watch(() => formData.value?.status, (newStatus) => {
+  if (newStatus === 'completed' && !formData.value?.completionDate) {
+    const today = new Date().toISOString().split('T')[0];
+    formData.value!.completionDate = `${today}T00:00:00.000Z`;
+  }
 });
 </script>
 

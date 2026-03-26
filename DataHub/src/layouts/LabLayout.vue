@@ -28,7 +28,7 @@ Funktionalität:
     <!-- ======================================================= -->
     <!-- 2. CONTENT: Hier werden die Seiten ausgetauscht       -->
     <!-- ======================================================= -->
-    <v-card-text style="flex-grow: 1;">
+    <v-card-text style="flex-grow: 1; overflow: auto;">
       <!-- 
         Das ist der dynamische Bereich. Vue Router wird hier
         ProjectSearchView, ProjectEditorView etc. einfügen.

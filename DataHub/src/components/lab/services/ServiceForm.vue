@@ -64,12 +64,12 @@
           <!-- 5. KRYO SERVICE -->
           <template v-if="formData.serviceType === 'cryo_service' || formData.serviceType === 'cryo_tubes'">
             <v-col cols="6"><v-text-field v-model.number="formData.sampleCount" label="K_Anz_Proben" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.tubesPerSample" label="K_Anz_Tubes_pro_Probe" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.scrollsPerTubeCount" label="K_Röllchen pro Tube (Anzahl)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.scrollsPerTubeWeight" label="K_Röllchen pro Tube (Gewicht)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heRequestor" label="K_HE_Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.heTissueBank" label="K_HE_Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="12"><v-text-field v-model.number="formData.archiveSampleCases" label="K_Archiv_Anz_Proben (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="6"><v-text-field v-model.number="formData.slidesPerSample" label="K_Anz_OT_pro_Probe (ohne HE)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="6"><v-text-field v-model.number="formData.heRequestor" label="K_HE-Schnitte für Antragsteller" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            <v-col cols="6"><v-text-field v-model.number="formData.heTissueBank" label="K_HE-Schnitte für Gewebebank" type="number" density="compact" variant="outlined"></v-text-field></v-col>
+            
+            <v-col cols="6"><v-checkbox v-model="formData.isSampleTaken" label="Probe entnommen" density="compact" hide-details></v-checkbox></v-col>
+            <v-col cols="6"><v-checkbox v-model="formData.isSampleDelivered" label="Probe abgegeben" density="compact" hide-details></v-checkbox></v-col>
           </template>
 
           <!-- 6. IHC -->
@@ -78,9 +78,16 @@
             <v-col cols="6">
               <v-select v-model="formData.stainingDevice" label="IHC_Färbegerät" :items="['Dako', 'Ventana', 'Bond', 'Manuell']" density="compact" variant="outlined"></v-select>
             </v-col>
+            <v-col cols="6"><v-checkbox v-model="formData.isSampleTaken" label="Probe entnommen" density="compact" hide-details></v-checkbox></v-col>
+            <v-col cols="6"><v-checkbox v-model="formData.isSampleDelivered" label="Probe abgegeben" density="compact" hide-details></v-checkbox></v-col>
           </template>
 
-          <!-- 7. FÄRBUNG (Nur Bemerkung & Datum, siehe unten) -->
+          <!-- 7. FÄRBUNG -->
+          <template v-if="formData.serviceType === 'staining'">
+            <v-col cols="12">
+              <v-btn disabled color="primary" variant="tonal" prepend-icon="mdi-import">Aus Antikörper importieren</v-btn>
+            </v-col>
+          </template>
 
           <!-- 8. DNA/RNA EXTRAKTION -->
           <template v-if="formData.serviceType === 'dna_rna_extraction'">
@@ -122,10 +129,6 @@
           </template>
 
           <!-- 13. ARCHIVARBEIT -->
-          <template v-if="formData.serviceType === 'archival_work'">
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveSlidesCases" label="P_Archiv_Anz_Schnittpräparate (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-            <v-col cols="6"><v-text-field v-model.number="formData.archiveBlocksCases" label="P_Anz_Blöcke (Fälle)" type="number" density="compact" variant="outlined"></v-text-field></v-col>
-          </template>
 
           <!-- ======================================================= -->
           <!-- ALLGEMEINE FELDER (Für fast alle sichtbar)              -->
@@ -133,6 +136,14 @@
           
           <v-col cols="12">
             <v-divider class="my-2"></v-divider>
+          </v-col>
+
+          <v-col cols="12">
+            <v-text-field label="Pathologische Beurteilung" disabled density="compact" variant="outlined"></v-text-field>
+          </v-col>
+
+          <v-col cols="12">
+            <v-text-field v-model="formData.partialDeliveryDate" label="Datum Teilabgabe" type="date" density="compact" variant="outlined"></v-text-field>
           </v-col>
 
           <v-col cols="12">
@@ -150,6 +161,7 @@
     <v-divider></v-divider>
     
     <v-card-actions class="pa-4 bg-grey-lighten-5">
+      <v-btn color="error" variant="tonal" @click="resetForm">Formular leeren</v-btn>
       <v-spacer></v-spacer>
       <v-btn variant="text" @click="$emit('cancel')">Abbrechen</v-btn>
       <v-btn color="primary" variant="flat" prepend-icon="mdi-content-save" @click="save">Speichern</v-btn>
@@ -211,5 +223,20 @@ function getLabel(type: string) { return labels[type] || type; }
 function save() {
   // Sende die bearbeiteten Daten zurück
   emit('save', formData.value);
+}
+
+function resetForm() {
+  const type = formData.value.serviceType;
+  const id = formData.value.id;
+  const projId = formData.value.projectId;
+  formData.value = {
+    id,
+    projectId: projId,
+    serviceType: type,
+    status: 'in_progress',
+    createdAt: new Date().toISOString(),
+    isSampleTaken: false,
+    isSampleDelivered: false
+  } as any;
 }
 </script>

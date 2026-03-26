@@ -46,7 +46,6 @@
                       <div class="d-flex flex-wrap ga-6">
                         <v-checkbox v-model="filters.finalCheck" label="Abschlusskontrolle" density="compact" hide-details></v-checkbox>
                         <v-checkbox v-model="filters.isLongTermProject" label="Langzeitprojekt" density="compact" hide-details></v-checkbox>
-                        <v-checkbox v-model="filters.isSfb118Project" label="SFB1118" density="compact" hide-details></v-checkbox>
                       </div>
                     </v-col>
 

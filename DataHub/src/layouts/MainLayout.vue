@@ -54,7 +54,7 @@
     <!-- OBEN: Header                          -->
     <!-- ===================================== -->
     <v-app-bar flat border="b" height="64" color="white">
-      <div class="d-flex align-center px-4" style="min-width: 200px;">
+      <div class="d-flex align-center px-4 cursor-pointer" style="min-width: 200px;" @click="router.push('/')">
         <v-icon color="primary" class="mr-2">mdi-flask-outline</v-icon>
         <span class="font-weight-bold text-h6 text-grey-darken-3">LAB<span class="text-primary">OS</span></span>
       </div>
@@ -110,7 +110,7 @@
     <!-- ===================================== -->
     <!-- MITTE: Content                        -->
     <!-- ===================================== -->
-    <v-main class="bg-grey-lighten-5">  
+    <v-main class="bg-grey-lighten-5" style="height: 100vh; overflow: auto;">  
     <router-view v-slot="{ Component }">
       <v-fade-transition mode="out-in">
         <!-- Key geändert auf route.name! -->
