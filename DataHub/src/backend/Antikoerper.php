@@ -1,0 +1,88 @@
+<?php
+header('Content-Type: application/json');
+echo '[
+  {
+    "AK_LOT_ID": 10001,
+    "AK_ID": 10002,
+    "AK_Name": "Caspase-3",
+    "HERST_ID": 10003,
+    "HERST_Name": "Institution_1",
+    "REF_NR": "559565",
+    "LOT_NR": "4052923",
+    "KONZ": "500 µg/ml",
+    "HOST": "rabbit",
+    "ISOTYP": "IgG",
+    "KLON": "Polyclonal",
+    "STATUS": "Verbraucht",
+    "IST_SEK_ANTIKOERPER": false,
+    "upsize_ts": "6869A440B44C9BA0"
+  },
+  {
+    "AK_LOT_ID": 10004,
+    "AK_ID": 10005,
+    "AK_Name": "Angiopoietin 2",
+    "HERST_ID": 10006,
+    "HERST_Name": "Institution_2",
+    "REF_NR": "20R-AR043",
+    "LOT_NR": "P15072901",
+    "KONZ": "80 mg/ml",
+    "HOST": "rabbit",
+    "KLON": "Polyclonal",
+    "LAGERUNG": "4°C",
+    "KONTROLLGEWEBE": "Plazenta",
+    "REAKTIVITAET": "Mensch/Ratte",
+    "EIGENTUEMER": "Institution_3",
+    "STATUS": "Verfügbar",
+    "IST_SEK_ANTIKOERPER": false,
+    "upsize_ts": "9DD403EC2F69D39D"
+  },
+  {
+    "AK_LOT_ID": 10007,
+    "AK_ID": 10008,
+    "AK_Name": "Anti-goat 2nd",
+    "HERST_ID": 10001,
+    "HERST_Name": "Institution_4",
+    "REF_NR": "E0466",
+    "LOT_NR": "20020162",
+    "KONZ": "670 µg/ml",
+    "HOST": "rabbit",
+    "KLON": "Polyclonal",
+    "LAGERUNG": "4°C",
+    "STATUS": "Verfügbar",
+    "IST_SEK_ANTIKOERPER": true,
+    "upsize_ts": "06C90E95288050C0"
+  },
+  {
+    "AK_LOT_ID": 10006,
+    "AK_ID": 10009,
+    "AK_Name": "Anti-rabbit 2nd",
+    "HERST_ID": 10001,
+    "HERST_Name": "Institution_4",
+    "REF_NR": "E0432",
+    "LOT_NR": "20027287",
+    "KONZ": "860 µg/ml",
+    "HOST": "goat",
+    "KLON": "Polyclonal",
+    "LAGERUNG": "4°C",
+    "STATUS": "Verfügbar",
+    "IST_SEK_ANTIKOERPER": true,
+    "upsize_ts": "78A22431E0D1D4E6"
+  },
+  {
+    "AK_LOT_ID": 10010,
+    "AK_ID": 10011,
+    "AK_Name": "Anti-rat 2nd",
+    "HERST_ID": 10001,
+    "HERST_Name": "Institution_4",
+    "REF_NR": "E0468",
+    "LOT_NR": "00075934",
+    "KONZ": "850 µg/ml",
+    "HOST": "rabbit",
+    "KLON": "Polyclonal",
+    "LAGERUNG": "4°C",
+    "STATUS": "Verfügbar",
+    "IST_SEK_ANTIKOERPER": true,
+    "upsize_ts": "9B34F076B281271C"
+  }
+]';
+?>
