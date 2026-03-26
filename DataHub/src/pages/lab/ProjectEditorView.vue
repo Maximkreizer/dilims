@@ -57,7 +57,7 @@
                variant="outlined" 
                color="primary" 
                prepend-icon="mdi-beaker-check-outline" 
-               @click="goToServices(projectData?.id || 0)" 
+               @click="goToServices(projectData?.ORIGREC || 0)" 
                :disabled="isFormLoading"
                class="font-weight-bold"
              >

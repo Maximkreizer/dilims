@@ -184,11 +184,11 @@ export const state = reactive({
       if (!state.projects.activeProject) return;
       this.isLoading = true;
       const serviceData = this.activeService;
-      const index = state.projects.activeProject.services.findIndex((s: any) => s.id === serviceData.id);
-      if (index !== -1 && serviceData.id !== 0) {
+      const index = state.projects.activeProject.services.findIndex((s: any) => s.ORIGREC === serviceData.ORIGREC);
+      if (index !== -1 && serviceData.ORIGREC !== 0) {
         state.projects.activeProject.services[index] = serviceData;
       } else {
-        serviceData.id = Date.now();
+        serviceData.ORIGREC = Date.now();
         state.projects.activeProject.services.push(serviceData);
       }
       this.services = [...state.projects.activeProject.services];
